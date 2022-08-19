@@ -4,7 +4,7 @@
   <!-- 元数据 -->
   <meta charset="utf-8">
   <link rel="icon" href="">
-  <title>Hello World | Auntilz</title>
+  <title>frida从入门到入门 | Auntilz</title>
   <meta name="author" content="Auntilz" />
   <meta http-equiv="Cache-Control" content="no-transform" />
   <meta http-equiv="Cache-Control" content="no-siteapp" />
@@ -13,18 +13,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <meta name="format-detection" content="telphone=no, email=no" />
   
-    <meta name="keywords" content="" />
+    <meta name="keywords" content="frida, hook" />
   
-  <meta name="description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick">
+  <meta name="description" content="frida 从入门到入门安装pip install frida-tools 就是这么简单0v0。 注入方式 直接注入 frida -l xx.js com.xxx frida -l xx.js com.xxx -F 注入当前应用   启动时注入(Spawn) frida -l xx.js -f com.xxx --no&#x3D;pause 不加--no&#x3D;pause还得在交互界面补一句%resume(真的麻">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hello World">
-<meta property="og:url" content="http://example.com/2022/07/15/hello-world/index.html">
+<meta property="og:title" content="frida从入门到入门">
+<meta property="og:url" content="http://example.com/2022/08/20/aaa/index.html">
 <meta property="og:site_name" content="Auntilz">
-<meta property="og:description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick">
+<meta property="og:description" content="frida 从入门到入门安装pip install frida-tools 就是这么简单0v0。 注入方式 直接注入 frida -l xx.js com.xxx frida -l xx.js com.xxx -F 注入当前应用   启动时注入(Spawn) frida -l xx.js -f com.xxx --no&#x3D;pause 不加--no&#x3D;pause还得在交互界面补一句%resume(真的麻">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2022-07-15T02:16:51.627Z">
-<meta property="article:modified_time" content="2022-07-15T02:16:51.627Z">
+<meta property="article:published_time" content="2022-08-19T16:44:36.000Z">
+<meta property="article:modified_time" content="2022-08-19T16:46:47.113Z">
 <meta property="article:author" content="Auntilz">
+<meta property="article:tag" content="frida">
+<meta property="article:tag" content="hook">
 <meta name="twitter:card" content="summary">
   
   <!-- 站点验证相关 -->
@@ -155,15 +157,15 @@
 
             <article itemscope itemtype="https://schema.org/Article">
     
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/07/15/hello-world/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/08/20/aaa/">
     <div class="kratos-hentry kratos-post-inner clearfix">
         <header class="kratos-entry-header">
             
-                <h1 class="kratos-entry-title text-center" itemprop="name headline">Hello World</h1>
+                <h1 class="kratos-entry-title text-center" itemprop="name headline">frida从入门到入门</h1>
             
             
             <ul class="kratos-post-meta text-center">
-                <li><time datetime="2022-07-15T02:16:51.627Z" itemprop="datePublished"><i class="fa fa-calendar"></i> 2022-07-15</time></li>
+                <li><time datetime="2022-08-19T16:44:36.000Z" itemprop="datePublished"><i class="fa fa-calendar"></i> 2022-08-20</time></li>
                 <li itemprop="author" itemscope itemtype="https://schema.org/Person">
                     <i class="fa fa-user"></i> 作者 <span itemprop="name">Auntilz</span>
                 </li>
@@ -171,7 +173,7 @@
                     <i class="fa fa-edit"></i> 
                     
                     
-                        444
+                        1085
                     
                     字
                 </li>
@@ -181,24 +183,53 @@
         <div class="kratos-post-content">
             <div id="expire-alert" class="alert alert-warning hidden" role="alert">
                 <div class="icon"><i class="fa fa-warning"></i></div>
-                <div class="text"><p>本文最后编辑于 <time datetime="1657851411627"></time> 前，其中的内容可能需要更新。</p></div>
+                <div class="text"><p>本文最后编辑于 <time datetime="1660927607113"></time> 前，其中的内容可能需要更新。</p></div>
             </div>
             
+                <div class="kratos-post-inner-toc">
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#frida-%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E5%85%A5%E9%97%A8"><span class="toc-number">1.</span> <span class="toc-text">frida 从入门到入门</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85"><span class="toc-number">1.1.</span> <span class="toc-text">安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E5%85%A5%E6%96%B9%E5%BC%8F"><span class="toc-number">1.2.</span> <span class="toc-text">注入方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A3%9F%E7%94%A8%E6%95%99%E7%A8%8B"><span class="toc-number">1.3.</span> <span class="toc-text">食用教程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Windows"><span class="toc-number">1.3.1.</span> <span class="toc-text">Windows</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E6%8B%A6%E6%88%AA%E5%99%A8%EF%BC%88Interceptor%EF%BC%89"><span class="toc-number">1.3.1.1.</span> <span class="toc-text">函数拦截器（Interceptor）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%BB%E5%8A%A8%E8%B0%83%E7%94%A8"><span class="toc-number">1.3.1.2.</span> <span class="toc-text">主动调用</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E6%93%8D%E4%BD%9C"><span class="toc-number">1.3.2.</span> <span class="toc-text">内存操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Android-x2F-Linux"><span class="toc-number">1.3.3.</span> <span class="toc-text">Android&#x2F;Linux</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Java%E5%B1%82"><span class="toc-number">1.3.3.1.</span> <span class="toc-text">Java层</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#native%E5%B1%82"><span class="toc-number">1.3.3.2.</span> <span class="toc-text">native层</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IOS-x2F-MAC-os"><span class="toc-number">1.3.4.</span> <span class="toc-text">IOS&#x2F;MAC os</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9B%E9%98%B6"><span class="toc-number">1.4.</span> <span class="toc-text">进阶</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#RPC"><span class="toc-number">1.4.1.</span> <span class="toc-text">RPC</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">1.4.2.</span> <span class="toc-text"></span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Objection"><span class="toc-number">1.5.</span> <span class="toc-text">Objection</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#frida-trace"><span class="toc-number">1.6.</span> <span class="toc-text">frida-trace</span></a></li></ol></li></ol>
+                </div>
+            
             <hr />
-            <div itemprop="articleBody"><p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-</div>
+            <div itemprop="articleBody"><h1 id="frida-从入门到入门"><a href="#frida-从入门到入门" class="headerlink" title="frida 从入门到入门"></a>frida 从入门到入门</h1><h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p><code>pip install frida-tools</code> 就是这么简单0v0。</p>
+<h2 id="注入方式"><a href="#注入方式" class="headerlink" title="注入方式"></a>注入方式</h2><ul>
+<li>直接注入<ul>
+<li><code>frida -l xx.js com.xxx</code></li>
+<li><code>frida -l xx.js com.xxx -F</code> 注入当前应用</li>
+</ul>
+</li>
+<li>启动时注入(Spawn)<ul>
+<li><code>frida -l xx.js -f com.xxx --no=pause</code> 不加<code>--no=pause</code>还得在交互界面补一句<code>%resume</code>(真的麻烦＞﹏＜)</li>
+</ul>
+</li>
+</ul>
+<h2 id="食用教程"><a href="#食用教程" class="headerlink" title="食用教程"></a>食用教程</h2><p>跨平台真的是太方便了，大大降低了学习成本，好耶！！！</p>
+<h3 id="Windows"><a href="#Windows" class="headerlink" title="Windows"></a>Windows</h3><h4 id="函数拦截器（Interceptor）"><a href="#函数拦截器（Interceptor）" class="headerlink" title="函数拦截器（Interceptor）"></a>函数拦截器（Interceptor）</h4><p><code>Interceptor.attach(函数指针，回调函数)</code><br>回调函数：</p>
+<ul>
+<li><code>onEnter</code>：给定参数用于读写它们</li>
+<li><code>onLeave</code>：可以省略，给定返回参数，用于读写返回值（不同的返回值类型，需要相应的转换！）<code>.replace()</code>用来改写返回值</li>
+<li>注意：retval 对象会在 onLeave 调用中回收, 因此不要将其存储在回调之外使用, 如果需要存储包含的值, 需要制作深拷贝, 如 ptr(retval.toString())</li>
+</ul>
+<h4 id="主动调用"><a href="#主动调用" class="headerlink" title="主动调用"></a>主动调用</h4><p><code>new NativeFunction(address, returnType, argTypes[, options]) </code></p>
+<ul>
+<li><code>address</code> : 函数地址</li>
+<li><code>returnType</code> : 指定返回类型</li>
+<li><code>argTypes</code> : 数组指定参数类型</li>
+<li>类型可选: void, pointer, int, uint, long, ulong, char, uchar, float, double, int8, uint8, int16, int32, uint32, int64, uint64; 参照函数所需的 type 来定义即可;</li>
+</ul>
+<h3 id="内存操作"><a href="#内存操作" class="headerlink" title="内存操作"></a>内存操作</h3><p>Memory.scan(地址，大小，模式，回调函数)</p>
+<ul>
+<li>模式：可以使用以<code>？</code>来表示任意数值的通配符</li>
+<li>回调函数：<ul>
+<li>onMatch(address,size):扫描到一个内存块，起始地址是address，大小size的内存块，返回stop表示停止扫描</li>
+<li>onError:(reason):扫描内存的时候出现内存访问异常的时候回调</li>
+<li>onComplete():内存扫描完毕的时候调用</li>
+</ul>
+</li>
+</ul>
+<h3 id="Android-x2F-Linux"><a href="#Android-x2F-Linux" class="headerlink" title="Android&#x2F;Linux"></a>Android&#x2F;Linux</h3><h4 id="Java层"><a href="#Java层" class="headerlink" title="Java层"></a>Java层</h4><h4 id="native层"><a href="#native层" class="headerlink" title="native层"></a>native层</h4><h3 id="IOS-x2F-MAC-os"><a href="#IOS-x2F-MAC-os" class="headerlink" title="IOS&#x2F;MAC os"></a>IOS&#x2F;MAC os</h3><p>你问我为什么ios空空如也，有没有一种可能作者没有苹果手机(哭了&#x2F;(ㄒ^ㄒ)&#x2F;)</p>
+<p>这块用到最多的知识是ObjC，自己去了解吧，我也不会</p>
+<h2 id="进阶"><a href="#进阶" class="headerlink" title="进阶"></a>进阶</h2><h3 id="RPC"><a href="#RPC" class="headerlink" title="RPC"></a>RPC</h3><h3 id=""><a href="#" class="headerlink" title=""></a></h3><h2 id="Objection"><a href="#Objection" class="headerlink" title="Objection"></a>Objection</h2><h2 id="frida-trace"><a href="#frida-trace" class="headerlink" title="frida-trace"></a>frida-trace</h2></div>
         </div>
         
             <div class="kratos-copyright text-center clearfix">
@@ -253,7 +284,7 @@
     <script type="text/javascript">
         $(()=>{
             new QRCode("wechat-qr", {
-                text: "http://example.com/2022/07/15/hello-world/",
+                text: "http://example.com/2022/08/20/aaa/",
                 width: 150,
                 height: 150,
                 correctLevel : QRCode.CorrectLevel.H
@@ -265,9 +296,16 @@
             const qzoneBase     = "https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?";
             const facebookBase  = "https://www.facebook.com/sharer/sharer.php?";
             const twitterBase   = "https://twitter.com/intent/tweet?";
-            const hostUrl       = "http://example.com/2022/07/15/hello-world/";
-            const title         = "「Hello World」";
-            const excerpt       = `Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using ...`;
+            const hostUrl       = "http://example.com/2022/08/20/aaa/";
+            const title         = "「frida从入门到入门」";
+            const excerpt       = `frida 从入门到入门安装pip install frida-tools 就是这么简单0v0。
+注入方式
+直接注入
+frida -l xx.js com.xxx
+frida -l xx.js com.xxx -F 注入当前应用
+
+
+...`;
             let _URL;
             switch (dest) {
                 case "qq"       : _URL = qqBase+"url="+hostUrl+"&title="+title+"&desc=&summary="+excerpt+"&site=cxpy";     break;
@@ -286,10 +324,10 @@
             <div class="footer-tag clearfix">
                 <div class="pull-left">
                 <i class="fa fa-tags"></i>
-                    
+                    <a class="tag-none-link" href="/tags/frida/" rel="tag">frida</a>, <a class="tag-none-link" href="/tags/hook/" rel="tag">hook</a>
                 </div>
                 <div class="pull-date">
-                    <time datetime="2022-07-15T02:16:51.627Z" itemprop="dateModified">最后编辑：2022-07-15</time>
+                    <time datetime="2022-08-19T16:46:47.113Z" itemprop="dateModified">最后编辑：2022-08-20</time>
                 </div>
             </div>
         </footer>
@@ -297,10 +335,10 @@
     
         <nav class="navigation post-navigation clearfix" role="navigation">
             
-            
-            <div class="nav-next clearfix">
-                <a title=" 英语语法入门" href="/2022/07/15/test/">下一篇 &gt;</a>
+            <div class="nav-previous clearfix">
+                <a title=" 英语语法入门" href="/2022/07/15/test/">&lt; 上一篇</a>
             </div>
+            
             
         </nav>
     
@@ -359,6 +397,18 @@
 </aside>
             
                     <div class="sticky-area">
+                
+                    <aside id="krw-toc" class="widget widget-kratos-toc clearfix">
+    <div class="photo-background"></div>
+    <h4 class="widget-title no-after">
+        <i class="fa fa-compass"></i>
+        文章目录
+        <span class="toc-progress-bar" role="progressbar" aria-label="阅读进度："></span>
+    </h4>
+    <div class="textwidget">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#frida-%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E5%85%A5%E9%97%A8"><span class="toc-text">frida 从入门到入门</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85"><span class="toc-text">安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E5%85%A5%E6%96%B9%E5%BC%8F"><span class="toc-text">注入方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A3%9F%E7%94%A8%E6%95%99%E7%A8%8B"><span class="toc-text">食用教程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Windows"><span class="toc-text">Windows</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E6%8B%A6%E6%88%AA%E5%99%A8%EF%BC%88Interceptor%EF%BC%89"><span class="toc-text">函数拦截器（Interceptor）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%BB%E5%8A%A8%E8%B0%83%E7%94%A8"><span class="toc-text">主动调用</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E6%93%8D%E4%BD%9C"><span class="toc-text">内存操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Android-x2F-Linux"><span class="toc-text">Android&#x2F;Linux</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Java%E5%B1%82"><span class="toc-text">Java层</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#native%E5%B1%82"><span class="toc-text">native层</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IOS-x2F-MAC-os"><span class="toc-text">IOS&#x2F;MAC os</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9B%E9%98%B6"><span class="toc-text">进阶</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#RPC"><span class="toc-text">RPC</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-text"></span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Objection"><span class="toc-text">Objection</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#frida-trace"><span class="toc-text">frida-trace</span></a></li></ol></li></ol>
+    </div>
+</aside>
                 
                 
   <aside id="krw-categories" class="widget widget-kratos-categories clearfix">
