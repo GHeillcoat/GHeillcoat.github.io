@@ -173,7 +173,7 @@
                     <i class="fa fa-edit"></i> 
                     
                     
-                        ~7.31K
+                        ~7.29K
                     
                     字
                 </li>
@@ -197,7 +197,7 @@
 <h2 id="Android"><a href="#Android" class="headerlink" title="Android"></a>Android</h2><h3 id="Hook-Java"><a href="#Hook-Java" class="headerlink" title="Hook Java"></a>Hook Java</h3><p>Hook java层首先需要被包裹在<code>Java.perform(function()&#123;&#125;)</code>中，当需要调用Java类时使用<code>Java.use(&#39;类名&#39;)</code>来调用其中<code>$init</code>表示构造函数，<code>$new</code>表示实例化对象<code>.overload(&#39;type&#39;)</code>表示重载函数<strong>成员方法和成员属性名字相同时默认hook成员方法，如需hook成员属性在成员属性前加“_”来表示</strong></p>
 <h4 id="主动调用函数"><a href="#主动调用函数" class="headerlink" title="主动调用函数"></a>主动调用函数</h4><ul>
 <li>静态调用<ul>
-<li>使用Java.use().class.implementation&#x3D;function(){hook代码}</li>
+<li>使用Java.use().class.implementation=function(){hook代码}</li>
 </ul>
 </li>
 <li>动态调用<ul>
@@ -210,20 +210,12 @@
 </li>
 </ul>
 <h4 id="hook参数-amp-返回值"><a href="#hook参数-amp-返回值" class="headerlink" title="hook参数&amp;返回值"></a>hook参数&amp;返回值</h4><p>部分情况下直接打印返回值并不能直观的体现需要通过类型转换得到需要的数据，如DumpHex，可以通过<code>$ClassName</code>得到class的属性后在转换，如果为Json类的可以直接用<code>JSON.Stringify()</code>转换成字符串</p>
-<h4 id="hook被混淆的方法"><a href="#hook被混淆的方法" class="headerlink" title="hook被混淆的方法"></a>hook被混淆的方法</h4><p>有些被混淆方法名可能是不可视的字符如<code>༒</code>如果以这个字符命名的函数是合法的但是又有可能因为字符集的原因看不到函数名，这就要将其编码打印出来再通过打印的字符来调用此方法</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Java</span>.<span class="title function_">perform</span>(</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">x</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">var</span> targetClass = <span class="string">&quot;com.example.hooktest.MainActivity&quot;</span>;</span><br><span class="line">        <span class="keyword">var</span> hookCls = <span class="title class_">Java</span>.<span class="title function_">use</span>(targetClass);</span><br><span class="line">        <span class="keyword">var</span> methods = hookCls.<span class="property">class</span>.<span class="title function_">getDeclaredMethods</span>();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> i <span class="keyword">in</span> methods) &#123;</span><br><span class="line">            <span class="variable language_">console</span>.<span class="title function_">log</span>(methods[i].<span class="title function_">toString</span>());</span><br><span class="line">            <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="built_in">encodeURIComponent</span>(methods[i].<span class="title function_">toString</span>().<span class="title function_">replace</span>(<span class="regexp">/^.*?.([^s.()]+)(.*?$/</span>, <span class="string">&quot;$1&quot;</span>)));</span><br><span class="line">        &#125;</span><br><span class="line">        hookCls[<span class="built_in">decodeURIComponent</span>(<span class="string">&quot;%D6%8F&quot;</span>)]</span><br><span class="line">            .<span class="property">implementation</span> = <span class="keyword">function</span> (<span class="params">x</span>) &#123;</span><br><span class="line">                <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;original call: fun(&quot;</span> + x + <span class="string">&quot;)&quot;</span>);</span><br><span class="line">                <span class="keyword">var</span> result = <span class="variable language_">this</span>[<span class="built_in">decodeURIComponent</span>(<span class="string">&quot;%D6%8F&quot;</span>)](<span class="number">900</span>);</span><br><span class="line">                <span class="keyword">return</span> result;</span><br><span class="line">            &#125;</span><br><span class="line">    &#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-
+<h4 id="hook被混淆的方法"><a href="#hook被混淆的方法" class="headerlink" title="hook被混淆的方法"></a>hook被混淆的方法</h4><p>有些被混淆方法名可能是不可视的字符如<code>༒</code>如果以这个字符命名的函数是合法的但是又有可能因为字符集的原因看不到函数名，这就要将其编码打印出来再通过打印的字符来调用此方法<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Java</span>.<span class="title function_">perform</span>(</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">x</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">var</span> targetClass = <span class="string">&quot;com.example.hooktest.MainActivity&quot;</span>;</span><br><span class="line">        <span class="keyword">var</span> hookCls = <span class="title class_">Java</span>.<span class="title function_">use</span>(targetClass);</span><br><span class="line">        <span class="keyword">var</span> methods = hookCls.<span class="property">class</span>.<span class="title function_">getDeclaredMethods</span>();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> i <span class="keyword">in</span> methods) &#123;</span><br><span class="line">            <span class="variable language_">console</span>.<span class="title function_">log</span>(methods[i].<span class="title function_">toString</span>());</span><br><span class="line">            <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="built_in">encodeURIComponent</span>(methods[i].<span class="title function_">toString</span>().<span class="title function_">replace</span>(<span class="regexp">/^.*?.([^s.()]+)(.*?$/</span>, <span class="string">&quot;$1&quot;</span>)));</span><br><span class="line">        &#125;</span><br><span class="line">        hookCls[<span class="built_in">decodeURIComponent</span>(<span class="string">&quot;%D6%8F&quot;</span>)]</span><br><span class="line">            .<span class="property">implementation</span> = <span class="keyword">function</span> (<span class="params">x</span>) &#123;</span><br><span class="line">                <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;original call: fun(&quot;</span> + x + <span class="string">&quot;)&quot;</span>);</span><br><span class="line">                <span class="keyword">var</span> result = <span class="variable language_">this</span>[<span class="built_in">decodeURIComponent</span>(<span class="string">&quot;%D6%8F&quot;</span>)](<span class="number">900</span>);</span><br><span class="line">                <span class="keyword">return</span> result;</span><br><span class="line">            &#125;</span><br><span class="line">    &#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure></p>
 <h4 id="类型转换"><a href="#类型转换" class="headerlink" title="类型转换"></a>类型转换</h4><p>Java.cast（arg,type）强转类型</p>
 <h4 id="调用DEX类"><a href="#调用DEX类" class="headerlink" title="调用DEX类"></a>调用DEX类</h4><p>如果有现成的安卓源码可以将其编译后解压apk得到class.dex,使用<code>Java.openClassFile(&#39;dex路径&#39;).lord()</code>加载dex类</p>
-<h4 id="注册java类"><a href="#注册java类" class="headerlink" title="注册java类"></a>注册java类</h4><p>如果不想调用dex，可以将java代码翻译成js代码用</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Java</span>.<span class="title function_">registerClass</span>(&#123;</span><br><span class="line"><span class="attr">neme</span>:<span class="string">&#x27;加载类的名字不要和已有的类明重复&#x27;</span></span><br><span class="line"><span class="attr">implements</span>: 可选,</span><br><span class="line">    <span class="attr">methods</span>: &#123;</span><br><span class="line">    类的属性和方法</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-<h4 id="打印堆栈"><a href="#打印堆栈" class="headerlink" title="打印堆栈"></a>打印堆栈</h4><p>调用安卓自带的API实现打印堆栈</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">showStacks</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="title function_">send</span>(<span class="string">&#x27;调用栈输出</span></span><br><span class="line"><span class="string">	&#x27;</span> + <span class="title class_">Java</span>.<span class="title function_">use</span>(<span class="string">&quot;android.util.Log&quot;</span>).<span class="title function_">getStackTraceString</span>(<span class="title class_">Java</span>.<span class="title function_">use</span>(<span class="string">&quot;java.lang.Exception&quot;</span>).$new()));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="rpc远程调用"><a href="#rpc远程调用" class="headerlink" title="rpc远程调用"></a>rpc远程调用</h4><p>frida支持在js代码中使用rpc.exports关键字对js函数进行导出，导出方法可在python代码中通过script.exports.导出符号()进行调用</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">Hook10</span>(<span class="params"></span>)&#123;</span><br><span class="line">	<span class="title class_">Java</span>.<span class="title function_">perform</span>(<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">		<span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;Frida Test Hook10&quot;</span>);</span><br><span class="line">		<span class="comment">// 主动调用类静态方法</span></span><br><span class="line">		<span class="keyword">var</span> clszz = <span class="title class_">Java</span>.<span class="title function_">use</span>(<span class="string">&quot;cn.gemini.k.fridatest.FridaHook1&quot;</span>);</span><br><span class="line">		<span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;func3_verify_static  ret:&quot;</span>+clszz.<span class="title function_">func3_verify_static</span>(<span class="string">&quot;&gt;&gt;&gt;pwd&lt;&lt;&lt;&quot;</span>));</span><br><span class="line">	&#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">rpc.<span class="property">exports</span> = &#123;</span><br><span class="line">    <span class="attr">exporthook10</span>: <span class="title class_">Hook10</span> <span class="comment">//将方法导出为exporthook10符号，这里要注意导出名千万不能有大写字母或下划线</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>通过python调用</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> frida</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"></span><br><span class="line"><span class="comment"># 目标包名</span></span><br><span class="line">appPacknName = <span class="string">&quot;cn.gemini.k.fridatest&quot;</span></span><br><span class="line">scriptFile = <span class="string">&quot;hook_script.js&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 输出日志的回调方法</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">on_message</span>(<span class="params">message, data</span>):</span><br><span class="line">    <span class="keyword">if</span> message[<span class="string">&#x27;type&#x27;</span>] == <span class="string">&#x27;send&#x27;</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;[*] &#123;0&#125;&quot;</span>.<span class="built_in">format</span>(message[<span class="string">&#x27;payload&#x27;</span>]))</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="built_in">print</span>(message)</span><br><span class="line"></span><br><span class="line">device = frida.get_usb_device()</span><br><span class="line"><span class="comment"># spawn模式,找到目标包名并重启,在启动前注入脚本</span></span><br><span class="line">pid = device.spawn([appPacknName])</span><br><span class="line">session = device.attach(pid)</span><br><span class="line"><span class="comment"># 注意这里需要将device.attach(pid)这句代码写在前面,这样执行才符合预期(启动时程序白屏,等待下面这行代码来恢复执行)</span></span><br><span class="line"><span class="comment"># 其实在https://www.jianshu.com/p/b833fba1bffe这篇文章中有提到</span></span><br><span class="line">device.resume(pid)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 方式一: 通过js文件创建hook代码</span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(scriptFile, encoding=<span class="string">&#x27;UTF-8&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    script = session.create_script(f.read())</span><br><span class="line"><span class="comment"># 方式二: 直接将hook代码写在python文件中</span></span><br><span class="line"><span class="comment"># script = session.create_script(js_code)</span></span><br><span class="line"></span><br><span class="line">script.on(<span class="string">&quot;message&quot;</span>, on_message)</span><br><span class="line">script.load()  <span class="comment"># 把js代码注入到目标应用中</span></span><br><span class="line"><span class="comment"># 避免结束</span></span><br><span class="line"><span class="comment"># sys.stdin.read()</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># frida RPC测试</span></span><br><span class="line">script.exports.exporthook10()</span><br></pre></td></tr></table></figure>
-
+<h4 id="注册java类"><a href="#注册java类" class="headerlink" title="注册java类"></a>注册java类</h4><p>如果不想调用dex，可以将java代码翻译成js代码用<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Java</span>.<span class="title function_">registerClass</span>(&#123;</span><br><span class="line"><span class="attr">neme</span>:<span class="string">&#x27;加载类的名字不要和已有的类明重复&#x27;</span></span><br><span class="line"><span class="attr">implements</span>: 可选,</span><br><span class="line">    <span class="attr">methods</span>: &#123;</span><br><span class="line">    类的属性和方法</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<h4 id="打印堆栈"><a href="#打印堆栈" class="headerlink" title="打印堆栈"></a>打印堆栈</h4><p>调用安卓自带的API实现打印堆栈<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">showStacks</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="title function_">send</span>(<span class="string">&#x27;调用栈输出</span></span><br><span class="line"><span class="string">	&#x27;</span> + <span class="title class_">Java</span>.<span class="title function_">use</span>(<span class="string">&quot;android.util.Log&quot;</span>).<span class="title function_">getStackTraceString</span>(<span class="title class_">Java</span>.<span class="title function_">use</span>(<span class="string">&quot;java.lang.Exception&quot;</span>).$new()));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="rpc远程调用"><a href="#rpc远程调用" class="headerlink" title="rpc远程调用"></a>rpc远程调用</h4><p>frida支持在js代码中使用rpc.exports关键字对js函数进行导出，导出方法可在python代码中通过script.exports.导出符号()进行调用<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">Hook10</span>(<span class="params"></span>)&#123;</span><br><span class="line">	<span class="title class_">Java</span>.<span class="title function_">perform</span>(<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">		<span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;Frida Test Hook10&quot;</span>);</span><br><span class="line">		<span class="comment">// 主动调用类静态方法</span></span><br><span class="line">		<span class="keyword">var</span> clszz = <span class="title class_">Java</span>.<span class="title function_">use</span>(<span class="string">&quot;cn.gemini.k.fridatest.FridaHook1&quot;</span>);</span><br><span class="line">		<span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;func3_verify_static  ret:&quot;</span>+clszz.<span class="title function_">func3_verify_static</span>(<span class="string">&quot;&gt;&gt;&gt;pwd&lt;&lt;&lt;&quot;</span>));</span><br><span class="line">	&#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">rpc.<span class="property">exports</span> = &#123;</span><br><span class="line">    <span class="attr">exporthook10</span>: <span class="title class_">Hook10</span> <span class="comment">//将方法导出为exporthook10符号，这里要注意导出名千万不能有大写字母或下划线</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure><br>通过python调用<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> frida</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"></span><br><span class="line"><span class="comment"># 目标包名</span></span><br><span class="line">appPacknName = <span class="string">&quot;cn.gemini.k.fridatest&quot;</span></span><br><span class="line">scriptFile = <span class="string">&quot;hook_script.js&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 输出日志的回调方法</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">on_message</span>(<span class="params">message, data</span>):</span><br><span class="line">    <span class="keyword">if</span> message[<span class="string">&#x27;type&#x27;</span>] == <span class="string">&#x27;send&#x27;</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;[*] &#123;0&#125;&quot;</span>.<span class="built_in">format</span>(message[<span class="string">&#x27;payload&#x27;</span>]))</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="built_in">print</span>(message)</span><br><span class="line"></span><br><span class="line">device = frida.get_usb_device()</span><br><span class="line"><span class="comment"># spawn模式,找到目标包名并重启,在启动前注入脚本</span></span><br><span class="line">pid = device.spawn([appPacknName])</span><br><span class="line">session = device.attach(pid)</span><br><span class="line"><span class="comment"># 注意这里需要将device.attach(pid)这句代码写在前面,这样执行才符合预期(启动时程序白屏,等待下面这行代码来恢复执行)</span></span><br><span class="line"><span class="comment"># 其实在https://www.jianshu.com/p/b833fba1bffe这篇文章中有提到</span></span><br><span class="line">device.resume(pid)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 方式一: 通过js文件创建hook代码</span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(scriptFile, encoding=<span class="string">&#x27;UTF-8&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    script = session.create_script(f.read())</span><br><span class="line"><span class="comment"># 方式二: 直接将hook代码写在python文件中</span></span><br><span class="line"><span class="comment"># script = session.create_script(js_code)</span></span><br><span class="line"></span><br><span class="line">script.on(<span class="string">&quot;message&quot;</span>, on_message)</span><br><span class="line">script.load()  <span class="comment"># 把js代码注入到目标应用中</span></span><br><span class="line"><span class="comment"># 避免结束</span></span><br><span class="line"><span class="comment"># sys.stdin.read()</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># frida RPC测试</span></span><br><span class="line">script.exports.exporthook10()</span><br></pre></td></tr></table></figure></p>
 <h3 id="Hook-Nagtive"><a href="#Hook-Nagtive" class="headerlink" title="Hook Nagtive"></a>Hook Nagtive</h3><h4 id="判断指令集"><a href="#判断指令集" class="headerlink" title="判断指令集"></a>判断指令集</h4><p>可以利用IDA 判断来Thumb指令集和Arm 指令集</p>
 <ol>
 <li>IDA - Options - General - number of opcode bytes - 设置为 4</li>
@@ -241,126 +233,127 @@
 </ul>
 <h3 id="Windows"><a href="#Windows" class="headerlink" title="Windows"></a>Windows</h3><h3 id="objection的使用"><a href="#objection的使用" class="headerlink" title="objection的使用"></a>objection的使用</h3><p>objection实现Java层hook everywhere，内存漫游，内存搜索，来达到快速逆向的目的</p>
 <p><code>objection -g [packageName] explore</code>打开交互界面调试该应用</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
-<th align="center">命令</th>
-<th align="center">说明</th>
+<th style="text-align:center">命令</th>
+<th style="text-align:center">说明</th>
 </tr>
 </thead>
-<tbody><tr>
-<td align="center">memory list modules</td>
-<td align="center">枚举当前进程模块</td>
+<tbody>
+<tr>
+<td style="text-align:center">memory list modules</td>
+<td style="text-align:center">枚举当前进程模块</td>
 </tr>
 <tr>
-<td align="center">memory list exports [lib_name]</td>
-<td align="center">查看指定模块的导出函数</td>
+<td style="text-align:center">memory list exports [lib_name]</td>
+<td style="text-align:center">查看指定模块的导出函数</td>
 </tr>
 <tr>
-<td align="center">memory list exports libart.so –json &#x2F;root&#x2F;libart.json</td>
-<td align="center">将结果保存到json文件中</td>
+<td style="text-align:center">memory list exports libart.so —json /root/libart.json</td>
+<td style="text-align:center">将结果保存到json文件中</td>
 </tr>
 <tr>
-<td align="center">memory search –string –offsets-only</td>
-<td align="center">搜索内存</td>
+<td style="text-align:center">memory search —string —offsets-only</td>
+<td style="text-align:center">搜索内存</td>
 </tr>
 <tr>
-<td align="center">search instances search instances com.xx.xx.class</td>
-<td align="center">堆内存中搜索指定类的实例, 可以获取该类的实例id</td>
+<td style="text-align:center">search instances search instances com.xx.xx.class</td>
+<td style="text-align:center">堆内存中搜索指定类的实例, 可以获取该类的实例id</td>
 </tr>
 <tr>
-<td align="center">android heap execute [ins_id] [func_name]</td>
-<td align="center">直接调用指定实例下的方法</td>
+<td style="text-align:center">android heap execute [ins_id] [func_name]</td>
+<td style="text-align:center">直接调用指定实例下的方法</td>
 </tr>
 <tr>
-<td align="center">android heap execute [ins_id]</td>
-<td align="center">自定义frida脚本, 执行实例的方法</td>
+<td style="text-align:center">android heap execute [ins_id]</td>
+<td style="text-align:center">自定义frida脚本, 执行实例的方法</td>
 </tr>
 <tr>
-<td align="center">android root disable</td>
-<td align="center">尝试关闭app的root检测</td>
+<td style="text-align:center">android root disable</td>
+<td style="text-align:center">尝试关闭app的root检测</td>
 </tr>
 <tr>
-<td align="center">android root simulate</td>
-<td align="center">尝试模拟root环境</td>
+<td style="text-align:center">android root simulate</td>
+<td style="text-align:center">尝试模拟root环境</td>
 </tr>
 <tr>
-<td align="center">android ui screenshot [image.png]</td>
-<td align="center">截图</td>
+<td style="text-align:center">android ui screenshot [image.png]</td>
+<td style="text-align:center">截图</td>
 </tr>
 <tr>
-<td align="center">android ui FLAG_SECURE false</td>
-<td align="center">设置FLAG_SECURE权限</td>
+<td style="text-align:center">android ui FLAG_SECURE false</td>
+<td style="text-align:center">设置FLAG_SECURE权限</td>
 </tr>
 <tr>
-<td align="center">android hooking list classes</td>
-<td align="center">列出内存中所有的类</td>
+<td style="text-align:center">android hooking list classes</td>
+<td style="text-align:center">列出内存中所有的类</td>
 </tr>
 <tr>
-<td align="center">android hooking search classes [search_name]</td>
-<td align="center">在内存中所有已加载的类中搜索包含特定关键词的类</td>
+<td style="text-align:center">android hooking search classes [search_name]</td>
+<td style="text-align:center">在内存中所有已加载的类中搜索包含特定关键词的类</td>
 </tr>
 <tr>
-<td align="center">android hooking search methods [search_name]</td>
-<td align="center">在内存中所有已加载的方法中搜索包含特定关键词的方法</td>
+<td style="text-align:center">android hooking search methods [search_name]</td>
+<td style="text-align:center">在内存中所有已加载的方法中搜索包含特定关键词的方法</td>
 </tr>
 <tr>
-<td align="center">android hooking generate simple [class_name]</td>
-<td align="center">生成hook代码</td>
+<td style="text-align:center">android hooking generate simple [class_name]</td>
+<td style="text-align:center">生成hook代码</td>
 </tr>
 <tr>
-<td align="center">android hooking watch class_method com.xxx.xxx.methodName –dump-args –dump-backtrace –dump-return</td>
-<td align="center">hook指定方法, 如果有重载会hook所有重载,如果有疑问可以看–dump-args : 打印参数–dump-backtrace : 打印调用栈–dump-return : 打印返回值</td>
+<td style="text-align:center">android hooking watch class_method com.xxx.xxx.methodName —dump-args —dump-backtrace —dump-return</td>
+<td style="text-align:center">hook指定方法, 如果有重载会hook所有重载,如果有疑问可以看—dump-args : 打印参数—dump-backtrace : 打印调用栈—dump-return : 打印返回值</td>
 </tr>
 <tr>
-<td align="center">android hooking watch class com.xxx.xxx</td>
-<td align="center">hook指定类, 会打印该类下的所有调用</td>
+<td style="text-align:center">android hooking watch class com.xxx.xxx</td>
+<td style="text-align:center">hook指定类, 会打印该类下的所有调用</td>
 </tr>
 <tr>
-<td align="center">android hooking set return_value com.xxx.xxx.methodName false</td>
-<td align="center">设置返回值(只支持bool类型)</td>
+<td style="text-align:center">android hooking set return_value com.xxx.xxx.methodName false</td>
+<td style="text-align:center">设置返回值(只支持bool类型)</td>
 </tr>
 <tr>
-<td align="center">android hooking list activities</td>
-<td align="center">枚举activity</td>
+<td style="text-align:center">android hooking list activities</td>
+<td style="text-align:center">枚举activity</td>
 </tr>
 <tr>
-<td align="center">android intent launch_activity [activity_class]</td>
-<td align="center">启动activity</td>
+<td style="text-align:center">android intent launch_activity [activity_class]</td>
+<td style="text-align:center">启动activity</td>
 </tr>
 <tr>
-<td align="center">android hooking list services</td>
-<td align="center">枚举services</td>
+<td style="text-align:center">android hooking list services</td>
+<td style="text-align:center">枚举services</td>
 </tr>
 <tr>
-<td align="center">android intent launch_service [services_class]</td>
-<td align="center">启动services</td>
+<td style="text-align:center">android intent launch_service [services_class]</td>
+<td style="text-align:center">启动services</td>
 </tr>
 <tr>
-<td align="center">jobs list</td>
-<td align="center">查看任务列表</td>
+<td style="text-align:center">jobs list</td>
+<td style="text-align:center">查看任务列表</td>
 </tr>
 <tr>
-<td align="center">job kill [id]</td>
-<td align="center">删除任务</td>
+<td style="text-align:center">job kill [id]</td>
+<td style="text-align:center">删除任务</td>
 </tr>
 <tr>
-<td align="center">android sslpinning disable</td>
-<td align="center">关闭ssl校验</td>
+<td style="text-align:center">android sslpinning disable</td>
+<td style="text-align:center">关闭ssl校验</td>
 </tr>
 <tr>
-<td align="center">help android  clipboard</td>
-<td align="center">获取Android剪贴板服务上的句柄并每5秒轮询一次用于数据。 如果发现新数据，与之前的调查不同，则该数据将被转储到屏幕上。</td>
+<td style="text-align:center">help android  clipboard</td>
+<td style="text-align:center">获取Android剪贴板服务上的句柄并每5秒轮询一次用于数据。 如果发现新数据，与之前的调查不同，则该数据将被转储到屏幕上。</td>
 </tr>
 <tr>
-<td align="center">help android shell_exec [command]</td>
-<td align="center">执行命令</td>
+<td style="text-align:center">help android shell_exec [command]</td>
+<td style="text-align:center">执行命令</td>
 </tr>
-</tbody></table>
-<h3 id="frida-trace的使用"><a href="#frida-trace的使用" class="headerlink" title="frida-trace的使用"></a>frida-trace的使用</h3><p>frida－trace是一个动态跟踪函数调用的工具</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">用法:frida-trace[选项]target</span><br><span class="line"></span><br><span class="line">选项:</span><br><span class="line">——version显示程序的版本号和退出</span><br><span class="line">-h，——help显示这个帮助信息和退出</span><br><span class="line">-D ID，——device=ID连接到设备与给定的ID </span><br><span class="line">-U，——usb连接到usb设备</span><br><span class="line">-R，——远程连接到远程frida-server </span><br><span class="line">-h HOST，——HOST =主机连接到远程frida-server在HOST上</span><br><span class="line">-f FILE，——FILE =FILE spawn FILE </span><br><span class="line">-F，——attach-frontmost附加到前端应用程序</span><br><span class="line">-n NAME，——attach- NAME =NAME附加到NAME -p PID，——attach</span><br><span class="line">- PID =PID附加到PID</span><br><span class="line">—stdio=inherit|pipe stdio行为spawning时(默认为“inherit”)</span><br><span class="line">—aux=选项设置spawn时的辅助选项，如“uid=(int)42”(支持的类型有:-O FILE，——options- FILE =FILE通过文本文件传递命令行选项</span><br><span class="line">-I MODULE，——include- MODULE =MODULE include </span><br><span class="line">-X MODULE，——exclude- MODULE =MODULE exclude MODULE -I FUNCTION，——include=FUNCTION include [MODULE]![FUNCTION] </span><br><span class="line">-x FUNCTION，——exclude=FUNCTION排除[MODULE]![功能]</span><br><span class="line">-a MODULE!OFFSET,模块!偏移</span><br><span class="line">-m OBJC_METHOD，——include- MODULE -imports=MODULE include模块导入</span><br><span class="line">-m OBJC_METHOD，——exclude-objc-method=OBJC_METHOD排除OBJC_METHOD </span><br><span class="line">-j JAVA_METHOD，——include-java-method=JAVA_METHOD排除JAVA_METHOD </span><br><span class="line">-J JAVA_METHOD，——exclude-java-method=JAVA_METHOD排除JAVA_METHOD </span><br><span class="line">-s DEBUG_SYMBOL，——include-debug-symbol=DEBUG_SYMBOL包括DEBUG_SYMBOL -q，</span><br><span class="line">-S PATH，——init-session=用于初始化会话的JavaScript文件的路径</span><br><span class="line">-P PARAMETERS_JSON，——parameters=PARAMETERS_JSON参数为JSON，暴露为一个名为&#x27;parameters&#x27;的全局参数</span><br><span class="line">-o output，——output= output将消息转储到文件</span><br></pre></td></tr></table></figure>
-
-
+</tbody>
+</table>
+</div>
+<h3 id="frida-trace的使用"><a href="#frida-trace的使用" class="headerlink" title="frida-trace的使用"></a>frida-trace的使用</h3><p>frida－trace是一个动态跟踪函数调用的工具<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">用法:frida-trace[选项]target</span><br><span class="line"></span><br><span class="line">选项:</span><br><span class="line">——version显示程序的版本号和退出</span><br><span class="line">-h，——help显示这个帮助信息和退出</span><br><span class="line">-D ID，——device=ID连接到设备与给定的ID </span><br><span class="line">-U，——usb连接到usb设备</span><br><span class="line">-R，——远程连接到远程frida-server </span><br><span class="line">-h HOST，——HOST =主机连接到远程frida-server在HOST上</span><br><span class="line">-f FILE，——FILE =FILE spawn FILE </span><br><span class="line">-F，——attach-frontmost附加到前端应用程序</span><br><span class="line">-n NAME，——attach- NAME =NAME附加到NAME -p PID，——attach</span><br><span class="line">- PID =PID附加到PID</span><br><span class="line">—stdio=inherit|pipe stdio行为spawning时(默认为“inherit”)</span><br><span class="line">—aux=选项设置spawn时的辅助选项，如“uid=(int)42”(支持的类型有:-O FILE，——options- FILE =FILE通过文本文件传递命令行选项</span><br><span class="line">-I MODULE，——include- MODULE =MODULE include </span><br><span class="line">-X MODULE，——exclude- MODULE =MODULE exclude MODULE -I FUNCTION，——include=FUNCTION include [MODULE]![FUNCTION] </span><br><span class="line">-x FUNCTION，——exclude=FUNCTION排除[MODULE]![功能]</span><br><span class="line">-a MODULE!OFFSET,模块!偏移</span><br><span class="line">-m OBJC_METHOD，——include- MODULE -imports=MODULE include模块导入</span><br><span class="line">-m OBJC_METHOD，——exclude-objc-method=OBJC_METHOD排除OBJC_METHOD </span><br><span class="line">-j JAVA_METHOD，——include-java-method=JAVA_METHOD排除JAVA_METHOD </span><br><span class="line">-J JAVA_METHOD，——exclude-java-method=JAVA_METHOD排除JAVA_METHOD </span><br><span class="line">-s DEBUG_SYMBOL，——include-debug-symbol=DEBUG_SYMBOL包括DEBUG_SYMBOL -q，</span><br><span class="line">-S PATH，——init-session=用于初始化会话的JavaScript文件的路径</span><br><span class="line">-P PARAMETERS_JSON，——parameters=PARAMETERS_JSON参数为JSON，暴露为一个名为&#x27;parameters&#x27;的全局参数</span><br><span class="line">-o output，——output= output将消息转储到文件</span><br></pre></td></tr></table></figure></p>
 <h1 id="frida进阶"><a href="#frida进阶" class="headerlink" title="frida进阶"></a>frida进阶</h1><h2 id="Stlker"><a href="#Stlker" class="headerlink" title="Stlker"></a>Stlker</h2><h2 id="socket"><a href="#socket" class="headerlink" title="socket"></a>socket</h2></div>
         </div>
         
