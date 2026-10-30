@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 620" fill="none">
+  <defs>
+    <linearGradient id="far" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.42" />
+      <stop offset="1" stop-color="#fff" stop-opacity="0.06" />
+    </linearGradient>
+    <linearGradient id="mid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.72" />
+      <stop offset="1" stop-color="#fff" stop-opacity="0.12" />
+    </linearGradient>
+    <linearGradient id="near" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.92" />
+      <stop offset="1" stop-color="#fff" stop-opacity="0.3" />
+    </linearGradient>
+    <linearGradient id="mist" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#fff" stop-opacity="0" />
+      <stop offset="0.5" stop-color="#fff" stop-opacity="0.5" />
+      <stop offset="1" stop-color="#fff" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+
+  <!-- 远山 -->
+  <path
+    d="M0 430 C90 392 150 356 214 372 C286 390 330 330 402 316 C470 303 508 352 566 344 C640 334 688 286 752 300 C818 315 862 372 930 366 C1002 359 1064 322 1120 334 C1160 342 1184 352 1200 358 L1200 620 L0 620 Z"
+    fill="url(#far)"
+  />
+  <!-- 雾带 -->
+  <rect x="0" y="392" width="1200" height="42" fill="url(#mist)" opacity="0.55" />
+  <!-- 中山 -->
+  <path
+    d="M0 512 C82 476 132 430 196 442 C258 454 292 402 356 392 C424 381 462 428 528 424 C602 419 646 368 714 376 C786 385 826 438 896 434 C958 431 1014 396 1072 404 C1124 411 1170 434 1200 442 L1200 620 L0 620 Z"
+    fill="url(#mid)"
+  />
+  <!-- 近山 -->
+  <path
+    d="M0 574 C74 550 122 512 186 520 C252 528 288 486 354 484 C424 482 466 520 534 522 C610 524 654 484 722 486 C792 488 830 528 900 532 C964 536 1020 512 1080 516 C1132 519 1174 534 1200 540 L1200 620 L0 620 Z"
+    fill="url(#near)"
+  />
+  <!-- 松枝点景 -->
+  <g stroke="#fff" stroke-opacity="0.5" stroke-linecap="round" stroke-width="2.4">
+    <path d="M948 470 C966 452 986 442 1010 438" />
+    <path d="M962 458 C972 448 978 440 982 430" />
+    <path d="M976 452 C990 448 1002 444 1014 434" />
+    <path d="M990 446 C1000 438 1008 432 1014 424" />
+  </g>
+</svg>

@@ -1,0 +1,55 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { isoDate } from '../lib/format';
+
+const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+
+const postMap = Object.fromEntries(
+  posts.map((post) => [
+    post.id,
+    {
+      title: post.data.title,
+      category: post.data.category,
+      date: isoDate(post.data.pubDate),
+      url: `/posts/${post.id}`,
+    },
+  ]),
+);
+---
+
+<BaseLayout title="批注" description="你在这座书房里留下的每一笔批注">
+  <section class="page">
+    <div class="wrap wrap--narrow">
+      <header class="page-head">
+        <p class="page-eyebrow">随记</p>
+        <h1 class="page-title">我的批注</h1>
+        <p class="page-desc">
+          所有批注只保存在这台设备的浏览器里，不会上传到任何地方。换设备时，用「导出」把它们带走。
+        </p>
+      </header>
+
+      <div class="notes-toolbar">
+        <span class="notes-total" data-notes-total>0 条批注</span>
+        <div class="notes-toolbar-actions">
+          <button class="btn" type="button" data-notes-export-all>
+            导出全部
+          </button>
+          <button class="btn btn--ghost" type="button" data-notes-clear>
+            清空
+          </button>
+        </div>
+      </div>
+
+      <div class="notes-archive" data-notes-archive></div>
+
+      <p class="empty-state" data-notes-archive-empty hidden>
+        还没有任何批注。<br />去文章里选中一句话，写下第一笔。
+      </p>
+    </div>
+  </section>
+
+  <script type="application/json" data-post-map set:html={JSON.stringify(postMap)}></script>
+</BaseLayout>

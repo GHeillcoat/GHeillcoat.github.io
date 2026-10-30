@@ -1,0 +1,33 @@
+---
+export interface Props {
+  class?: string;
+  char?: string;
+}
+
+const { class: className = '', char = '墨' } = Astro.props;
+---
+
+<svg class={className} viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+  <rect x="2.5" y="2.5" width="59" height="59" rx="2.5" fill="currentColor" />
+  <rect
+    x="7.5"
+    y="7.5"
+    width="49"
+    height="49"
+    rx="0.5"
+    fill="none"
+    stroke="#fbf3e4"
+    stroke-width="1"
+    opacity="0.55"
+  />
+  <text
+    x="32"
+    y="43.5"
+    text-anchor="middle"
+    font-size="30"
+    font-family="'Kaiti SC','KaiTi','STKaiti','Noto Serif SC',serif"
+    fill="#fbf3e4"
+  >
+    {char}
+  </text>
+</svg>

@@ -1,0 +1,219 @@
+/* ==========================================================================
+   Ornaments · 纸纹、墨晕、分隔符与动效
+   ========================================================================== */
+
+/* 纸的纤维感：极淡的噪点，像宣纸在灯下透出的纹路 */
+.paper-grain {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: var(--grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.42'/%3E%3C/svg%3E");
+  background-size: var(--grain-size) var(--grain-size);
+  mix-blend-mode: multiply;
+}
+
+[data-theme='dark'] .paper-grain {
+  mix-blend-mode: screen;
+}
+
+/* 页面顶部的暖光，像纸被一盏灯从上方照着 */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(80% 42% at 50% -8%, color-mix(in srgb, var(--gold) 12%, transparent), transparent 70%),
+    radial-gradient(60% 40% at 100% 0%, color-mix(in srgb, var(--ink) 3%, transparent), transparent 70%);
+}
+
+/* 墨晕：远山与雾 */
+.ink-wash {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(48% 42% at 76% 34%, color-mix(in srgb, var(--ink) 13%, transparent), transparent 70%),
+    radial-gradient(36% 30% at 62% 58%, color-mix(in srgb, var(--ink) 9%, transparent), transparent 72%),
+    radial-gradient(30% 26% at 88% 62%, color-mix(in srgb, var(--ink) 7%, transparent), transparent 70%);
+  filter: blur(26px);
+  opacity: 0.9;
+}
+
+.ink-wash--mountains::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  height: 70%;
+  background-color: color-mix(in srgb, var(--ink) 30%, transparent);
+  -webkit-mask-image: url('/images/art/ink-mountains.svg');
+  mask-image: url('/images/art/ink-mountains.svg');
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  opacity: 0.55;
+}
+
+/* — 分隔符 ——————————————————————————————— */
+
+.prose hr {
+  position: relative;
+  height: 1px;
+  border: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--line-strong) 18%,
+    var(--line-strong) 82%,
+    transparent
+  );
+  overflow: visible;
+}
+
+.prose hr::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1.35rem;
+  height: 1.35rem;
+  transform: translate(-50%, -50%) rotate(45deg);
+  border: 1px solid var(--line-strong);
+  background: var(--paper);
+}
+
+.prose hr::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0.3rem;
+  height: 0.3rem;
+  z-index: 1;
+  transform: translate(-50%, -50%) rotate(45deg);
+  background: var(--cinnabar);
+  opacity: 0.7;
+}
+
+/* 页面分节用的云纹细线 */
+.rule-cloud {
+  height: 1.1rem;
+  border: 0;
+  background-color: var(--line-strong);
+  -webkit-mask-image: url('/images/art/cloud-divider.svg');
+  mask-image: url('/images/art/cloud-divider.svg');
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  opacity: 0.75;
+}
+
+.rule-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  color: var(--line-strong);
+}
+
+.rule-dots span {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.rule-dots span:nth-child(2) {
+  width: 5px;
+  height: 5px;
+  background: var(--cinnabar);
+  opacity: 0.75;
+}
+
+/* — 竖排小字 ——————————————————————————— */
+
+.vertical-note {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-family: var(--font-kai);
+  letter-spacing: 0.35em;
+  color: var(--ink-faint);
+  font-size: var(--text-xs);
+}
+
+/* — 揭示动效 ——————————————————————————— */
+
+.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 700ms var(--ease-ink), transform 700ms var(--ease-ink);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.js [data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* 首屏淡入 */
+.site-main > * {
+  animation: page-rise 620ms var(--ease-ink) both;
+}
+
+@keyframes page-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* 悬停时的一缕墨色 */
+.ink-underline {
+  position: relative;
+}
+
+.ink-underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.15em;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0.6);
+  transform-origin: left;
+  opacity: 0.35;
+  transition: transform var(--dur) var(--ease-ink), opacity var(--dur) var(--ease-out);
+}
+
+.ink-underline:hover::after {
+  transform: scaleX(1);
+  opacity: 0.8;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .js [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+}

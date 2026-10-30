@@ -1,0 +1,82 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Seal from '../components/Seal.astro';
+import Icon from '../components/Icon.astro';
+import { site } from '../config';
+---
+
+<BaseLayout title="关于" description="关于这座书房，以及它是怎么搭起来的">
+  <section class="page">
+    <div class="wrap">
+      <header class="page-head">
+        <p class="page-eyebrow">自述</p>
+        <h1 class="page-title">关于</h1>
+        <p class="page-desc">{site.description}</p>
+      </header>
+
+      <div class="about-grid">
+        <div class="prose about-prose">
+          <h2>这间书房</h2>
+          <p>
+            「{site.title}」是一个很安静的地方。它不追热点，也不做信息流，只放那些我愿意反复读、反复改的东西：读书的札记、写代码时想通的事、以及对某些老问题的重新理解。
+          </p>
+          <p>
+            版面取了宣纸与墨色的调子——不是大红大紫的中国风，而是纸的米白、墨的层次、一点点朱砂与赭金。字体用思源宋体，正文首行缩进两字，标点按中文的规矩排。希望你读起来，像在读一本装帧克制的线装书。
+          </p>
+          <h2>能做什么</h2>
+          <p>
+            这座书房不只是「看」。选中正文里的任何一句话，会浮出一枚小工具条：可以<em>批注</em>、<em>复制</em>，或者<em>引用</em>。批注保存在你自己的浏览器里，文章里的高亮会一直在，也可以在<em>批注</em>页统一导出成 Markdown。
+          </p>
+          <p>
+            右上角的「寻章」是全文检索，按 <kbd>Ctrl</kbd> + <kbd>K</kbd> 随时唤出；按 <kbd>/</kbd> 也可以。夜里读字，点一下月亮，纸色会换成「夜墨」。
+          </p>
+          <h2>写了什么</h2>
+          <p>
+            文字全部以 Markdown 书写，数学公式用 LaTeX，流程图用 Mermaid，代码有高亮和复制按钮，脚注、任务清单、表格、图片灯箱都在。写作的时候不必想排版，排版已经等在那里了。
+          </p>
+          <blockquote>
+            <p>「纸上得来终觉浅，绝知此事要躬行。」—— 陆游</p>
+          </blockquote>
+        </div>
+
+        <aside class="about-aside">
+          <div class="about-card about-card--seal">
+            <Seal class="about-seal" char="痕" />
+            <p class="about-signature">墨痕 · {site.latin}</p>
+            <p class="about-motto">{site.author.bio}</p>
+          </div>
+
+          <div class="about-card">
+            <h2>本站</h2>
+            <ul class="about-list" role="list">
+              <li><span class="k">框架</span><span>Astro · 静态生成</span></li>
+              <li><span class="k">检索</span><span>Pagefind · 零服务端</span></li>
+              <li><span class="k">公式</span><span>KaTeX · 构建期渲染</span></li>
+              <li><span class="k">图表</span><span>Mermaid · 按需加载</span></li>
+              <li><span class="k">字体</span><span>自托管 · 按字切片</span></li>
+              <li><span class="k">追踪</span><span>无</span></li>
+            </ul>
+          </div>
+
+          <div class="about-card">
+            <h2>快捷键</h2>
+            <ul class="about-list about-list--keys" role="list">
+              <li><span class="k"><kbd>Ctrl</kbd> <kbd>K</kbd></span><span>寻章（搜索）</span></li>
+              <li><span class="k"><kbd>/</kbd></span><span>同上</span></li>
+              <li><span class="k"><kbd>Esc</kbd></span><span>关闭浮层</span></li>
+              <li><span class="k"><kbd>T</kbd></span><span>明暗切换</span></li>
+            </ul>
+          </div>
+
+          <div class="about-card">
+            <h2>来信</h2>
+            <p class="about-contact">
+              <Icon name="mail" size={14} class="icon" />
+              <a href="mailto:hi@inkwell.example.com">hi@inkwell.example.com</a>
+            </p>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

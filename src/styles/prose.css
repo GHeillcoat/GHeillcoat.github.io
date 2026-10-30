@@ -1,0 +1,681 @@
+/* ==========================================================================
+   Prose · 正文排版（阅读体验的核心）
+   ========================================================================== */
+
+.prose {
+  font-size: 1.1875rem;
+  line-height: var(--leading-prose);
+  letter-spacing: 0.012em;
+  color: var(--ink);
+  text-align: justify;
+  text-justify: inter-character;
+  word-break: break-word;
+  hanging-punctuation: allow-end;
+  --indent: 2em;
+}
+
+.prose > *:first-child {
+  margin-top: 0;
+}
+
+.prose p {
+  margin-block: 0.7em;
+  text-indent: var(--indent);
+}
+
+.prose p:has(> img:only-child) {
+  text-indent: 0;
+}
+
+.prose strong {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* 中文着重号，比斜体克制也更地道 */
+.prose em {
+  font-style: normal;
+  text-emphasis: filled dot var(--cinnabar);
+  text-emphasis-position: under right;
+  -webkit-text-emphasis: filled dot var(--cinnabar);
+  -webkit-text-emphasis-position: under right;
+}
+
+.prose a {
+  color: var(--link);
+  text-decoration: none;
+  background-image: linear-gradient(180deg, transparent 92%, color-mix(in srgb, var(--link) 45%, transparent) 92%);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  transition: color var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out);
+  border-radius: 1px;
+}
+
+.prose a:hover {
+  color: var(--link-hover);
+  background-color: var(--cinnabar-wash);
+}
+
+.prose a:has(> code) {
+  background-image: none;
+}
+
+/* — 标题 ————————————————————————————————— */
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+  position: relative;
+  text-indent: 0;
+  text-align: left;
+  scroll-margin-top: 7rem;
+}
+
+.prose h1 {
+  font-size: 1.9rem;
+  margin-block: 2.4em 0.9em;
+}
+
+.prose h2 {
+  font-size: 1.5rem;
+  letter-spacing: 0.04em;
+  margin-block: 2.6em 1em;
+  padding-bottom: 0.45em;
+  border-bottom: 1px solid var(--line-faint);
+}
+
+.prose h2::before {
+  content: '';
+  position: absolute;
+  left: -1.15rem;
+  top: 0.18em;
+  width: 2px;
+  height: 1.05em;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--cinnabar), color-mix(in srgb, var(--cinnabar) 30%, transparent));
+}
+
+.prose h3 {
+  font-size: 1.24rem;
+  letter-spacing: 0.03em;
+  margin-block: 2.1em 0.8em;
+  color: var(--ink);
+}
+
+.prose h3::before {
+  content: '';
+  position: absolute;
+  left: -1.05rem;
+  top: 0.62em;
+  width: 0.3rem;
+  height: 0.3rem;
+  border-radius: 50%;
+  background: var(--gold);
+}
+
+.prose h4 {
+  font-size: 1.05rem;
+  letter-spacing: 0.05em;
+  margin-block: 1.8em 0.6em;
+  color: var(--ink-soft);
+}
+
+.prose h5,
+.prose h6 {
+  font-size: 0.98rem;
+  letter-spacing: 0.08em;
+  margin-block: 1.6em 0.5em;
+  color: var(--ink-mute);
+}
+
+.heading-anchor {
+  margin-left: 0.45em;
+  color: var(--ink-faint);
+  font-size: 0.72em;
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+  background: none !important;
+}
+
+.prose h1:hover .heading-anchor,
+.prose h2:hover .heading-anchor,
+.prose h3:hover .heading-anchor,
+.prose h4:hover .heading-anchor {
+  opacity: 1;
+}
+
+.heading-anchor:hover {
+  color: var(--cinnabar);
+}
+
+/* — 列表 ————————————————————————————————— */
+
+.prose ul,
+.prose ol {
+  margin-block: 1em;
+  padding-left: 1.55em;
+}
+
+.prose li {
+  margin-block: 0.4em;
+  padding-left: 0.15em;
+}
+
+.prose li > p {
+  text-indent: 0;
+  margin-block: 0;
+}
+
+.prose ul > li::marker {
+  color: var(--ink-faint);
+  font-size: 0.85em;
+}
+
+.prose ol > li::marker {
+  color: var(--ink-mute);
+  font-family: var(--font-latin);
+  font-size: 0.9em;
+}
+
+.prose li::marker {
+  font-feature-settings: 'tnum';
+}
+
+.prose ul ul,
+.prose ol ol,
+.prose ul ol,
+.prose ol ul {
+  margin-block: 0.3em;
+}
+
+.prose .contains-task-list {
+  padding-left: 0.2em;
+  list-style: none;
+}
+
+.prose .task-list-item {
+  list-style: none;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55em;
+  margin-block: 0.45em;
+}
+
+.prose .task-list-item input[type='checkbox'] {
+  margin-top: 0.62em;
+  width: 0.95em;
+  height: 0.95em;
+  accent-color: var(--cinnabar);
+  flex-shrink: 0;
+}
+
+.prose .task-list-item:has(input:checked) {
+  color: var(--ink-mute);
+}
+
+/* — 引文 ————————————————————————————————— */
+
+.prose blockquote {
+  position: relative;
+  margin-block: 1.7em;
+  padding: 1.05em 1.3em 1.05em 1.5em;
+  border-left: 2px solid var(--line-strong);
+  border-radius: 0 2px 2px 0;
+  background: linear-gradient(90deg, var(--paper-sunken), color-mix(in srgb, var(--paper-sunken) 30%, transparent));
+  color: var(--ink-soft);
+  font-size: 0.98em;
+}
+
+.prose blockquote::before {
+  content: '「';
+  position: absolute;
+  left: 0.45em;
+  top: 0.2em;
+  font-family: var(--font-kai);
+  font-size: 1.9em;
+  line-height: 1;
+  color: var(--line-strong);
+}
+
+.prose blockquote p {
+  text-indent: 0;
+  margin-block: 0.35em;
+}
+
+.prose blockquote p:first-child {
+  margin-top: 0;
+}
+
+.prose blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+.prose blockquote em {
+  text-emphasis: none;
+}
+
+/* — 分隔线 ——————————————————————————————— */
+
+.prose hr {
+  margin-block: 2.8em;
+}
+
+/* — 行内代码 ————————————————————————————— */
+
+.prose :not(pre) > code {
+  font-family: var(--font-mono);
+  font-size: 0.84em;
+  letter-spacing: 0;
+  padding: 0.1em 0.36em;
+  border-radius: 2px;
+  border: 1px solid var(--line-faint);
+  background: var(--paper-sunken);
+  color: color-mix(in srgb, var(--cinnabar) 78%, var(--ink));
+  white-space: nowrap;
+}
+
+.prose a code {
+  color: inherit;
+}
+
+/* — 代码块 ——————————————————————————————— */
+
+.prose pre {
+  position: relative;
+  margin-block: 1.7em;
+  padding: 1.15rem 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.86rem;
+  line-height: 1.75;
+  tab-size: 2;
+  overflow-x: auto;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 45%), var(--shadow-1);
+}
+
+[data-theme='dark'] .prose pre {
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 4%), var(--shadow-1);
+}
+
+.prose pre.astro-code {
+  background-color: var(--shiki-light-bg, #f8f3e7);
+  color: var(--shiki-light, #2b2723);
+}
+
+.prose pre.astro-code span {
+  color: var(--shiki-light);
+}
+
+[data-theme='dark'] .prose pre.astro-code {
+  background-color: var(--shiki-dark-bg, #1c1a16);
+  color: var(--shiki-dark, #ded6c6);
+}
+
+[data-theme='dark'] .prose pre.astro-code span {
+  color: var(--shiki-dark);
+}
+
+.prose pre code {
+  font-family: inherit;
+  font-size: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  white-space: pre;
+}
+
+.prose pre[data-language]::after {
+  content: attr(data-language);
+  position: absolute;
+  top: 0.45rem;
+  right: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease-out);
+  pointer-events: none;
+}
+
+.prose pre:hover[data-language]::after {
+  opacity: 1;
+}
+
+.copy-code {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--paper-raised) 88%, transparent);
+  color: var(--ink-mute);
+  font-family: var(--font-kai);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  opacity: 0;
+  transform: translateY(-2px);
+  transition: opacity var(--dur) var(--ease-out), transform var(--dur) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+
+.prose pre:hover .copy-code,
+.copy-code:focus-visible {
+  opacity: 1;
+  transform: none;
+}
+
+.copy-code:hover {
+  color: var(--ink);
+}
+
+.copy-code.is-done {
+  color: var(--jade);
+  border-color: color-mix(in srgb, var(--jade) 40%, var(--line));
+}
+
+/* 行内高亮（==高亮== 语法扩展） */
+.prose mark {
+  background: var(--mark);
+  color: inherit;
+  padding: 0.02em 0.15em;
+  border-radius: 1px;
+}
+
+/* — 表格 ————————————————————————————————— */
+
+.prose table {
+  width: 100%;
+  margin-block: 1.8em;
+  border-collapse: collapse;
+  font-size: 0.9em;
+  line-height: 1.7;
+  font-variant-numeric: tabular-nums;
+}
+
+.prose thead {
+  border-top: 1.5px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.prose thead th {
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-align: left;
+  color: var(--ink);
+}
+
+.prose tbody tr {
+  border-bottom: 1px solid var(--line-faint);
+}
+
+.prose tbody tr:last-child {
+  border-bottom: 1.5px solid var(--line-strong);
+}
+
+.prose th,
+.prose td {
+  padding: 0.6em 0.85em;
+  vertical-align: top;
+}
+
+.prose tbody tr:hover {
+  background: color-mix(in srgb, var(--paper-sunken) 65%, transparent);
+}
+
+.prose th[align='center'],
+.prose td[align='center'] {
+  text-align: center;
+}
+
+.prose th[align='right'],
+.prose td[align='right'] {
+  text-align: right;
+}
+
+.prose table code {
+  white-space: nowrap;
+}
+
+/* — 图 ————————————————————————————————— */
+
+.prose img {
+  max-width: 100%;
+  margin-inline: auto;
+  border-radius: 2px;
+  cursor: zoom-in;
+}
+
+.prose figure {
+  margin-block: 1.9em;
+}
+
+.prose figure img {
+  margin-inline: auto;
+}
+
+.prose figcaption {
+  margin-top: 0.65em;
+  text-align: center;
+  font-family: var(--font-kai);
+  font-size: 0.78em;
+  letter-spacing: 0.12em;
+  color: var(--ink-faint);
+}
+
+.prose img + em {
+  display: block;
+  text-align: center;
+  font-family: var(--font-kai);
+  font-size: 0.78em;
+  color: var(--ink-faint);
+  text-emphasis: none;
+  margin-top: 0.5em;
+}
+
+/* — 脚注 ————————————————————————————————— */
+
+.prose sup {
+  font-size: 0.7em;
+  line-height: 0;
+  vertical-align: super;
+}
+
+.prose sup a {
+  color: var(--cinnabar);
+  text-decoration: none;
+  padding-inline: 0.08em;
+}
+
+.prose .footnotes {
+  margin-top: 3.5em;
+  padding-top: 1.4em;
+  border-top: 1px solid var(--line);
+  font-size: 0.82em;
+  color: var(--ink-mute);
+  line-height: 1.9;
+}
+
+.prose .footnotes h2 {
+  display: none;
+}
+
+.prose .footnotes ol {
+  padding-left: 1.2em;
+}
+
+.prose .footnotes li {
+  margin-block: 0.5em;
+}
+
+.prose .footnotes p {
+  text-indent: 0;
+  margin: 0;
+}
+
+.prose .data-footnote-backref {
+  text-decoration: none;
+}
+
+/* — KaTeX ————————————————————————————————— */
+
+.prose .katex {
+  font-size: 1.06em;
+}
+
+.prose .katex-display {
+  margin-block: 1.7em;
+  padding-block: 0.4em;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.prose .katex-display > .katex {
+  text-align: center;
+}
+
+.prose .katex-error {
+  color: var(--cinnabar);
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+}
+
+/* — Mermaid ——————————————————————————————— */
+
+.prose .mermaid-block {
+  margin-block: 1.9em;
+  padding: 1.2rem;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--paper-raised);
+  text-align: center;
+  overflow-x: auto;
+}
+
+.prose .mermaid-block svg {
+  max-width: 100%;
+  height: auto;
+  margin-inline: auto;
+}
+
+.prose .mermaid-block.is-rendering .mermaid-fallback {
+  opacity: 0.5;
+}
+
+.prose .mermaid-fallback {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+  text-align: left;
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
+
+.prose .mermaid-block.is-rendered .mermaid-fallback {
+  display: none;
+}
+
+.prose .mermaid-block.is-failed .mermaid-fallback {
+  display: block;
+}
+
+.prose .mermaid-block.is-failed::before {
+  content: '图表渲染失败，以下是源码';
+  display: block;
+  margin-bottom: 0.6rem;
+  font-family: var(--font-kai);
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  color: var(--cinnabar);
+}
+
+/* — 折叠 ————————————————————————————————— */
+
+.prose details {
+  margin-block: 1.4em;
+  padding: 0.85em 1.1em;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--paper-raised);
+}
+
+.prose summary {
+  cursor: pointer;
+  font-family: var(--font-kai);
+  letter-spacing: 0.1em;
+  color: var(--ink-soft);
+}
+
+.prose details[open] summary {
+  margin-bottom: 0.7em;
+  padding-bottom: 0.5em;
+  border-bottom: 1px solid var(--line-faint);
+}
+
+/* — 键盘 / 缩写 ————————————————————————— */
+
+.prose kbd {
+  padding: 0.1em 0.4em;
+  border: 1px solid var(--line-strong);
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  background: var(--paper-raised);
+  font-size: 0.78em;
+}
+
+.prose abbr[title] {
+  text-decoration: underline dotted var(--line-strong);
+  text-underline-offset: 0.25em;
+  cursor: help;
+}
+
+/* — 正文首段小引 ————————————————————————— */
+
+.prose > p:first-of-type {
+  font-size: 1.02em;
+}
+
+@media (max-width: 780px) {
+  .prose {
+    font-size: 1.0625rem;
+    line-height: 1.92;
+    --indent: 2em;
+  }
+
+  .prose h2 {
+    font-size: 1.32rem;
+  }
+
+  .prose h2::before {
+    left: -0.85rem;
+  }
+
+  .prose h3::before {
+    left: -0.8rem;
+  }
+
+  .prose blockquote {
+    padding-inline: 1.1em;
+  }
+
+  .prose pre {
+    font-size: 0.8rem;
+    padding: 1rem;
+    margin-inline: calc(var(--gutter) * -0.5);
+  }
+}

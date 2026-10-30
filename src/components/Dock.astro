@@ -1,0 +1,10 @@
+---
+import Icon from './Icon.astro';
+---
+
+<div class="dock" data-dock>
+  <slot />
+  <button class="dock-btn" type="button" data-to-top aria-label="回到顶部" title="回到顶部">
+    <Icon name="arrow-up" class="icon" size={18} />
+  </button>
+</div>

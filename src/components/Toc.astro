@@ -1,0 +1,33 @@
+---
+import Icon from './Icon.astro';
+
+export interface Props {
+  headings: { depth: number; slug: string; text: string }[];
+}
+
+const { headings } = Astro.props;
+const items = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+---
+
+<nav class="toc" data-toc aria-label="本文目录">
+  <div class="toc-head">
+    <span class="toc-title">目录</span>
+    <button class="toc-close" type="button" data-drawer-close aria-label="收起">
+      <Icon name="close" size={16} />
+    </button>
+  </div>
+
+  {
+    items.length > 0 ? (
+      <ol class="toc-list" data-toc-list>
+        {items.map((h) => (
+          <li class={`toc-depth-${h.depth}`}>
+            <a href={`#${h.slug}`}>{h.text}</a>
+          </li>
+        ))}
+      </ol>
+    ) : (
+      <p class="toc-empty">此文篇幅尚短，未设小节。</p>
+    )
+  }
+</nav>

@@ -1,0 +1,53 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { formatDateShort, isoDate } from '../lib/format';
+
+const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+
+const byYear = new Map<number, typeof posts>();
+for (const post of posts) {
+  const year = post.data.pubDate.getFullYear();
+  if (!byYear.has(year)) byYear.set(year, []);
+  byYear.get(year)!.push(post);
+}
+const years = [...byYear.keys()].sort((a, b) => b - a);
+---
+
+<BaseLayout title="归档" description="按年份翻阅全部文章">
+  <section class="page">
+    <div class="wrap wrap--narrow">
+      <header class="page-head">
+        <p class="page-eyebrow">旧卷</p>
+        <h1 class="page-title">归档</h1>
+        <p class="page-desc">凡 {posts.length} 篇，按年编次。</p>
+      </header>
+
+      {
+        years.map((year, yearIndex) => (
+          <section class="archive-year" aria-labelledby={`year-${year}`} data-reveal style={`--reveal-delay:${Math.min(yearIndex, 8) * 60}ms`}>
+            <h2 class="archive-year-label" id={`year-${year}`}>
+              {year}
+            </h2>
+            <ul class="archive-list" role="list">
+              {byYear.get(year)!.map((post) => (
+                <li class="archive-item">
+                  <time datetime={isoDate(post.data.pubDate)}>
+                    {formatDateShort(post.data.pubDate).slice(5)}
+                  </time>
+                  <a href={`/posts/${post.id}`}>{post.data.title}</a>
+                  <span class="archive-dot" aria-hidden="true"></span>
+                  <span class="archive-cat">{post.data.category}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))
+      }
+
+      {posts.length === 0 && <p class="empty-state">尚无文章。</p>}
+    </div>
+  </section>
+</BaseLayout>

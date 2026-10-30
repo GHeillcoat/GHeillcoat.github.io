@@ -1,0 +1,115 @@
+---
+import '../styles/global.css';
+import { getCollection } from 'astro:content';
+import { site } from '../config';
+import { isoDate } from '../lib/format';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import SearchPalette from '../components/SearchPalette.astro';
+import Lightbox from '../components/Lightbox.astro';
+import Dock from '../components/Dock.astro';
+
+export interface Props {
+  title?: string;
+  description?: string;
+  ogType?: 'website' | 'article';
+  noindex?: boolean;
+  bodyClass?: string;
+}
+
+const {
+  title,
+  description = site.description,
+  ogType = 'website',
+  noindex = false,
+  bodyClass = '',
+} = Astro.props;
+
+const pageTitle = title ? `${title} · ${site.title}` : `${site.title} · ${site.tagline}`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL('/images/art/og.svg', Astro.site);
+
+// 轻量文章索引：供命令面板在 Pagefind 索引不可用时兜底
+const allPosts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+const postIndex = allPosts.map((post) => ({
+  t: post.data.title,
+  u: `/posts/${post.id}`,
+  d: post.data.description,
+  c: post.data.category,
+  y: isoDate(post.data.pubDate),
+}));
+---
+
+<!doctype html>
+<html lang={site.locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical.href} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate" type="application/rss+xml" title={site.title} href="/rss.xml" />
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical.href} />
+    <meta property="og:site_name" content={site.title} />
+    <meta property="og:image" content={ogImage.href} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#f6f2e8" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#14130f" media="(prefers-color-scheme: dark)" />
+
+    <!-- 在首帧之前确定纸色，避免闪烁 -->
+    <script is:inline>
+      (function () {
+        try {
+          var forced = new URLSearchParams(location.search).get('theme');
+          var saved = localStorage.getItem('ink:theme');
+          var theme =
+            forced === 'light' || forced === 'dark'
+              ? forced
+              : saved === 'light' || saved === 'dark'
+                ? saved
+                : window.matchMedia('(prefers-color-scheme: dark)').matches
+                  ? 'dark'
+                  : 'light';
+          document.documentElement.dataset.theme = theme;
+        } catch (e) {}
+        document.documentElement.classList.add('js');
+      })();
+    </script>
+
+    <slot name="head" />
+  </head>
+  <body class={bodyClass}>
+    <div class="paper-grain" aria-hidden="true"></div>
+    <a class="skip-link" href="#main">跳到正文</a>
+
+    <SiteHeader />
+
+    <main id="main" class="site-main">
+      <slot />
+    </main>
+
+    <SiteFooter />
+
+    <SearchPalette />
+    <Lightbox />
+    <Dock>
+      <slot name="dock" />
+    </Dock>
+    <div class="toast" data-toast role="status" aria-live="polite"></div>
+
+    <script type="application/json" data-post-index set:html={JSON.stringify(postIndex)} />
+
+    <script>
+      import '../scripts/app';
+    </script>
+  </body>
+</html>

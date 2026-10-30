@@ -1,0 +1,52 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Icon from './Icon.astro';
+import { countWords, formatDateShort, formatNumber, isoDate, readingLabel } from '../lib/format';
+
+export interface Props {
+  post: CollectionEntry<'posts'>;
+  index?: number;
+}
+
+const { post, index = 0 } = Astro.props;
+const { data } = post;
+const words = countWords(post.body ?? '');
+---
+
+<li class="post-row" data-reveal style={`--reveal-delay:${Math.min(index, 12) * 35}ms`}>
+  <div class="post-row-date">
+    <time datetime={isoDate(data.pubDate)}>{formatDateShort(data.pubDate)}</time>
+    <span class="post-row-cat">{data.category}</span>
+  </div>
+
+  <div class="post-row-main">
+    <h3 class="post-row-title">
+      <a href={`/posts/${post.id}`}>{data.title}</a>
+    </h3>
+    {data.description && <p class="post-row-desc">{data.description}</p>}
+
+    <div class="post-row-foot">
+      <span class="post-row-metrics">
+        <Icon name="clock" size={12} />
+        {readingLabel(post.body ?? '', data.lang)}
+      </span>
+      <span class="post-row-metrics">
+        <Icon name="pen" size={12} />
+        {formatNumber(words)} 字
+      </span>
+      {
+        data.tags.length > 0 && (
+          <ul class="post-inline-tags" role="list">
+            {data.tags.slice(0, 3).map((tag) => (
+              <li>
+                <a href={`/tags/${encodeURIComponent(tag)}`} class="post-inline-tag">
+                  #{tag}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </div>
+  </div>
+</li>

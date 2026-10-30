@@ -1,0 +1,27 @@
+---
+import Icon from './Icon.astro';
+---
+
+<aside class="notes-panel" data-notes-panel aria-label="本文批注">
+  <div class="notes-head">
+    <h2 class="notes-title">
+      批注
+      <span class="notes-count" data-notes-count>0</span>
+    </h2>
+    <div class="notes-actions">
+      <button class="chip-btn" type="button" data-notes-export>
+        <Icon name="download" size={11} />
+        导出
+      </button>
+      <button class="chip-btn toc-close" type="button" data-drawer-close aria-label="收起">
+        <Icon name="close" size={11} />
+      </button>
+    </div>
+  </div>
+
+  <p class="notes-hint">选中正文任意一句，即可留下批注。批注只存在你的浏览器里，可随时导出。</p>
+
+  <ul class="notes-list" data-notes-list role="list"></ul>
+
+  <p class="notes-empty" data-notes-empty>还没有批注。读到会心处，随手记一笔。</p>
+</aside>

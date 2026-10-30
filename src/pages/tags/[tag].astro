@@ -1,0 +1,49 @@
+---
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostRow from '../../components/PostRow.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
+  const counts = new Map<string, number>();
+  for (const post of posts) {
+    for (const tag of post.data.tags) counts.set(tag, (counts.get(tag) ?? 0) + 1);
+  }
+
+  return [...counts.keys()].map((tag) => ({
+    params: { tag },
+    props: {
+      tag,
+      posts: posts
+        .filter((post) => post.data.tags.includes(tag))
+        .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()),
+    },
+  }));
+}
+
+interface Props {
+  tag: string;
+  posts: CollectionEntry<'posts'>[];
+}
+
+const { tag, posts } = Astro.props;
+---
+
+<BaseLayout title={`标签 · ${tag}`} description={`标签「${tag}」下的全部文章`}>
+  <section class="page">
+    <div class="wrap wrap--narrow">
+      <header class="page-head">
+        <p class="page-eyebrow"><a href="/tags">索引</a> / 标签</p>
+        <h1 class="page-title">
+          <span class="tag-title-mark">#</span>{tag}
+        </h1>
+        <p class="page-desc">共 {posts.length} 篇</p>
+      </header>
+
+      <ol class="post-list" role="list">
+        {posts.map((post, i) => <PostRow post={post} index={i} />)}
+      </ol>
+    </div>
+  </section>
+</BaseLayout>

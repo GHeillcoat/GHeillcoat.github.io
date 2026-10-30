@@ -1,0 +1,155 @@
+/* ==========================================================================
+   墨痕 · Design tokens
+   宣纸（light）与夜墨（dark）两套纸色。所有颜色都从纸与墨里取，
+   朱砂与金只用在小面积的印章、强调和装饰上。
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  /* — 纸 ————————————————————————————————— */
+  --paper: #f6f2e8;
+  --paper-raised: #fbf8f0;
+  --paper-sunken: #efe9da;
+  --paper-deep: #e7dfcc;
+  --paper-glass: rgb(246 242 232 / 78%);
+
+  /* — 墨 ————————————————————————————————— */
+  --ink: #24211c;
+  --ink-soft: #4b453b;
+  --ink-mute: #7f7666;
+  --ink-faint: #a79d8b;
+
+  /* — 线 ————————————————————————————————— */
+  --line: #e2d9c6;
+  --line-strong: #d1c5ab;
+  --line-faint: #ece5d6;
+
+  /* — 颜色（克制使用）—————————————————— */
+  --cinnabar: #9c4033; /* 朱砂 */
+  --cinnabar-soft: #b85f4c;
+  --cinnabar-wash: rgb(156 64 51 / 10%);
+  --jade: #4d6a58; /* 松绿 */
+  --indigo: #3b5a63; /* 黛青 */
+  --gold: #a5875a; /* 赭金 */
+  --seal: #a63b2c;
+
+  /* — 交互 ——————————————————————————————— */
+  --link: var(--indigo);
+  --link-hover: var(--cinnabar);
+  --selection: #e8dcbe;
+  --mark: #f0e2bf;
+  --focus: rgb(59 90 99 / 55%);
+
+  /* — 阴影：像纸轻轻叠起 ——————————————— */
+  --shadow-1: 0 1px 1px rgb(36 33 28 / 4%), 0 2px 6px -2px rgb(36 33 28 / 8%);
+  --shadow-2: 0 1px 2px rgb(36 33 28 / 5%), 0 12px 28px -16px rgb(36 33 28 / 22%);
+  --shadow-lift: 0 2px 4px rgb(36 33 28 / 5%), 0 18px 40px -20px rgb(36 33 28 / 26%);
+
+  /* — 字体 ——————————————————————————————— */
+  --font-latin: 'EB Garamond', 'Noto Serif SC', 'Times New Roman', serif;
+  --font-serif: 'EB Garamond', 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', 'Noto Serif CJK SC',
+    'SimSun', serif;
+  --font-kai: 'Kaiti SC', 'KaiTi', 'STKaiti', 'TW-Kai', 'LXGW WenKai', 'Noto Serif SC', serif;
+  --font-mono: 'JetBrains Mono', 'Cascadia Code', 'SFMono-Regular', Consolas, 'Noto Serif SC', monospace;
+
+  /* — 字号（流式）———————————————————————— */
+  --text-2xs: 0.6875rem;
+  --text-xs: 0.78125rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-md: 1.0625rem;
+  --text-lg: 1.1875rem;
+  --text-xl: 1.4375rem;
+  --text-2xl: 1.875rem;
+  --text-3xl: 2.5rem;
+  --text-4xl: clamp(2.9rem, 6vw, 4.6rem);
+
+  --leading-tight: 1.35;
+  --leading-snug: 1.6;
+  --leading-normal: 1.85;
+  --leading-prose: 1.95;
+
+  /* — 间距 ——————————————————————————————— */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+  --space-10: 8rem;
+
+  /* — 版心 ——————————————————————————————— */
+  --w-page: 1160px;
+  --w-prose: 44rem;
+  --w-aside: 17rem;
+  --gutter: clamp(1.25rem, 4vw, 3rem);
+
+  /* — 形 ————————————————————————————————— */
+  --radius-xs: 2px;
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 12px;
+  --hairline: 1px;
+
+  /* — 动 ————————————————————————————————— */
+  --ease-out: cubic-bezier(0.16, 0.84, 0.44, 1);
+  --ease-ink: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --dur-fast: 140ms;
+  --dur: 240ms;
+  --dur-slow: 420ms;
+
+  /* — 纸纹 ——————————————————————————————— */
+  --grain-opacity: 0.42;
+  --grain-size: 180px;
+  --seal-rotate: -2.5deg;
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --paper: #14130f;
+  --paper-raised: #1a1814;
+  --paper-sunken: #100f0c;
+  --paper-deep: #221f19;
+  --paper-glass: rgb(20 19 15 / 76%);
+
+  --ink: #e8e1d2;
+  --ink-soft: #c6bda9;
+  --ink-mute: #928a7b;
+  --ink-faint: #6b6457;
+
+  --line: #2c2922;
+  --line-strong: #3d382e;
+  --line-faint: #232019;
+
+  --cinnabar: #c47b68;
+  --cinnabar-soft: #d39a86;
+  --cinnabar-wash: rgb(196 123 104 / 14%);
+  --jade: #93b3a1;
+  --indigo: #95b4bd;
+  --gold: #c6a979;
+  --seal: #b4513f;
+
+  --link: #9dbcc4;
+  --link-hover: #d79a86;
+  --selection: #3a352c;
+  --mark: #3e3829;
+  --focus: rgb(157 188 196 / 60%);
+
+  --shadow-1: 0 1px 1px rgb(0 0 0 / 30%), 0 2px 8px -2px rgb(0 0 0 / 45%);
+  --shadow-2: 0 1px 2px rgb(0 0 0 / 35%), 0 14px 32px -18px rgb(0 0 0 / 60%);
+  --shadow-lift: 0 2px 6px rgb(0 0 0 / 40%), 0 22px 48px -24px rgb(0 0 0 / 70%);
+
+  --grain-opacity: 0.3;
+}
+
+/* 允许系统偏好在不刷新时生效（没有手动选择时） */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+  }
+}

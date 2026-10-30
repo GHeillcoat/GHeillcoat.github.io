@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Seal from '../components/Seal.astro';
+---
+
+<BaseLayout title="迷路了" description="这一页并不存在" noindex>
+  <section class="page">
+    <div class="wrap notfound">
+      <p class="notfound-code">404</p>
+      <p class="notfound-msg">此页不在书中</p>
+      <p class="notfound-hint">你要找的那一页，或许已经被风吹走了。</p>
+      <Seal class="notfound-seal" char="空" />
+      <a class="btn btn--primary" href="/">回到书房</a>
+    </div>
+  </section>
+</BaseLayout>

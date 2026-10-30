@@ -1,0 +1,46 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Icon from '../../components/Icon.astro';
+
+const posts = await getCollection('posts', ({ data }) => !data.draft);
+const counts = new Map<string, number>();
+for (const post of posts) {
+  for (const tag of post.data.tags) counts.set(tag, (counts.get(tag) ?? 0) + 1);
+}
+const tags = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'zh'));
+---
+
+<BaseLayout title="标签" description="按标签索引全部文章">
+  <section class="page">
+    <div class="wrap wrap--narrow">
+      <header class="page-head">
+        <p class="page-eyebrow">索引</p>
+        <h1 class="page-title">标签</h1>
+        <p class="page-desc">共 {tags.length} 个标签，{posts.length} 篇文章。</p>
+      </header>
+
+      <ul class="tag-cloud tag-cloud--large" role="list">
+        {
+          tags.map(([tag, count], i) => (
+            <li data-reveal style={`--reveal-delay:${Math.min(i, 16) * 25}ms`}>
+              <a class="tag-chip" href={`/tags/${encodeURIComponent(tag)}`}>
+                <span>#{tag}</span>
+                <span class="tag-count">{count}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      {tags.length === 0 && <p class="empty-state">还没有标签。</p>}
+
+      <p class="tag-foot">
+        <a href="/archive">
+          <Icon name="book" size={13} class="icon" />
+          按时间翻阅
+        </a>
+      </p>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,526 @@
+/* ==========================================================================
+   Pages · 各页面的补充样式（与页面结构紧密相关，按页分组）
+   ========================================================================== */
+
+/* — 首页 ————————————————————————————————— */
+
+.hero-stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 0.9rem;
+  margin-top: var(--space-5);
+  font-family: var(--font-latin);
+  font-size: var(--text-sm);
+  letter-spacing: 0.14em;
+  color: var(--ink-faint);
+}
+
+.divider-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--ink-faint);
+  opacity: 0.7;
+}
+
+.section--tags {
+  padding-bottom: clamp(3.5rem, 8vw, 6rem);
+}
+
+/* — 列表里的标签与指标 ————————————————— */
+
+.post-inline-tags {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.post-inline-tag {
+  color: var(--ink-faint);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.04em;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.post-inline-tag:hover {
+  color: var(--cinnabar);
+}
+
+.post-row-metrics svg {
+  width: 0.72rem;
+  height: 0.72rem;
+  opacity: 0.8;
+}
+
+/* — 精选卡片：无题图时的字印 ————————————— */
+
+.post-cover {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  border-radius: 1px;
+  background: linear-gradient(140deg, var(--paper-sunken), var(--paper-deep));
+}
+
+.post-cover--auto {
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(120% 90% at 20% 10%, color-mix(in srgb, var(--ink) 7%, transparent), transparent 60%),
+    linear-gradient(140deg, var(--paper-sunken), var(--paper-deep));
+}
+
+.post-cover-glyph {
+  font-family: var(--font-kai);
+  font-size: clamp(2.6rem, 6vw, 4rem);
+  color: color-mix(in srgb, var(--ink) 22%, transparent);
+  letter-spacing: 0;
+  transition: transform var(--dur-slow) var(--ease-ink), color var(--dur-slow) var(--ease-out);
+}
+
+.featured-card:hover .post-cover-glyph {
+  transform: scale(1.06);
+  color: color-mix(in srgb, var(--ink) 34%, transparent);
+}
+
+/* — 文章页补充 ——————————————————————— */
+
+.post-cat {
+  color: var(--cinnabar);
+  letter-spacing: 0.16em;
+}
+
+.post-cat:hover {
+  color: var(--cinnabar);
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+  text-decoration-thickness: 1px;
+}
+
+.meta-item svg {
+  width: 0.8rem;
+  height: 0.8rem;
+  opacity: 0.85;
+}
+
+.meta-note-btn {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink-mute);
+  letter-spacing: 0.1em;
+  font-size: var(--text-2xs);
+  transition: color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+}
+
+.meta-note-btn:hover {
+  color: var(--ink);
+  border-color: var(--line-strong);
+}
+
+.meta-note-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.05rem;
+  height: 1.05rem;
+  padding-inline: 0.15rem;
+  border-radius: 999px;
+  background: var(--paper-sunken);
+  font-family: var(--font-latin);
+  font-size: 0.6rem;
+  letter-spacing: 0;
+  color: var(--ink-mute);
+}
+
+.post-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.post-tags--foot {
+  margin-bottom: var(--space-6);
+}
+
+.post-tags--foot .tag-chip {
+  font-size: var(--text-xs);
+  padding: 0.3rem 0.7rem;
+}
+
+/* — 标签页补充 ——————————————————————— */
+
+.tag-cloud--large {
+  gap: 0.9rem;
+}
+
+.tag-cloud--large .tag-chip {
+  font-size: var(--text-md);
+  padding: 0.55rem 1.15rem;
+}
+
+.tag-title-mark {
+  color: var(--cinnabar);
+  font-family: var(--font-latin);
+  font-weight: 400;
+  margin-right: 0.3rem;
+}
+
+.tag-foot {
+  margin-top: var(--space-7);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--line-faint);
+}
+
+.tag-foot a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--ink-mute);
+  font-size: var(--text-sm);
+  letter-spacing: 0.12em;
+}
+
+.tag-foot a:hover {
+  color: var(--ink);
+}
+
+/* — 关于页 ————————————————————————————— */
+
+.about-aside {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  position: sticky;
+  top: 6.5rem;
+}
+
+.about-prose {
+  font-size: 1.0625rem;
+}
+
+.about-prose h2 {
+  margin-top: 1.9em;
+}
+
+.about-prose h2:first-child {
+  margin-top: 0;
+}
+
+.about-card--seal {
+  text-align: center;
+  padding-block: 2.25rem 1.75rem;
+  background:
+    radial-gradient(90% 70% at 50% 0%, var(--cinnabar-wash), transparent 70%),
+    var(--paper-raised);
+}
+
+.about-seal {
+  width: 4.5rem;
+  margin-inline: auto;
+  color: var(--seal);
+  transform: rotate(-3deg);
+}
+
+.about-signature {
+  margin-top: var(--space-4);
+  font-size: var(--text-sm);
+  letter-spacing: 0.24em;
+  color: var(--ink-soft);
+}
+
+.about-motto {
+  margin-top: 0.4rem;
+  font-family: var(--font-kai);
+  font-size: var(--text-xs);
+  letter-spacing: 0.1em;
+  color: var(--ink-faint);
+}
+
+.about-list--keys .k {
+  font-family: var(--font-latin);
+}
+
+.about-list--keys kbd {
+  padding: 0.05rem 0.3rem;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  font-size: 0.62rem;
+}
+
+.about-contact {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--text-sm);
+  color: var(--ink-mute);
+}
+
+.about-contact a {
+  color: var(--ink-soft);
+}
+
+/* — 404 ————————————————————————————————— */
+
+.notfound-hint {
+  font-family: var(--font-kai);
+  font-size: var(--text-sm);
+  color: var(--ink-faint);
+  letter-spacing: 0.14em;
+}
+
+.notfound-seal {
+  width: 3.2rem;
+  color: var(--seal);
+  opacity: 0.85;
+  transform: rotate(6deg);
+  margin-block: 0.5rem;
+}
+
+/* — 页脚补充 ——————————————————————————— */
+
+.footer-brand-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-rss {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.footer-meta a {
+  color: var(--ink-mute);
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 0.25em;
+}
+
+/* — 批注页 ————————————————————————————— */
+
+.notes-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-bottom: var(--space-4);
+  margin-bottom: var(--space-5);
+  border-bottom: 1px solid var(--line-faint);
+}
+
+.notes-total {
+  font-family: var(--font-latin);
+  font-size: var(--text-sm);
+  letter-spacing: 0.12em;
+  color: var(--ink-faint);
+}
+
+.notes-toolbar-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.notes-archive {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.notes-archive-group {
+  padding-bottom: var(--space-5);
+  border-bottom: 1px solid var(--line-faint);
+}
+
+.notes-archive-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: var(--space-4);
+}
+
+.notes-archive-title {
+  font-size: var(--text-lg);
+  letter-spacing: 0.03em;
+  color: var(--ink);
+}
+
+.notes-archive-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+  font-family: var(--font-latin);
+  font-size: var(--text-xs);
+  color: var(--ink-faint);
+  letter-spacing: 0.1em;
+}
+
+.notes-archive-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.notes-archive-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding-left: 0.95rem;
+  border-left: 1px solid var(--line);
+}
+
+.notes-archive-quote {
+  font-family: var(--font-kai);
+  font-size: var(--text-sm);
+  color: var(--ink-mute);
+  line-height: 1.85;
+}
+
+.notes-archive-body {
+  font-size: var(--text-sm);
+  line-height: 1.85;
+  color: var(--ink-soft);
+  white-space: pre-wrap;
+}
+
+.notes-archive-foot {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-latin);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  color: var(--ink-faint);
+}
+
+.notes-archive-foot button {
+  color: var(--ink-faint);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.notes-archive-foot button:hover {
+  color: var(--cinnabar);
+}
+
+/* — 编辑器主操作区 ————————————————————— */
+
+.note-editor-main-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.note-editor .btn {
+  padding: 0.35rem 0.85rem;
+}
+
+/* — 抽屉遮罩 ——————————————————————————— */
+
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 134;
+  background: rgb(20 18 14 / 38%);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  animation: fade-in var(--dur) var(--ease-out) both;
+}
+
+/* — 目录/批注抽屉（移动端）———————————— */
+
+.dock-btn--panel {
+  display: none;
+  position: relative;
+}
+
+.toc-close {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .post-aside {
+    position: fixed;
+    inset: 0 0 0 auto;
+    z-index: 136;
+    width: min(23rem, 90vw);
+    max-height: none;
+    padding: 1.15rem 1.25rem 2rem;
+    background: var(--paper-raised);
+    border-left: 1px solid var(--line);
+    transform: translateX(103%);
+    transition: transform var(--dur) var(--ease-out);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .post-aside[data-open] {
+    transform: none;
+    box-shadow: -24px 0 48px -32px rgb(0 0 0 / 40%);
+  }
+
+  .post-aside .toc {
+    border-left: 0;
+    padding-left: 0;
+    max-height: none;
+    mask-image: none;
+    border-bottom: 1px solid var(--line-faint);
+    padding-bottom: 1rem;
+  }
+
+  .post-aside .notes-panel {
+    border: 0;
+    box-shadow: none;
+    background: none;
+    padding: 0;
+    max-height: none;
+  }
+
+  .post-aside .notes-hint {
+    margin-bottom: 0.25rem;
+  }
+
+  .toc-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 999px;
+    color: var(--ink-faint);
+    transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+  }
+
+  .toc-close:hover {
+    background: var(--paper-sunken);
+    color: var(--ink);
+  }
+
+  .dock-btn--panel {
+    display: grid;
+  }
+
+  .toc-head .toc-close {
+    display: inline-flex;
+  }
+}
+
+@media (min-width: 1025px) {
+  .dock-btn--panel {
+    display: none;
+  }
+}
