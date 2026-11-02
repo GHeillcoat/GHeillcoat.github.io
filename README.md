@@ -35,6 +35,15 @@
 | 知识图谱 | `/graph` 整站图谱 + 首页右侧「书房的地图」可折叠侧栏 + 文章页局部图谱：拖动、缩放、悬停高亮、点击跳转 |
 | 多文件跳转 | 双链、反向链接、出链、图谱节点、标签页四路互通 |
 
+### 笔记库（从 Obsidian vault 导入）
+
+- `npm run import:vault -- --from "D:/obsidian"` 把真实 vault 导入成独立集合，`/vault` 按分卷浏览
+- 保留原始目录结构，生成 `title / date / tags / aliases / category`，正文 H1 不会重复
+- 双链按「完整路径 → 文件名 → 标题 → 别名」容错匹配，`[[#小节]]` 同页跳转也支持
+- 附件复制到 `public/vault/`，`![[图片]]` 自动解析
+- 笔记与博客双链互通，但**不进入**首页、归档、标签、图谱，避免 440 篇课堂笔记淹没博客
+- 支持 `==高亮==`、块引用锚点清理、宽表格横向滚动（Obsidian 常见写法）
+
 ### 写作（Markdown 全能力）
 
 | 能力 | 说明 |
@@ -108,21 +117,24 @@ npm run qa        # 端到端自检：用本机 Edge/Chrome 真点一遍交互
 ├── astro.config.mjs          # 管线配置：remark/rehype（双链 / callout / KaTeX / Mermaid）、Shiki 双主题
 ├── scripts/
 │   ├── fetch-fonts.mjs       # 按站点字符集生成 woff2 子集 + fonts.css
+│   ├── import-vault.mjs      # npm run import:vault：把 Obsidian vault 导入成 /vault
 │   ├── new-post.mjs          # npm run new：生成一篇草稿
 │   ├── shot.mjs              # 截图（本机 Edge headless）
 │   └── qa.mjs                # 端到端交互自检
 ├── src/
 │   ├── config.ts             # 站点标题、导航、页脚
-│   ├── content.config.ts     # 元数据归一（Obsidian properties / Hexo frontmatter）
+│   ├── content.config.ts     # 元数据归一（Obsidian properties / Hexo frontmatter）+ vault 集合
 │   ├── content/posts/        # 文章（.md / .mdx）——可以直接当 Obsidian vault
-│   ├── layouts/              # BaseLayout / PostLayout
+│   ├── content/vault/        # 导入的课堂笔记（由 import-vault.mjs 生成，可重跑）
+│   ├── layouts/              # BaseLayout / PostLayout / VaultLayout
 │   ├── components/           # 页眉页脚、卡片、目录、批注面板、图谱、搜索面板…
-│   ├── pages/                # 首页/文章/图谱/归档/标签/批注/关于/404/rss
+│   ├── pages/                # 首页/文章/笔记库/图谱/归档/标签/批注/关于/404/rss
 │   ├── scripts/              # 主题、命令面板、批注、目录、Mermaid、图谱、灯箱…
 │   ├── styles/               # tokens / base / layout / components / prose / ornaments / pages
-│   └── lib/                  # vault 索引、双链/callout rehype 插件、图谱数据、排版工具
+│   └── lib/                  # vault 索引、双链/callout/Obsidian 额外语法插件、图谱数据、排版工具
 ├── public/
 │   ├── fonts/                # 生成的字体子集（由脚本维护）
+│   ├── vault/                # 导入笔记的附件
 │   └── images/               # 水墨 SVG 插图与 OG 图
 └── docs/                     # 写作说明、设计说明、DOM/图谱契约
 ```

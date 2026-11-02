@@ -1,0 +1,120 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { formatDateShort } from '../../lib/format';
+import { vaultUrl } from '../../lib/vault-graph';
+
+const notes = await getCollection('vault', (entry) => !entry.data.draft);
+
+const chapters = new Map<string, Map<string, typeof notes>>();
+for (const note of notes) {
+  const segments = note.id.split('/');
+  const category = note.data.category || segments[0] || '笔记';
+  const sub = segments.length > 2 ? segments[1] : '';
+  if (!chapters.has(category)) chapters.set(category, new Map());
+  const group = chapters.get(category)!;
+  if (!group.has(sub)) group.set(sub, []);
+  group.get(sub)!.push(note);
+}
+
+const chapterList = [...chapters.entries()]
+  .map(([name, groups]) => {
+    const items = [...groups.values()].flat();
+    items.sort((a, b) => a.data.title.localeCompare(b.data.title, 'zh'));
+    return { name, groups: [...groups.entries()], count: items.length };
+  })
+  .sort((a, b) => chapterOrder(a.name) - chapterOrder(b.name) || a.name.localeCompare(b.name, 'zh'));
+
+function chapterLabel(name: string) {
+  if (name === '_root') return '根目录';
+  if (name === '笔记') return '索引与总览';
+  return name;
+}
+
+const tagCount = new Set(notes.flatMap((note) => note.data.tags)).size;
+const sorted = [...notes].sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const latest = sorted.slice(0, 8);
+
+/** Ch01…Ch22 按章号排前面，索引类居中，根目录文件最后 */
+function chapterOrder(name: string) {
+  const match = /^ch\s*0*(\d+)/i.exec(name);
+  if (match) return Number(match[1]);
+  if (name === '笔记') return 900;
+  if (name === '_root') return 950;
+  return 800;
+}
+---
+
+<BaseLayout title="笔记" description="从 Obsidian 导入的课堂笔记：AI 通识、工程与论文笔记，支持双链与全文检索">
+  <section class="page">
+    <div class="wrap">
+      <header class="page-head vault-index-head">
+        <p class="page-eyebrow">笔记库</p>
+        <h1 class="page-title">笔记</h1>
+        <p class="page-desc">
+          从 Obsidian 直接导入的课堂笔记：双链、公式、表格、Mermaid 与博客正文一样渲染；
+          按 <kbd>Ctrl</kbd> + <kbd>K</kbd> 可以全库检索。
+        </p>
+      </header>
+
+      <div class="vault-stats">
+        <span><strong>{notes.length}</strong> 篇</span>
+        <span class="divider-dot" aria-hidden="true"></span>
+        <span><strong>{chapterList.length}</strong> 个分卷</span>
+        <span class="divider-dot" aria-hidden="true"></span>
+        <span><strong>{tagCount}</strong> 个标签</span>
+        <a class="vault-stats-link" href="/graph">
+          看博客图谱
+          <Icon name="arrow-right" size={12} class="icon" />
+        </a>
+      </div>
+
+      <div class="vault-latest">
+        <h2 class="vault-section-title">最近更新</h2>
+        <ul class="vault-latest-list" role="list">
+          {
+            latest.map((note) => (
+              <li>
+                <a href={vaultUrl(note.id)}>{note.data.title}</a>
+                <time datetime={note.data.pubDate.toISOString().slice(0, 10)}>
+                  {formatDateShort(note.data.pubDate)}
+                </time>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div class="vault-chapters">
+        {
+          chapterList.map((chapter, index) => (
+            <details class="vault-chapter" open={index < 2}>
+              <summary class="vault-chapter-summary">
+                <span class="vault-chapter-name">{chapterLabel(chapter.name)}</span>
+                <span class="vault-chapter-count">{chapter.count} 篇</span>
+              </summary>
+              <div class="vault-chapter-body">
+                {chapter.groups.map(([sub, list]) => (
+                  <div class="vault-group">
+                    {sub && <h3 class="vault-group-title">{sub}</h3>}
+                    <ul class="vault-note-list" role="list">
+                      {list.map((note) => (
+                        <li>
+                          <a href={vaultUrl(note.id)}>{note.data.title}</a>
+                          {note.data.tags.length > 0 && (
+                            <span class="vault-note-tags">{note.data.tags.slice(0, 2).join(' · ')}</span>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</BaseLayout>

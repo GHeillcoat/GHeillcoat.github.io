@@ -1,0 +1,152 @@
+---
+import { render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import BaseLayout from './BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import {
+  countWords,
+  excerptFromBody,
+  formatDateZh,
+  formatNumber,
+  isoDate,
+  readingLabel,
+} from '../lib/format';
+import { relationNodes } from '../lib/graph';
+import { getVaultGraph } from '../lib/vault-graph';
+
+export interface Props {
+  entry: CollectionEntry<'vault'>;
+}
+
+const { entry } = Astro.props;
+const { data } = entry;
+const { Content, headings } = await render(entry);
+
+const graph = await getVaultGraph();
+const { backlinks, outlinks } = relationNodes(graph, entry.id);
+const summary = data.description || excerptFromBody(entry.body, 120);
+const folder = entry.id.split('/').slice(0, -1).join(' / ');
+const words = countWords(entry.body ?? '');
+const toc = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+---
+
+<BaseLayout title={data.title} description={summary}>
+  <article class="vault-note" data-pagefind-body>
+    <div class="wrap">
+      <header class="vault-head">
+        <nav class="vault-crumb" aria-label="位置">
+          <a href="/vault">笔记</a>
+          <span class="vault-crumb-sep" aria-hidden="true">/</span>
+          <span>{data.category}</span>
+          {folder && <span class="vault-crumb-rest"> / {folder.replace(data.category, '').replace(/^ \/ /, '')}</span>}
+        </nav>
+
+        <h1 class="vault-title">{data.title}</h1>
+        {data.description && <p class="vault-desc">{data.description}</p>}
+
+        <div class="vault-meta">
+          <span class="meta-item">
+            <Icon name="calendar" size={13} />
+            {formatDateZh(data.pubDate)}
+          </span>
+          {data.updatedDate && (
+            <span class="meta-item">
+              <Icon name="pen" size={13} />
+              修订于 {formatDateZh(data.updatedDate)}
+            </span>
+          )}
+          <span class="meta-item">
+            <Icon name="clock" size={13} />
+            {readingLabel(entry.body ?? '', 'zh')}
+          </span>
+          <span class="meta-item">
+            <Icon name="hash" size={13} />
+            {formatNumber(words)} 字
+          </span>
+          {
+            data.tags.length > 0 && (
+              <ul class="vault-tags" role="list">
+                {data.tags.slice(0, 5).map((tag) => (
+                  <li>
+                    <span class="tag-chip">#{tag}</span>
+                  </li>
+                ))}
+              </ul>
+            )
+          }
+        </div>
+      </header>
+
+      {
+        toc.length > 1 && (
+          <details class="vault-toc" open>
+            <summary>
+              本页目录
+              <span class="vault-toc-count">{toc.length}</span>
+            </summary>
+            <ol class="vault-toc-list">
+              {toc.map((h) => (
+                <li class={`vault-toc-depth-${h.depth}`}>
+                  <a href={`#${h.slug}`}>{h.text}</a>
+                </li>
+              ))}
+            </ol>
+          </details>
+        )
+      }
+
+      <div class="vault-prose prose" data-prose>
+        <Content />
+      </div>
+
+      <section class="vault-links" aria-labelledby="vault-links-title">
+        <h2 class="vault-links-title" id="vault-links-title">相关笔记</h2>
+        <div class="vault-links-grid">
+          <div class="vault-link-card">
+            <h3>反向链接 <span>{backlinks.length}</span></h3>
+            {
+              backlinks.length > 0 ? (
+                <ul class="vault-link-list" role="list">
+                  {backlinks.map((node) => (
+                    <li>
+                      <a href={node.url}>{node.title}</a>
+                      <span>{node.category}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p class="vault-links-empty">没有别处链接到这里。</p>
+              )
+            }
+          </div>
+
+          <div class="vault-link-card">
+            <h3>出链 <span>{outlinks.length}</span></h3>
+            {
+              outlinks.length > 0 ? (
+                <ul class="vault-link-list" role="list">
+                  {outlinks.map((node) => (
+                    <li>
+                      <a href={node.url}>{node.title}</a>
+                      <span>{node.category}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p class="vault-links-empty">这篇还没有链到别的笔记。</p>
+              )
+            }
+          </div>
+        </div>
+
+        {data.source && (
+          <p class="vault-source">
+            <Icon name="folder" size={12} class="icon" />
+            原始文件：{data.source}
+          </p>
+        )}
+      </section>
+    </div>
+  </article>
+</BaseLayout>
+

@@ -310,9 +310,29 @@ async function main() {
   check('批注页空状态逻辑', notesPage.emptyShown === false);
 
   /* 其它页面可访问 */
-  for (const path of ['/posts/', '/archive/', '/tags/', '/about/']) {
+  for (const path of ['/posts/', '/archive/', '/tags/', '/about/', '/vault/']) {
     const res = await page.goto(`${BASE}${path}`, { waitUntil: 'domcontentloaded' });
     check(`页面 ${path} 可访问`, res?.status() === 200, String(res?.status()));
+  }
+
+  /* 笔记库：详情页渲染 + 双链/代码块 */
+  const vaultIndex = await page.evaluate(() => ({
+    chapters: document.querySelectorAll('.vault-chapter').length,
+    notes: document.querySelectorAll('.vault-note-list a').length,
+  }));
+  check('笔记库有分卷与笔记', vaultIndex.chapters >= 10 && vaultIndex.notes >= 100, `${vaultIndex.chapters} 卷 / ${vaultIndex.notes} 篇`);
+
+  const vaultNotePath = await page.evaluate(() => document.querySelector('.vault-note-list a')?.getAttribute('href') ?? '');
+  if (vaultNotePath) {
+    const res = await page.goto(`${BASE}${vaultNotePath}`, { waitUntil: 'domcontentloaded' });
+    check('笔记详情页可访问', res?.status() === 200, String(res?.status()));
+    const note = await page.evaluate(() => ({
+      prose: document.querySelector('.vault-prose')?.children.length ?? 0,
+      broken: document.querySelectorAll('.vault-prose .is-broken').length,
+      title: document.querySelector('.vault-title')?.textContent?.trim() ?? '',
+    }));
+    check('笔记正文已渲染', note.prose > 0 && note.title.length > 0, `${note.title} · ${note.prose} 段`);
+    check('笔记双链无断链', note.broken === 0, `${note.broken} 条断链`);
   }
 
   /* 移动端首页无横向溢出 */

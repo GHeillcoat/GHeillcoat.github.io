@@ -21,6 +21,7 @@ import path from 'node:path';
 import { parse as parseYaml } from 'yaml';
 
 const POSTS_DIR = path.resolve('src/content/posts');
+const VAULT_DIR = path.resolve('src/content/vault');
 const PUBLIC_DIR = path.resolve('public');
 const CACHE_TTL = 800;
 
@@ -116,21 +117,39 @@ export function normalizeMeta(data, fallbackTitle) {
 
 let cache = { at: 0, index: null };
 
-function build() {
-  const files = walk(POSTS_DIR);
-  const entries = [];
-  const byKey = new Map();
+function walkAll(dir, out = []) {
+  let entries;
+  try {
+    entries = fs.readdirSync(dir, { withFileTypes: true });
+  } catch {
+    return out;
+  }
+  for (const entry of entries) {
+    if (entry.name.startsWith('.')) continue;
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) walkAll(full, out);
+    else out.push(full);
+  }
+  return out;
+}
 
-  for (const file of files) {
+function encodePath(value) {
+  return value.split('/').map(encodeURIComponent).join('/');
+}
+
+function scanDir(dir, kind) {
+  const entries = [];
+  for (const file of walk(dir)) {
     const raw = fs.readFileSync(file, 'utf8');
     const { data, body } = splitFrontmatter(raw);
-    const rel = path.relative(POSTS_DIR, file).replace(/\\/g, '/');
+    const rel = path.relative(dir, file).replace(/\\/g, '/');
     const id = rel.replace(/\.(md|mdx)$/i, '');
     const meta = normalizeMeta(data, id);
     if (meta.draft) continue;
 
-    const entry = {
+    entries.push({
       id,
+      kind,
       title: meta.title,
       aliases: meta.aliases,
       tags: meta.tags,
@@ -139,21 +158,49 @@ function build() {
       published: meta.published,
       updated: meta.updated,
       description: meta.description,
-      url: `/posts/${id}`,
+      url: kind === 'vault' ? `/vault/${encodePath(id)}` : `/posts/${encodePath(id)}`,
       body,
-    };
-    entries.push(entry);
+    });
+  }
+  return entries;
+}
 
-    // 命中优先级：id（含路径）→ 标题 → 别名
-    for (const key of [id, entry.title, ...entry.aliases]) {
+function build() {
+  // 博客文章优先命中，其次是导入的笔记（标题/别名冲突时文章赢）
+  const entries = [...scanDir(POSTS_DIR, 'post'), ...scanDir(VAULT_DIR, 'vault')];
+  const byKey = new Map();
+
+  // Obsidian 的短链接（[[文件名]]、[[别名]]、[[标题]]）都要能命中：
+  // 除了 id / 标题 / 别名，还注册文件名本身，以及去掉空格标点的宽松形式。
+  const loose = (value) =>
+    normalizeKey(value)
+      .normalize('NFC')
+      .replace(/[^\p{L}\p{N}]+/gu, '');
+
+  for (const entry of entries) {
+    const base = entry.id.split('/').pop();
+    const keys = [entry.id, base, entry.title, ...entry.aliases];
+    for (const key of keys) {
       const normalized = normalizeKey(key);
       if (normalized && !byKey.has(normalized)) byKey.set(normalized, entry);
+      const looseKey = loose(key);
+      if (looseKey && !byKey.has(looseKey)) byKey.set(looseKey, entry);
+      const dashed = normalized.replace(/\s+/g, '-');
+      if (dashed && !byKey.has(dashed)) byKey.set(dashed, entry);
     }
-    const dashedTitle = normalizeKey(entry.title).replace(/\s+/g, '-');
-    if (dashedTitle && !byKey.has(dashedTitle)) byKey.set(dashedTitle, entry);
   }
 
-  return { entries, byKey };
+  const assets = new Map();
+  const vaultPublic = path.join(PUBLIC_DIR, 'vault');
+  for (const file of walkAll(vaultPublic)) {
+    const rel = `/vault/${path.relative(vaultPublic, file).replace(/\\/g, '/')}`;
+    const base = path.basename(file);
+    if (!assets.has(base)) assets.set(base, rel);
+    const lower = rel.toLowerCase();
+    if (!assets.has(lower)) assets.set(lower, rel);
+  }
+
+  return { entries, byKey, assets };
 }
 
 export function getVault() {
@@ -169,7 +216,20 @@ export function resolveNote(target) {
   const { byKey } = getVault();
   const key = normalizeKey(target);
   if (!key) return null;
-  return byKey.get(key) ?? null;
+  const direct = byKey.get(key);
+  if (direct) return direct;
+
+  const loose = (value) => value.normalize('NFC').replace(/[^\p{L}\p{N}]+/gu, '');
+  const looseKey = loose(key);
+  if (looseKey && byKey.get(looseKey)) return byKey.get(looseKey);
+
+  // 允许写「文件夹/文件名」的完整路径
+  if (key.includes('/')) {
+    const base = key.split('/').pop();
+    const hit = byKey.get(base) ?? byKey.get(loose(base));
+    if (hit) return hit;
+  }
+  return null;
 }
 
 /** 解析 ![[图片]]：返回 public 下的绝对路径，找不到返回 null */
@@ -185,6 +245,15 @@ export function resolveAsset(target) {
     if (fs.existsSync(candidate) && fs.statSync(candidate).isFile()) {
       return `/${path.relative(PUBLIC_DIR, candidate).replace(/\\/g, '/')}`;
     }
+  }
+
+  // 导入的 vault 附件：按文件名或相对路径匹配
+  const { assets } = getVault();
+  const base = path.basename(name);
+  const hit = assets.get(name) ?? assets.get(base) ?? assets.get(`/${name.toLowerCase()}`);
+  if (hit) return hit;
+  for (const [key, value] of assets) {
+    if (key.endsWith(`/${name}`)) return value;
   }
   return null;
 }

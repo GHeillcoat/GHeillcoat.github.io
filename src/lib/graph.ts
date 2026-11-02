@@ -32,10 +32,23 @@ export interface GraphData {
 
 type Post = CollectionEntry<'posts'>;
 
-function excerptOf(post: Post): string {
-  const description = post.data.description?.trim();
+/** 博客文章与导入的笔记都能喂进来（只要 data 里有这几个字段） */
+export interface GraphEntry {
+  id: string;
+  data: {
+    title: string;
+    pubDate: Date;
+    category: string;
+    description?: string;
+    tags: string[];
+  };
+  body?: string;
+}
+
+function excerptOf(entry: GraphEntry): string {
+  const description = entry.data.description?.trim();
   if (description) return description.slice(0, 80);
-  const body = (post.body ?? '')
+  const body = (entry.body ?? '')
     .replace(/```[\s\S]*?```/g, '')
     .replace(/!?\[\[[^\]]+\]\]/g, '')
     .replace(/[#>*`~$_{}[\]()!]/g, '')
@@ -44,15 +57,18 @@ function excerptOf(post: Post): string {
   return body.slice(0, 80);
 }
 
-export function buildGraph(posts: Post[]): GraphData {
-  const sorted = [...posts].sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
-  const nodes: GraphNode[] = sorted.map((post) => ({
-    id: post.id,
-    title: post.data.title,
-    category: post.data.category,
-    tags: post.data.tags,
-    url: `/posts/${post.id}`,
-    excerpt: excerptOf(post),
+export function buildGraph(
+  entries: GraphEntry[],
+  urlOf: (id: string) => string = (id) => `/posts/${id}`,
+): GraphData {
+  const sorted = [...entries].sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+  const nodes: GraphNode[] = sorted.map((entry) => ({
+    id: entry.id,
+    title: entry.data.title,
+    category: entry.data.category,
+    tags: entry.data.tags,
+    url: urlOf(entry.id),
+    excerpt: excerptOf(entry),
     degree: 0,
   }));
 
@@ -62,15 +78,15 @@ export function buildGraph(posts: Post[]): GraphData {
   const backlinks: Record<string, string[]> = {};
   const outlinks: Record<string, string[]> = {};
 
-  for (const post of sorted) {
-    const targets = resolveTargets(post.body ?? '').filter((id) => id !== post.id && ids.has(id));
-    outlinks[post.id] = targets;
+  for (const entry of sorted) {
+    const targets = resolveTargets(entry.body ?? '').filter((id) => id !== entry.id && ids.has(id));
+    outlinks[entry.id] = targets;
     for (const target of targets) {
-      const key = `${post.id}→${target}`;
+      const key = `${entry.id}→${target}`;
       if (seen.has(key)) continue;
       seen.add(key);
-      edges.push({ source: post.id, target });
-      (backlinks[target] ??= []).push(post.id);
+      edges.push({ source: entry.id, target });
+      (backlinks[target] ??= []).push(entry.id);
     }
   }
 

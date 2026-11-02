@@ -749,3 +749,503 @@ body:has(.post-aside[data-open]) .dock {
     margin-block: 0 2rem;
   }
 }
+
+/* ==========================================================================
+   笔记库（从 Obsidian 导入）
+   ========================================================================== */
+
+/* 宽表格：横向滚动，不撑破页面 */
+.prose .table-scroll {
+  margin-block: 1.8em;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  border-radius: 2px;
+}
+
+.prose .table-scroll > table {
+  margin: 0;
+  min-width: max-content;
+}
+
+/* — /vault 索引 ————————————————————————— */
+
+.vault-index-head {
+  max-width: 52rem;
+}
+
+.vault-stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1.1rem;
+  margin-bottom: var(--space-6);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--line-faint);
+  font-family: var(--font-latin);
+  font-size: var(--text-sm);
+  letter-spacing: 0.1em;
+  color: var(--ink-faint);
+}
+
+.vault-stats strong {
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+
+.vault-stats-link {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: var(--text-xs);
+  letter-spacing: 0.12em;
+  color: var(--ink-mute);
+}
+
+.vault-stats-link:hover {
+  color: var(--ink);
+}
+
+.vault-latest {
+  margin-bottom: var(--space-6);
+}
+
+.vault-section-title {
+  margin-bottom: var(--space-3);
+  font-family: var(--font-kai);
+  font-size: var(--text-sm);
+  letter-spacing: 0.3em;
+  color: var(--ink-mute);
+}
+
+.vault-latest-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  gap: 0.2rem 2.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.vault-latest-list li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 0.45rem;
+  border-bottom: 1px solid var(--line-faint);
+  font-size: var(--text-sm);
+}
+
+.vault-latest-list a {
+  color: var(--ink-soft);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vault-latest-list a:hover {
+  color: var(--ink);
+}
+
+.vault-latest-list time {
+  flex-shrink: 0;
+  font-family: var(--font-latin);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.08em;
+  color: var(--ink-faint);
+}
+
+.vault-chapters {
+  display: flex;
+  flex-direction: column;
+  margin-top: var(--space-5);
+}
+
+.vault-chapter {
+  border-bottom: 1px solid var(--line-faint);
+}
+
+.vault-chapter-summary {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 0.25rem;
+  cursor: pointer;
+  list-style: none;
+  transition: background var(--dur-fast) var(--ease-out);
+}
+
+.vault-chapter-summary::-webkit-details-marker {
+  display: none;
+}
+
+.vault-chapter-summary:hover {
+  background: color-mix(in srgb, var(--paper-sunken) 45%, transparent);
+}
+
+.vault-chapter-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: var(--text-md);
+  letter-spacing: 0.06em;
+  color: var(--ink);
+}
+
+.vault-chapter-name::before {
+  content: '';
+  width: 0.3rem;
+  height: 0.3rem;
+  border-radius: 50%;
+  background: var(--gold);
+  opacity: 0.8;
+}
+
+.vault-chapter-count {
+  font-family: var(--font-latin);
+  font-size: var(--text-xs);
+  letter-spacing: 0.1em;
+  color: var(--ink-faint);
+}
+
+.vault-chapter-body {
+  padding: 0.2rem 0.25rem 1.1rem 1.15rem;
+}
+
+.vault-group + .vault-group {
+  margin-top: var(--space-4);
+}
+
+.vault-group-title {
+  margin-bottom: 0.4rem;
+  font-family: var(--font-kai);
+  font-size: var(--text-xs);
+  letter-spacing: 0.24em;
+  color: var(--ink-faint);
+}
+
+.vault-note-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+  gap: 0.1rem 2rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.vault-note-list li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding-block: 0.42rem;
+  border-bottom: 1px dotted var(--line-faint);
+  font-size: var(--text-sm);
+}
+
+.vault-note-list a {
+  color: var(--ink-soft);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vault-note-list a:hover {
+  color: var(--ink);
+}
+
+.vault-note-tags {
+  flex-shrink: 0;
+  font-size: var(--text-2xs);
+  letter-spacing: 0.04em;
+  color: var(--ink-faint);
+}
+
+/* — /vault/<note> ————————————————————— */
+
+.vault-note {
+  padding-top: clamp(2.5rem, 6vw, 4rem);
+}
+
+.vault-head {
+  max-width: 50rem;
+}
+
+.vault-crumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem;
+  margin-bottom: var(--space-4);
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  color: var(--ink-mute);
+}
+
+.vault-crumb a {
+  color: var(--ink-mute);
+}
+
+.vault-crumb a:hover {
+  color: var(--ink);
+}
+
+.vault-crumb-sep {
+  color: var(--ink-faint);
+}
+
+.vault-crumb-rest {
+  color: var(--ink-faint);
+}
+
+.vault-title {
+  font-size: clamp(1.9rem, 4vw, 2.8rem);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  line-height: 1.32;
+  margin-bottom: var(--space-3);
+}
+
+.vault-desc {
+  margin-bottom: var(--space-4);
+  color: var(--ink-mute);
+  font-family: var(--font-kai);
+  font-size: var(--text-md);
+  line-height: 1.9;
+  letter-spacing: 0.04em;
+}
+
+.vault-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1.1rem;
+  padding-block: var(--space-3);
+  border-block: 1px solid var(--line-faint);
+  font-size: var(--text-xs);
+  color: var(--ink-faint);
+  letter-spacing: 0.1em;
+}
+
+.vault-meta .meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.vault-meta svg {
+  width: 0.8rem;
+  height: 0.8rem;
+  opacity: 0.85;
+}
+
+.vault-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.vault-tags .tag-chip {
+  font-size: var(--text-2xs);
+  padding: 0.15rem 0.5rem;
+}
+
+.vault-toc {
+  max-width: 50rem;
+  margin-top: var(--space-5);
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--line-faint);
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--paper-raised) 70%, transparent);
+}
+
+.vault-toc summary {
+  cursor: pointer;
+  font-family: var(--font-kai);
+  font-size: var(--text-sm);
+  letter-spacing: 0.24em;
+  color: var(--ink-mute);
+  list-style: none;
+}
+
+.vault-toc summary::-webkit-details-marker {
+  display: none;
+}
+
+.vault-toc-count {
+  margin-left: 0.5rem;
+  font-family: var(--font-latin);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.1em;
+  color: var(--ink-faint);
+}
+
+.vault-toc-list {
+  margin: 0.7rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.4rem;
+  font-size: var(--text-xs);
+}
+
+.vault-toc-list a {
+  color: var(--ink-soft);
+}
+
+.vault-toc-list a:hover {
+  color: var(--ink);
+}
+
+.vault-toc-depth-3 {
+  padding-left: 0.9rem;
+  color: var(--ink-faint);
+}
+
+.vault-prose {
+  margin-top: var(--space-6);
+  max-width: var(--w-prose);
+}
+
+.vault-links {
+  max-width: var(--w-prose);
+  margin-top: clamp(2.5rem, 6vw, 4rem);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--line);
+}
+
+.vault-links-title {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin-bottom: var(--space-4);
+  font-family: var(--font-kai);
+  font-size: var(--text-base);
+  letter-spacing: 0.28em;
+  color: var(--ink-soft);
+}
+
+.vault-links-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: var(--space-4);
+}
+
+.vault-link-card {
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--paper-raised);
+}
+
+.vault-link-card h3 {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-kai);
+  font-size: var(--text-xs);
+  letter-spacing: 0.22em;
+  color: var(--ink-mute);
+}
+
+.vault-link-card h3 span {
+  font-family: var(--font-latin);
+  font-size: var(--text-2xs);
+  color: var(--ink-faint);
+}
+
+.vault-link-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.vault-link-list li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding-block: 0.36rem;
+  border-top: 1px solid var(--line-faint);
+  font-size: var(--text-sm);
+}
+
+.vault-link-list a {
+  color: var(--ink-soft);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vault-link-list a:hover {
+  color: var(--ink);
+}
+
+.vault-link-list span {
+  flex-shrink: 0;
+  font-family: var(--font-kai);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.14em;
+  color: var(--ink-faint);
+}
+
+.vault-links-empty {
+  font-family: var(--font-kai);
+  font-size: var(--text-xs);
+  color: var(--ink-faint);
+  letter-spacing: 0.08em;
+}
+
+.vault-source {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: var(--space-5);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.02em;
+  color: var(--ink-faint);
+}
+
+@media (max-width: 780px) {
+  .vault-chapter-body {
+    padding-left: 0.25rem;
+  }
+
+  .vault-note-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .vault-note {
+    padding-top: 2rem;
+  }
+}
+
+/* 笔记页：正文列居中，宽屏不贴着左边 */
+.vault-head,
+.vault-toc,
+.vault-prose,
+.vault-links {
+  margin-inline: auto;
+}
+
+.vault-head {
+  max-width: min(100%, 52rem);
+}
+
+.vault-toc {
+  max-width: min(100%, var(--w-prose));
+}
+
+/* 笔记页不留侧边的空白卡片，保持一列阅读 */
+.vault-note .vault-links-grid {
+  margin-top: 0.4rem;
+}

@@ -71,6 +71,20 @@ function buildNode(embed, inner) {
     };
   }
 
+  // [[#小节]]：链到本页的标题锚点（Obsidian 同篇跳转写法）
+  if (!target && heading) {
+    return {
+      type: 'element',
+      tagName: 'a',
+      properties: {
+        href: `#${new GithubSlugger().slug(heading)}`,
+        className: ['wiki-link'],
+        'data-wiki-target': `#${heading}`,
+      },
+      children: [textNode(alias || heading)],
+    };
+  }
+
   const note = resolveNote(target || heading);
   if (!note) {
     return {

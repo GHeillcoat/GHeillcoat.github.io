@@ -10,6 +10,7 @@ import { unified } from '@astrojs/markdown-remark';
 import { rehypeMermaid } from './src/lib/rehype-mermaid.mjs';
 import { rehypeCallouts } from './src/lib/rehype-callouts.mjs';
 import { rehypeWikiLinks } from './src/lib/rehype-wikilinks.mjs';
+import { rehypeObsidianExtras } from './src/lib/rehype-obsidian.mjs';
 import { inkPaper, inkNight } from './src/lib/shiki-themes.mjs';
 
 export default defineConfig({
@@ -65,6 +66,7 @@ export default defineConfig({
             },
           },
         ],
+        rehypeObsidianExtras,
       ],
     }),
   },

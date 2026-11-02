@@ -89,4 +89,36 @@ const posts = defineCollection({
       }),
 });
 
-export const collections = { posts };
+/**
+ * 导入的 Obsidian 笔记（`npm run import:vault` 生成）。
+ * 与博客正文分开放，避免 440 篇课堂笔记把首页/归档/图谱冲掉；
+ * 它们有自己的 `/vault` 浏览页，双链仍与博客互通。
+ */
+const vault = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/vault' }),
+  schema: z
+    .object({
+      title: z.string(),
+      description: z.string().default(''),
+      date: z.coerce.date().optional(),
+      created: z.coerce.date().optional(),
+      updated: z.coerce.date().optional(),
+      category: z.string().default('笔记'),
+      tags: listLike.default([]),
+      aliases: listLike.default([]),
+      chapter: z.string().optional(),
+      section: z.string().optional(),
+      prerequisites: z.string().optional(),
+      source: z.string().optional(),
+      draft: z.boolean().default(false),
+    })
+    .transform((data) => ({
+      ...data,
+      pubDate: firstDate(data.date, data.created) ?? new Date('1970-01-01T00:00:00Z'),
+      updatedDate: firstDate(data.updated),
+      tags: toList(data.tags),
+      aliases: toList(data.aliases),
+    })),
+});
+
+export const collections = { posts, vault };
