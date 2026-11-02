@@ -2,11 +2,13 @@
 
 > 字里行间，墨迹未干。
 
-一个从零手作的中文博客：宣纸与墨色的古典淡雅，完整的 Markdown 写作体验（LaTeX、Mermaid、代码高亮、脚注、表格、任务清单、MDX），以及一套「划词批注」的私人笔记系统。
+一个从零手作的中文博客：宣纸与墨色的古典淡雅，完整的 Markdown 写作体验（LaTeX、Mermaid、代码高亮、脚注、表格、任务清单、MDX），
+一套「划词批注」的私人笔记系统，以及**纯展示向的 Obsidian 语法**（双链、callout、知识图谱、反向链接）。
 
 - 纯静态输出：没有服务端、没有数据库、没有追踪脚本
 - 中文排版优先：首行缩进两字、1.95 行距、两端对齐、着重号、全角标点
 - 「好看」与「快」一起做：字体按站点字符集切片、图表与检索按需加载
+- 内容就是 `src/content/posts/` 里的 Markdown：可以直接当 Obsidian vault 用；**没有后台/在线编辑器**（见 [写作说明](docs/authoring.md)）
 
 ---
 
@@ -20,6 +22,17 @@
 - **文章页**：阅读时长与字数、标签、上下篇、脚注、代码复制、图片灯箱（`←` `→` 连播）
 - **移动端**：目录与批注收进抽屉，dock 按钮回到顶部
 
+### Obsidian 语法的展示端（不重写客户端）
+
+| 能力 | 说明 |
+| --- | --- |
+| 双链 | `[[标题]]`、`[[标题\|别名]]`、`[[标题#小节]]`、按文件名/`aliases` 解析；断链显示为虚线 |
+| 嵌入 | `![[图片.svg]]` 从 `public/images` 找图并内联 |
+| Callout | `> [!note] 标题`、`> [!warning]- 折叠` 等 13 种类型，纸墨色系 |
+| 反向链接 / 出链 | 文章底部「关联」自动汇总，点击直达 |
+| 知识图谱 | `/graph` 整站图谱 + 文章页局部图谱：拖动、缩放、悬停高亮、点击跳转 |
+| 多文件跳转 | 双链、反向链接、出链、图谱节点、标签页四路互通 |
+
 ### 写作（Markdown 全能力）
 
 | 能力 | 说明 |
@@ -29,6 +42,7 @@
 | Mermaid | `flowchart` / `sequenceDiagram` / `mindmap` … 客户端渲染，跟随明暗主题 |
 | 代码 | Shiki 双主题（墨色），语言标签 + 一键复制 |
 | MDX | `src/content/posts/*.mdx` 里可直接写组件与 HTML |
+| 元数据 | 兼容 Hexo（`date` / `updated` / `categories`）与 Obsidian properties（`created` / `modified` / `aliases`） |
 | 排版件 | 标题锚点、自动 TOC、引用、分隔线、`details` 折叠、`kbd`、图注 |
 | 站点件 | RSS（`/rss.xml`）、sitemap、JSON-LD、OG 卡片、404 |
 
@@ -69,6 +83,7 @@ npm install
 
 npm run fonts     # 生成字体子集（需要联网；离线时保留旧文件）
 npm run dev       # http://localhost:4321
+npm run new -- "标题" 文件名   # 新建一篇草稿（frontmatter 已填好）
 
 npm run build     # fonts → astro build → pagefind 索引，产物在 dist/
 npm run preview   # 本地预览生产构建
@@ -80,31 +95,34 @@ npm run qa        # 端到端自检：用本机 Edge/Chrome 真点一遍交互
 > 每次改完文章内容，建议跑一次 `npm run fonts`（`npm run build` 会自动跑），
 > 让字体子集覆盖新出现的字。没有联网时会自动沿用现有字体，不会构建失败。
 
+> 写作细节（Obsidian / Hexo frontmatter、双链、callout、图谱）见 **[docs/authoring.md](docs/authoring.md)**。
+
 ---
 
 ## 目录结构
 
 ```
 .
-├── astro.config.mjs          # 管线配置：remark/rehype、Shiki 双主题、Mermaid 占位
+├── astro.config.mjs          # 管线配置：remark/rehype（双链 / callout / KaTeX / Mermaid）、Shiki 双主题
 ├── scripts/
 │   ├── fetch-fonts.mjs       # 按站点字符集生成 woff2 子集 + fonts.css
+│   ├── new-post.mjs          # npm run new：生成一篇草稿
 │   ├── shot.mjs              # 截图（本机 Edge headless）
 │   └── qa.mjs                # 端到端交互自检
 ├── src/
 │   ├── config.ts             # 站点标题、导航、页脚
-│   ├── content.config.ts     # 文章 frontmatter 校验（zod）
-│   ├── content/posts/        # 文章（.md / .mdx）
+│   ├── content.config.ts     # 元数据归一（Obsidian properties / Hexo frontmatter）
+│   ├── content/posts/        # 文章（.md / .mdx）——可以直接当 Obsidian vault
 │   ├── layouts/              # BaseLayout / PostLayout
-│   ├── components/           # 页眉页脚、卡片、目录、批注面板、搜索面板…
-│   ├── pages/                # 路由：首页/文章/归档/标签/批注/关于/404/rss
-│   ├── scripts/              # 主题、命令面板、批注、目录、Mermaid、灯箱…
+│   ├── components/           # 页眉页脚、卡片、目录、批注面板、图谱、搜索面板…
+│   ├── pages/                # 首页/文章/图谱/归档/标签/批注/关于/404/rss
+│   ├── scripts/              # 主题、命令面板、批注、目录、Mermaid、图谱、灯箱…
 │   ├── styles/               # tokens / base / layout / components / prose / ornaments / pages
-│   └── lib/                  # 日期中文格式、字数、rehype-mermaid、Shiki 主题
+│   └── lib/                  # vault 索引、双链/callout rehype 插件、图谱数据、排版工具
 ├── public/
 │   ├── fonts/                # 生成的字体子集（由脚本维护）
 │   └── images/               # 水墨 SVG 插图与 OG 图
-└── docs/                     # 设计说明、DOM 契约、内容规范
+└── docs/                     # 写作说明、设计说明、DOM/图谱契约
 ```
 
 ---
@@ -190,6 +208,7 @@ flowchart LR
 - 批注只存在本机浏览器，清缓存会丢，重要笔记请导出 Markdown
 - Mermaid 首次进入视口时才加载（约 100 KB gzip 起，随图表类型增加），移动端图表会整体等比缩小以适配宽度
 - 批注锚点用「原文 + 前后文」定位，文章大改（尤其是被批注的那段）后旧高亮可能找不到位置
+- 修改 `astro.config.mjs` 里的 remark/rehype 插件后，Astro 会复用内容缓存：需要 `rm -rf .astro` 再构建（文章内容改动不需要）
 
 ## 致敬
 

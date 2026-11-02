@@ -497,3 +497,10 @@ body:has(.post-aside[data-open]) .dock {
     display: none;
   }
 }
+
+/* 桌面端导航常驻，汉堡按钮没有意义：隐藏掉，避免「点了没反应」 */
+@media (min-width: 781px) {
+  .header-tools .menu-toggle {
+    display: none;
+  }
+}

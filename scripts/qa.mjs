@@ -74,7 +74,7 @@ async function main() {
   check('首页可访问', home.title.includes('墨痕'), home.title);
   check('首页渲染文章列表', home.postRows >= 3, `${home.postRows} 行`);
   check('首页精选卡片', home.featured >= 1, `${home.featured} 张`);
-  check('导航项齐全', home.navCount === 5, `${home.navCount} 项`);
+  check('导航项齐全', home.navCount >= 6, `${home.navCount} 项`);
   check('中文字体已加载（子集 woff2）', home.fontLoaded);
   check('默认主题生效', ['light', 'dark'].includes(home.theme), home.theme);
 
@@ -161,7 +161,67 @@ async function main() {
     await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
   }
 
-  /* 选中正文 -> 工具条 */
+  /* 双链 / callout / 关联区块（用枢纽笔记，链接最全） */
+  await open('/posts/a-map-of-the-study/', 'networkidle2');
+  await sleep(400);
+  const rich = await page.evaluate(() => ({
+    wiki: document.querySelectorAll('.wiki-link').length,
+    broken: document.querySelectorAll('.wiki-link.is-broken').length,
+    callouts: document.querySelectorAll('.callout').length,
+    relations: !!document.querySelector('.relations'),
+    backlinkItems: document.querySelectorAll('.relations-card .relation-link').length,
+  }));
+  if (rich.wiki > 0) {
+    check('双链渲染且无断链', rich.broken === 0, `${rich.wiki} 条链接，断链 ${rich.broken}`);
+    check('关联区块存在', rich.relations, `${rich.backlinkItems} 个关联条目`);
+  }
+  if (rich.callouts > 0) check('Callout 渲染', rich.callouts > 0, `${rich.callouts} 个`);
+
+  /* ---------- 图谱页 ---------- */
+  await open('/graph/');
+  const graph = await page.evaluate(() => {
+    const panel = document.querySelector('[data-graph]');
+    const canvas = panel?.querySelector('[data-graph-canvas]');
+    let nodes = 0;
+    let edges = 0;
+    try {
+      const data = JSON.parse(panel?.querySelector('script[data-graph-data]')?.textContent ?? '{}');
+      nodes = data.nodes?.length ?? 0;
+      edges = data.edges?.length ?? 0;
+    } catch {}
+    return {
+      canvas: !!canvas,
+      w: canvas ? Math.round(canvas.getBoundingClientRect().width) : 0,
+      h: canvas ? Math.round(canvas.getBoundingClientRect().height) : 0,
+      nodes,
+      edges,
+    };
+  });
+  check('图谱画布就位', graph.canvas && graph.w > 0, `${graph.w}×${graph.h}`);
+  check('图谱数据注入', graph.nodes > 0, `${graph.nodes} 节点 / ${graph.edges} 边`);
+
+  /* ---------- 移动端菜单（回归） ---------- */
+  await newPage(390, 844);
+  await open('/');
+  const menu = await page.evaluate(async () => {
+    const toggle = document.querySelector('[data-menu-toggle]');
+    const nav = document.querySelector('[data-site-nav]');
+    const visible = toggle ? toggle.getBoundingClientRect().width > 0 : false;
+    if (visible) {
+      toggle.click();
+      await new Promise((r) => setTimeout(r, 400));
+    }
+    return {
+      visible,
+      open: nav?.hasAttribute('data-open') ?? false,
+      display: nav ? getComputedStyle(nav).display : 'none',
+    };
+  });
+  check('移动端汉堡菜单可展开', !menu.visible || (menu.open && menu.display === 'flex'), JSON.stringify(menu));
+
+  /* 选中正文 -> 工具条（回到功能齐全的文章页） */
+  await open(richPath, 'networkidle2');
+  await sleep(600);
   const selectionShown = await page.evaluate(async () => {
     const p = document.querySelector('[data-prose] p');
     const range = document.createRange();
@@ -285,3 +345,4 @@ main().catch(async (err) => {
   if (browser) await browser.close().catch(() => {});
   process.exit(1);
 });
+

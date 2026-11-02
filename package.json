@@ -3,13 +3,14 @@
   "type": "module",
   "version": "1.0.0",
   "private": true,
-  "description": "墨痕 · 古典淡雅的中文博客（Astro 静态站，支持 LaTeX、Mermaid 与全文批注）",
+  "description": "墨痕 · 古典淡雅的中文博客（Astro 静态站，支持 Obsidian 双链 / callout / 知识图谱、LaTeX、Mermaid 与全文批注）",
   "engines": {
     "node": ">=20"
   },
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
+    "new": "node scripts/new-post.mjs",
     "fonts": "node scripts/fetch-fonts.mjs",
     "build": "node scripts/fetch-fonts.mjs && astro build && pagefind --site dist",
     "preview": "astro preview",

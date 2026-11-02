@@ -30,7 +30,7 @@ export async function getStaticPaths() {
 }
 ```
 
-这段代码的产物是 N 个 HTML 文件。请求进来时它不会再跑，一次也不会。所以内容越多，`astro build` 越久，而访客等的时间不变——成本被前置到了写下文章的那一刻。
+这段代码的产物是 N 个 HTML 文件。请求进来时它不会再跑，一次也不会。所以内容越多，`astro build` 越久，而访客等的时间不变——成本被前置到了写下文章的那一刻。这条链子上每一环长什么样、哪一步最容易出错，[[一篇文章的旅程]] 里从头走了一遍。
 
 ## 三、一次请求要做的事
 
@@ -59,6 +59,10 @@ du -sh dist/_astro/*.woff2 | sort -h | tail -5
 curl -sI https://example.com/posts/why-static-is-fast/ \
   | grep -Ei 'cache-control|content-encoding|etag'
 ```
+
+> [!warning] 子集化省了体积，也埋了一个坑
+> 字体里只留下站内出现过的字。新文章带进来一个生字，它就缺着——所以加完文章要重跑一次 `npm run fonts`。
+> 站内换了字体、或者多了一门外语引文，同理。
 
 ## 五、带指纹的文件名
 

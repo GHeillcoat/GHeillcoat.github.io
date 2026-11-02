@@ -8,6 +8,7 @@
 
 import { initCodeCopy } from './code-copy';
 import { initDrawer } from './drawer';
+import { initGraph } from './graph';
 import { initHeader } from './header';
 import { initKeyboard } from './keyboard';
 import { initLightbox } from './lightbox';
@@ -29,6 +30,7 @@ function init(): void {
   initLightbox();
   initCodeCopy();
   initMermaid();
+  initGraph();
   initNotes();
   initNotesArchive();
   initKeyboard();

@@ -12,6 +12,7 @@ export const site = {
   },
   nav: [
     { label: '文章', href: '/posts', key: 'posts' },
+    { label: '图谱', href: '/graph', key: 'graph' },
     { label: '归档', href: '/archive', key: 'archive' },
     { label: '标签', href: '/tags', key: 'tags' },
     { label: '批注', href: '/notes', key: 'notes' },
@@ -19,6 +20,7 @@ export const site = {
   ],
   /** 页脚站点地图 */
   footerLinks: [
+    { label: '图谱', href: '/graph' },
     { label: '归档', href: '/archive' },
     { label: '标签', href: '/tags' },
     { label: '批注', href: '/notes' },

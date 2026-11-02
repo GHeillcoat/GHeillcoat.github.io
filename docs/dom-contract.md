@@ -13,6 +13,17 @@
 - 无 JS 时页面必须仍然可读（渐进增强）。
 - 用 `src/lib/format.ts` 里已有的时间/字数工具，别重复实现。
 
+## 0. 构建期生成的「Obsidian 展示」结构（不需要 JS，只做样式）
+
+- 双链：`<a class="wiki-link" href="/posts/…" data-wiki-target="…">文字</a>`；
+  断链：`<span class="wiki-link is-broken" title="没有找到笔记：…">文字</span>`；
+  嵌入：`<img class="wiki-embed" src="/images/…" loading="lazy">`。
+- Callout（`src/lib/rehype-callouts.mjs`）：
+  `<div class="callout callout--note" data-callout="note">` + `.callout-title` / `.callout-title-text` / `.callout-content`；
+  折叠版是 `<details class="callout callout--warning is-foldable" open?>` + `<summary class="callout-title">`。
+- 文章页「关联」：`.relations`、`.relations-list`、`.relation-link`、`.relations-empty`；
+- 图谱：见 `docs/graph-contract.md`（`[data-graph]` + `[data-graph-canvas]` + `script[data-graph-data]`）。
+
 ## 1. 主题（`data-theme` + localStorage）
 
 - `<html data-theme="light|dark">` 由 `BaseLayout` 的内联脚本在首帧前设置；`?theme=dark` 查询参数可强制。

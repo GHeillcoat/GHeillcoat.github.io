@@ -1,7 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import Icon from './Icon.astro';
-import { formatDateZh, isoDate, readingLabel } from '../lib/format';
+import { excerptFromBody, formatDateZh, isoDate, readingLabel } from '../lib/format';
 
 export interface Props {
   post: CollectionEntry<'posts'>;
@@ -11,6 +11,7 @@ export interface Props {
 const { post, index = 0 } = Astro.props;
 const { data } = post;
 const cover = typeof data.cover === 'string' ? data.cover : undefined;
+const summary = data.description || excerptFromBody(post.body, 110);
 ---
 
 <article class="featured-card" data-reveal style={`--reveal-delay:${index * 80}ms`}>
@@ -35,7 +36,7 @@ const cover = typeof data.cover === 'string' ? data.cover : undefined;
     <a href={`/posts/${post.id}`}>{data.title}</a>
   </h3>
 
-  {data.description && <p class="featured-desc">{data.description}</p>}
+  {summary && <p class="featured-desc">{summary}</p>}
 
   <div class="featured-foot">
     <time datetime={isoDate(data.pubDate)}>{formatDateZh(data.pubDate)}</time>

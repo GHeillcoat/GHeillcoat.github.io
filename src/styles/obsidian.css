@@ -1,0 +1,930 @@
+/* ==========================================================================
+   Obsidian 展示层 · callout / 双链 / 嵌入图 / 关联区块 / 知识图谱
+   全部沿用纸墨 tokens；callout 只加三个局部变量（标记字、主色、底色），
+   不改全局语义。
+   ========================================================================== */
+
+/* ==========================================================================
+   1. Callout
+   ========================================================================== */
+
+/* 三个局部变量放在零特异性的一层，类型变体才能覆盖（.prose .callout 特异性更高会压住变体） */
+.callout {
+  --co-mark: '注';
+  --co-accent: var(--ink-mute);
+  --co-wash: 7%;
+}
+
+.prose .callout {
+  position: relative;
+  margin-block: 2em;
+  padding: 0.9em 1.15em 0.95em 2.8em;
+  border: 1px solid var(--line-faint);
+  border-left: 2px solid var(--co-accent);
+  border-radius: 0 2px 2px 0;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--co-accent) var(--co-wash), transparent), transparent 84%),
+    var(--paper-raised);
+  font-size: 0.97em;
+  line-height: 1.9;
+  letter-spacing: 0.01em;
+  color: var(--ink-soft);
+}
+
+/* 一个字的小印记，像盖在纸角上的章 */
+.prose .callout::before {
+  content: var(--co-mark);
+  position: absolute;
+  left: 0.65em;
+  top: 0.72em;
+  display: grid;
+  place-items: center;
+  width: 1.55em;
+  height: 1.55em;
+  border: 1px solid color-mix(in srgb, var(--co-accent) 55%, transparent);
+  border-radius: 1px;
+  background: color-mix(in srgb, var(--co-accent) 7%, transparent);
+  font-family: var(--font-kai);
+  font-size: 0.8em;
+  line-height: 1;
+  letter-spacing: 0;
+  color: var(--co-accent);
+  user-select: none;
+  pointer-events: none;
+}
+
+/* 标题：小字距、楷体，颜色只在主色里加深一点 */
+.prose .callout .callout-title {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  text-indent: 0;
+  font-family: var(--font-kai);
+  font-size: 0.86em;
+  font-weight: 500;
+  line-height: 1.7;
+  letter-spacing: 0.18em;
+  text-indent: 0.18em;
+  color: color-mix(in srgb, var(--co-accent) 78%, var(--ink));
+}
+
+.prose .callout .callout-content {
+  margin-top: 0.15em;
+}
+
+.prose .callout .callout-content > *:first-child {
+  margin-top: 0.1em;
+}
+
+.prose .callout .callout-content > *:last-child {
+  margin-bottom: 0;
+}
+
+.prose .callout .callout-content p {
+  text-indent: 0;
+  margin-block: 0.45em;
+}
+
+.prose .callout .callout-content ul,
+.prose .callout .callout-content ol {
+  margin-block: 0.5em;
+}
+
+.prose .callout .callout-content blockquote {
+  margin-block: 0.8em;
+  padding-block: 0.6em;
+  font-size: 0.98em;
+  background: color-mix(in srgb, var(--paper-sunken) 70%, transparent);
+}
+
+.prose .callout .callout-content pre {
+  margin-block: 1.1em;
+}
+
+.prose .callout .callout-content table {
+  margin-block: 1em;
+}
+
+/* — 折叠版 ————————————————————————————————— */
+
+/* 清掉 prose.css 里 details/summary 的通用装饰 */
+.prose details.callout {
+  padding: 0.9em 1.15em 0.95em 2.8em;
+  border: 1px solid var(--line-faint);
+  border-left: 2px solid var(--co-accent);
+  border-radius: 0 2px 2px 0;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--co-accent) var(--co-wash), transparent), transparent 84%),
+    var(--paper-raised);
+}
+
+.prose details.callout > summary.callout-title {
+  position: relative;
+  margin: 0;
+  padding: 0 1.6em 0 0.05em;
+  border: 0;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.prose details.callout > summary::-webkit-details-marker {
+  display: none;
+}
+
+.prose details.callout > summary::marker {
+  content: '';
+}
+
+/* prose.css 给 summary 加的 ＋ / － 在这里让位给自绘三角 */
+.prose details.callout > summary::before {
+  content: none;
+  display: none;
+}
+
+.prose details.callout > summary::after {
+  content: '';
+  position: absolute;
+  right: 0.35em;
+  top: 50%;
+  width: 0.34em;
+  height: 0.34em;
+  margin-top: -0.28em;
+  border-right: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
+  transform: rotate(45deg);
+  opacity: 0.55;
+  transition: transform var(--dur) var(--ease-ink), opacity var(--dur) var(--ease-out);
+}
+
+.prose details.callout[open] > summary::after {
+  margin-top: -0.12em;
+  transform: rotate(-135deg);
+  opacity: 0.75;
+}
+
+.prose details.callout[open] > summary {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.prose details.callout > .callout-content {
+  margin-top: 0.6em;
+}
+
+/* — 类型：只动「印记字 + 主色」———————————————— */
+
+.callout--note {
+  --co-mark: '注';
+  --co-accent: var(--ink-mute);
+}
+
+.callout--abstract {
+  --co-mark: '摘';
+  --co-accent: var(--ink-mute);
+}
+
+.callout--info {
+  --co-mark: '讯';
+  --co-accent: var(--indigo);
+}
+
+.callout--todo {
+  --co-mark: '待';
+  --co-accent: var(--gold);
+}
+
+.callout--tip {
+  --co-mark: '提';
+  --co-accent: var(--jade);
+}
+
+.callout--success {
+  --co-mark: '成';
+  --co-accent: var(--jade);
+}
+
+.callout--question {
+  --co-mark: '问';
+  --co-accent: var(--indigo);
+}
+
+.callout--warning {
+  --co-mark: '警';
+  --co-accent: var(--gold);
+  --co-wash: 6%;
+}
+
+.callout--failure {
+  --co-mark: '败';
+  --co-accent: var(--cinnabar);
+  --co-wash: 4.5%;
+}
+
+.callout--danger {
+  --co-mark: '危';
+  --co-accent: var(--cinnabar);
+  --co-wash: 4.5%;
+}
+
+.callout--bug {
+  --co-mark: '虫';
+  --co-accent: var(--cinnabar);
+  --co-wash: 4.5%;
+}
+
+.callout--example {
+  --co-mark: '例';
+  --co-accent: var(--indigo);
+}
+
+.callout--quote {
+  --co-mark: '引';
+  --co-accent: var(--ink-mute);
+}
+
+/* 夜墨里把底色调平，别让朱砂在深纸上发红 */
+[data-theme='dark'] .prose .callout,
+[data-theme='dark'] .prose details.callout {
+  --co-wash: 6%;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--co-accent) var(--co-wash), transparent), transparent 84%),
+    var(--paper-raised);
+  border-color: var(--line);
+  border-left-color: color-mix(in srgb, var(--co-accent) 82%, var(--line-strong));
+  color: var(--ink-soft);
+}
+
+[data-theme='dark'] .prose .callout .callout-title {
+  color: color-mix(in srgb, var(--co-accent) 72%, var(--ink));
+}
+
+/* ==========================================================================
+   2. 双链 / 断链 / 嵌入
+   ========================================================================== */
+
+/* 像书里的「参见」：不是蓝链接，是一条点线 */
+.prose a.wiki-link,
+.prose span.wiki-link {
+  color: var(--ink);
+  background-image: none;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-decoration-thickness: 1px;
+  text-decoration-color: color-mix(in srgb, var(--ink-mute) 72%, transparent);
+  text-underline-offset: 0.26em;
+  padding: 0 0.04em;
+  border-radius: 1px;
+  transition: color var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out),
+    text-decoration-color var(--dur-fast) var(--ease-out);
+}
+
+.prose a.wiki-link:hover,
+.prose a.wiki-link:focus-visible {
+  color: var(--cinnabar);
+  background-color: var(--cinnabar-wash);
+  text-decoration-color: color-mix(in srgb, var(--cinnabar) 60%, transparent);
+}
+
+/* 断链：虚线 + 退到淡墨，可悬停看 title */
+.prose span.wiki-link.is-broken {
+  color: var(--ink-mute);
+  text-decoration-style: dashed;
+  text-decoration-color: color-mix(in srgb, var(--cinnabar) 38%, var(--line-strong));
+  cursor: help;
+}
+
+.prose span.wiki-link.is-broken:hover {
+  color: var(--ink-soft);
+  background-color: color-mix(in srgb, var(--cinnabar-wash) 60%, transparent);
+}
+
+/* 嵌入图：和正文图片同一种「贴上去的纸」 */
+.prose img.wiki-embed {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  margin: 1.6em auto;
+  border-radius: 2px;
+  border: 1px solid var(--line);
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-1);
+  cursor: zoom-in;
+}
+
+.prose p:has(> img.wiki-embed:only-child) {
+  text-indent: 0;
+  margin-inline: 0;
+}
+
+.prose figure:has(> img.wiki-embed) {
+  margin-block: 1.6em;
+}
+
+/* ==========================================================================
+   3. 文章页「关联」
+   ========================================================================== */
+
+.relations {
+  margin-top: clamp(2.75rem, 5.5vw, 3.75rem);
+  padding-top: clamp(1.5rem, 3vw, 2rem);
+  border-top: 1px solid var(--line);
+}
+
+.relations-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.4rem 1rem;
+  margin-bottom: 1.1rem;
+}
+
+.relations-title {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  margin: 0;
+  font-family: var(--font-kai);
+  font-size: var(--text-base);
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-indent: 0.24em;
+  color: var(--ink-soft);
+}
+
+.relations-count,
+.relations-num {
+  font-family: var(--font-latin);
+  font-style: italic;
+  font-size: var(--text-sm);
+  letter-spacing: 0.06em;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.relations-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: var(--text-xs);
+  letter-spacing: 0.1em;
+  color: var(--ink-mute);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.relations-more .icon {
+  transition: transform var(--dur) var(--ease-ink);
+}
+
+.relations-more:hover {
+  color: var(--ink);
+}
+
+.relations-more:hover .icon {
+  transform: translateX(3px);
+}
+
+.relations-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.relations-lists {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  gap: 1rem;
+}
+
+.relations-card {
+  padding: 0.85rem 1rem 0.95rem;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-1);
+}
+
+.relations-subtitle {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin: 0 0 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--line-faint);
+  font-family: var(--font-kai);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-indent: 0.2em;
+  color: var(--ink-faint);
+}
+
+.relations-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.relations-list li + li {
+  border-top: 1px solid var(--line-faint);
+}
+
+.relation-link {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.42rem 0;
+  color: var(--ink-soft);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.relation-title {
+  min-width: 0;
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--ink);
+  background-image: linear-gradient(var(--line-strong), var(--line-strong));
+  background-repeat: no-repeat;
+  background-size: 0% 1px;
+  background-position: 0 100%;
+  transition: background-size var(--dur-slow) var(--ease-ink), color var(--dur) var(--ease-out);
+}
+
+.relation-link:hover .relation-title {
+  background-size: 100% 1px;
+  color: var(--ink);
+}
+
+.relation-link:hover {
+  color: var(--ink);
+}
+
+.relation-meta {
+  flex-shrink: 0;
+  font-family: var(--font-kai);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.08em;
+  color: var(--ink-faint);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.relation-link:hover .relation-meta {
+  color: var(--cinnabar);
+}
+
+.relations-empty {
+  margin: 0;
+  padding: 0.35rem 0;
+  font-family: var(--font-kai);
+  font-size: var(--text-xs);
+  line-height: 1.9;
+  letter-spacing: 0.06em;
+  color: var(--ink-faint);
+}
+
+.relations-empty--block {
+  margin-top: clamp(2.5rem, 5vw, 3.25rem);
+  padding: 1rem 1.2rem;
+  border: 1px dashed var(--line);
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--paper-raised) 45%, transparent);
+  color: var(--ink-mute);
+  line-height: 2;
+}
+
+.relations-empty--block code {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  padding: 0.05em 0.32em;
+  border: 1px solid var(--line-faint);
+  border-radius: 2px;
+  background: var(--paper-sunken);
+  color: color-mix(in srgb, var(--cinnabar) 55%, var(--ink));
+  white-space: nowrap;
+}
+
+/* 局部图谱落在关联区块里，比文章正文窄一点也没关系 */
+.relations-graph {
+  min-width: 0;
+}
+
+.relations-graph .graph-panel {
+  height: auto;
+}
+
+/* ==========================================================================
+   4. 图谱面板
+   ========================================================================== */
+
+.graph-panel {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background:
+    radial-gradient(90% 70% at 50% 0%, color-mix(in srgb, var(--gold) 3%, transparent), transparent 70%),
+    var(--paper-raised);
+  box-shadow: var(--shadow-1);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.graph-canvas {
+  display: block;
+  width: 100%;
+  height: 320px; /* JS 会按 data-graph-height 覆盖，这里是兜底 */
+  cursor: grab;
+}
+
+.graph-panel[data-graph-mode='global'] .graph-canvas {
+  height: 520px;
+}
+
+.graph-canvas:active {
+  cursor: grabbing;
+}
+
+/* 跟随光标的纸色小标签 */
+.graph-tip {
+  position: absolute;
+  z-index: 2;
+  max-width: 16rem;
+  padding: 0.3rem 0.55rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 2px;
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-1);
+  font-family: var(--font-kai);
+  font-size: var(--text-xs);
+  line-height: 1.7;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+
+.graph-controls {
+  position: absolute;
+  right: 0.7rem;
+  bottom: 0.7rem;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  align-items: flex-end;
+}
+
+.graph-btn {
+  display: grid;
+  place-items: center;
+  min-width: 2.1rem;
+  height: 2.1rem;
+  padding-inline: 0.4rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper-glass);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  color: var(--ink-mute);
+  font-size: 0.9rem;
+  line-height: 1;
+  box-shadow: var(--shadow-1);
+  transition: color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out),
+    background var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+}
+
+.graph-btn:hover {
+  color: var(--ink);
+  border-color: var(--line-strong);
+  background: var(--paper-raised);
+}
+
+.graph-btn:active {
+  transform: scale(0.97);
+}
+
+.graph-btn--text {
+  min-width: 2.9rem;
+  padding-inline: 0.62rem;
+  font-family: var(--font-kai);
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  text-indent: 0.06em;
+}
+
+.graph-hint {
+  position: absolute;
+  left: 0.85rem;
+  bottom: 0.6rem;
+  z-index: 1;
+  margin: 0;
+  font-family: var(--font-kai);
+  font-size: 0.68rem;
+  line-height: 1.7;
+  letter-spacing: 0.08em;
+  color: var(--ink-faint);
+  pointer-events: none;
+  max-width: calc(100% - 8rem);
+}
+
+[data-theme='dark'] .graph-panel {
+  background:
+    radial-gradient(90% 70% at 50% 0%, color-mix(in srgb, var(--gold) 4%, transparent), transparent 70%),
+    var(--paper-raised);
+}
+
+[data-theme='dark'] .graph-btn {
+  background: color-mix(in srgb, var(--paper-raised) 92%, transparent);
+}
+
+/* ==========================================================================
+   5. 图谱页
+   ========================================================================== */
+
+.graph-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 18rem;
+  gap: clamp(1.25rem, 2.6vw, 2.25rem);
+  align-items: start;
+}
+
+.graph-side {
+  position: sticky;
+  top: calc(var(--header-h) + 1.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+
+/* — 图例 ————————————————————————————————— */
+
+.graph-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.9rem;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--paper-raised);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.06em;
+  color: var(--ink-mute);
+}
+
+.graph-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.graph-legend-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  background: color-mix(in srgb, var(--ink-mute) 55%, transparent);
+}
+
+.graph-legend-line {
+  width: 1.1rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--line-strong) 20%, var(--line-strong) 80%, transparent);
+}
+
+.graph-legend-note {
+  font-family: var(--font-kai);
+  color: var(--ink-faint);
+  letter-spacing: 0.04em;
+}
+
+/* — 全部笔记索引 ——————————————————————— */
+
+.graph-index {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0.85rem 0.95rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-1);
+}
+
+.graph-index-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin: 0 0 0.6rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid var(--line-faint);
+  font-family: var(--font-kai);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-indent: 0.2em;
+  color: var(--ink-faint);
+}
+
+.graph-index-count {
+  font-family: var(--font-latin);
+  font-style: italic;
+  font-size: var(--text-sm);
+  letter-spacing: 0.06em;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.graph-index-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  max-height: min(52svh, 30rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  mask-image: linear-gradient(180deg, #000 92%, transparent);
+}
+
+.graph-index-list li + li {
+  border-top: 1px solid var(--line-faint);
+}
+
+.graph-index-link {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.36rem 0.1rem;
+  color: var(--ink-soft);
+  transition: color var(--dur-fast) var(--ease-out), padding-left var(--dur) var(--ease-ink);
+}
+
+.graph-index-name {
+  min-width: 0;
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.graph-index-degree {
+  flex-shrink: 0;
+  min-width: 1.1rem;
+  text-align: right;
+  font-family: var(--font-latin);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.04em;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.graph-index-link:hover {
+  color: var(--ink);
+}
+
+.graph-index-link:hover .graph-index-degree {
+  color: var(--cinnabar);
+}
+
+/* — 页脚小注 ————————————————————————————— */
+
+.graph-foot {
+  margin-top: clamp(1.5rem, 3vw, 2rem);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line-faint);
+  font-family: var(--font-kai);
+  font-size: var(--text-xs);
+  line-height: 2;
+  letter-spacing: 0.05em;
+  color: var(--ink-faint);
+}
+
+.graph-foot code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  padding: 0.04em 0.3em;
+  border: 1px solid var(--line-faint);
+  border-radius: 2px;
+  background: var(--paper-sunken);
+  color: var(--ink-mute);
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   响应式
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+  .graph-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .graph-side {
+    position: static;
+  }
+
+  .graph-index-list {
+    max-height: none;
+    mask-image: none;
+  }
+
+  .graph-panel[data-graph-mode='global'] .graph-canvas {
+    height: 460px;
+  }
+}
+
+@media (max-width: 780px) {
+  .relations-lists {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .relations-card {
+    padding: 0.8rem 0.9rem 0.9rem;
+  }
+
+  .relation-link {
+    padding: 0.5rem 0;
+    min-height: 2.25rem;
+  }
+
+  /* 引擎会内联写 height（来自 data-graph-height），小屏上把整站图谱压到 440，
+     局部图谱保持它自己的 320，不强行拉高 */
+  .graph-panel[data-graph-mode='global'] .graph-canvas {
+    height: 440px !important;
+  }
+
+  /* 右下角是悬浮坞的地盘，控制按钮挪到右上，避免互相盖住 */
+  .graph-controls {
+    right: 0.55rem;
+    top: 0.55rem;
+    bottom: auto;
+    gap: 0.3rem;
+  }
+
+  .graph-btn {
+    min-width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .graph-btn--text {
+    min-width: 3rem;
+    font-size: 0.7rem;
+  }
+
+  .graph-hint {
+    max-width: calc(100% - 7rem);
+    font-size: 0.64rem;
+  }
+
+  .prose .callout {
+    display: flow-root;
+    padding: 1.55em 1em 0.9em 1.1em;
+    margin-block: 1.7em;
+    border-left-width: 1px;
+  }
+
+  /* 窄屏把印记移到标题上方，正文拿回整行 */
+  .prose .callout::before {
+    position: static;
+    float: left;
+    margin: -0.35em 0.5em 0 -0.05em;
+    width: 1.45em;
+    height: 1.45em;
+    font-size: 0.78em;
+  }
+
+  .prose .callout .callout-title {
+    font-size: 0.84em;
+    letter-spacing: 0.14em;
+    text-indent: 0.14em;
+  }
+
+  .prose details.callout {
+    padding: 0.95em 1em 0.95em 1.1em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .relations-more .icon,
+  .relation-title,
+  .graph-btn,
+  .graph-index-link {
+    transition: none;
+  }
+}

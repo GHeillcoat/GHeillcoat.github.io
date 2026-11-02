@@ -1,0 +1,88 @@
+---
+import type { GraphData, GraphNode } from '../lib/graph';
+import { localGraph, relationNodes } from '../lib/graph';
+import GraphCanvas from './GraphCanvas.astro';
+import Icon from './Icon.astro';
+
+export interface Props {
+  graph: GraphData;
+  postId: string;
+  postTitle: string;
+}
+
+const { graph, postId } = Astro.props;
+const { backlinks, outlinks } = relationNodes(graph, postId);
+const local = localGraph(graph, postId);
+const total = backlinks.length + outlinks.length;
+---
+
+{
+  total > 0 ? (
+    <section class="relations" aria-labelledby="relations-title">
+      <header class="relations-head">
+        <h2 class="relations-title" id="relations-title">
+          关联
+          <span class="relations-count">{total}</span>
+        </h2>
+        <a class="relations-more" href="/graph">
+          知识图谱
+          <Icon name="arrow-right" size={12} class="icon" />
+        </a>
+      </header>
+
+      <div class="relations-body">
+        <div class="relations-lists">
+          <div class="relations-card">
+            <h3 class="relations-subtitle">
+              反向链接
+              <span class="relations-num">{backlinks.length}</span>
+            </h3>
+            {backlinks.length > 0 ? (
+              <ul class="relations-list" role="list">
+                {backlinks.map((node: GraphNode) => (
+                  <li>
+                    <a href={node.url} class="relation-link">
+                      <span class="relation-title">{node.title}</span>
+                      <span class="relation-meta">{node.category}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p class="relations-empty">暂时没有别处链接到这里。</p>
+            )}
+          </div>
+
+          <div class="relations-card">
+            <h3 class="relations-subtitle">
+              出链
+              <span class="relations-num">{outlinks.length}</span>
+            </h3>
+            {outlinks.length > 0 ? (
+              <ul class="relations-list" role="list">
+                {outlinks.map((node: GraphNode) => (
+                  <li>
+                    <a href={node.url} class="relation-link">
+                      <span class="relation-title">{node.title}</span>
+                      <span class="relation-meta">{node.category}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p class="relations-empty">这篇还没有链到别的笔记。</p>
+            )}
+          </div>
+        </div>
+
+        <div class="relations-graph">
+          <GraphCanvas graph={local} mode="local" focus={postId} height={320} hint="局部图谱 · 点节点跳转" />
+        </div>
+      </div>
+    </section>
+  ) : (
+    <p class="relations-empty relations-empty--block">
+      这篇还没有和别的笔记建立双链——在正文里写 <code>[[另一篇的标题]]</code> 就能连起来。
+    </p>
+  )
+}

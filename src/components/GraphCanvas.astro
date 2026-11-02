@@ -1,0 +1,59 @@
+---
+import type { GraphData } from '../lib/graph';
+
+export interface Props {
+  graph: GraphData;
+  mode?: 'global' | 'local';
+  focus?: string;
+  height?: number;
+  hint?: string;
+}
+
+const {
+  graph,
+  mode = 'global',
+  focus,
+  height = 520,
+  hint = '拖动平移 · 滚轮缩放 · 点击节点打开文章',
+} = Astro.props;
+
+const payload = {
+  nodes: graph.nodes.map((node) => ({
+    id: node.id,
+    title: node.title,
+    category: node.category,
+    url: node.url,
+    degree: node.degree,
+  })),
+  edges: graph.edges,
+};
+---
+
+<div
+  class="graph-panel"
+  data-graph
+  data-graph-mode={mode}
+  data-graph-focus={focus}
+  data-graph-height={height}
+>
+  <canvas
+    class="graph-canvas"
+    data-graph-canvas
+    style={`height:${height}px`}
+    role="img"
+    aria-label={`知识图谱：${graph.nodes.length} 篇笔记，${graph.edges.length} 条链接`}
+  >
+  </canvas>
+
+  <div class="graph-tip" data-graph-tip hidden></div>
+
+  <div class="graph-controls">
+    <button class="graph-btn" type="button" data-graph-zoom-in aria-label="放大">＋</button>
+    <button class="graph-btn" type="button" data-graph-zoom-out aria-label="缩小">－</button>
+    <button class="graph-btn graph-btn--text" type="button" data-graph-reset>重置</button>
+  </div>
+
+  <p class="graph-hint">{hint}</p>
+
+  <script type="application/json" data-graph-data set:html={JSON.stringify(payload)} />
+</div>

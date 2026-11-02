@@ -1,11 +1,13 @@
 ---
-import { render } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import 'katex/dist/katex.min.css';
 import BaseLayout from './BaseLayout.astro';
 import Toc from '../components/Toc.astro';
 import NotesPanel from '../components/NotesPanel.astro';
+import Relations from '../components/Relations.astro';
 import Icon from '../components/Icon.astro';
+import { buildGraph } from '../lib/graph';
 import {
   countWords,
   formatDateZh,
@@ -24,6 +26,10 @@ export interface Props {
 const { post, prev, next } = Astro.props;
 const { data } = post;
 const { Content, headings } = await render(post);
+
+// 双链图谱：整站的边 + 这篇的局部关系
+const allPosts = await getCollection('posts', (entry) => !entry.data.draft);
+const graph = buildGraph(allPosts);
 
 const words = countWords(post.body ?? '');
 const minutes = readingTime(post.body ?? '', data.lang);
@@ -170,6 +176,8 @@ const jsonLd = {
               }
             </nav>
           </footer>
+
+          <Relations graph={graph} postId={post.id} postTitle={data.title} />
         </div>
 
         <aside class="post-aside" data-drawer-panel>

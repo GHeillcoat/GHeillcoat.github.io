@@ -8,6 +8,8 @@ import rehypeSlug from 'rehype-slug';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import { unified } from '@astrojs/markdown-remark';
 import { rehypeMermaid } from './src/lib/rehype-mermaid.mjs';
+import { rehypeCallouts } from './src/lib/rehype-callouts.mjs';
+import { rehypeWikiLinks } from './src/lib/rehype-wikilinks.mjs';
 import { inkPaper, inkNight } from './src/lib/shiki-themes.mjs';
 
 export default defineConfig({
@@ -28,6 +30,8 @@ export default defineConfig({
       remarkPlugins: [remarkGfm, remarkMath],
       rehypePlugins: [
         rehypeSlug,
+        rehypeCallouts,
+        rehypeWikiLinks,
         rehypeMermaid,
         [
           rehypeKatex,

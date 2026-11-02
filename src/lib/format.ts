@@ -69,6 +69,27 @@ export function formatNumber(n: number): string {
   return n.toLocaleString('en-US');
 }
 
+/**
+ * 从正文里取摘要：
+ * - 支持 Hexo 的 `<!-- more -->` 截断标记；
+ * - 去掉代码块、图片、双链语法、HTML 标签，尽量得到干净的纯文本。
+ */
+export function excerptFromBody(body: string | undefined, length = 120): string {
+  if (!body) return '';
+  const moreIndex = body.indexOf('<!-- more -->');
+  const raw = moreIndex >= 0 ? body.slice(0, moreIndex) : body;
+  return raw
+    .replace(/```[\s\S]*?```/g, ' ')
+    .replace(/!?\[\[([^\]|#]+)(?:#[^\]|]*)?(?:\|([^\]]*))?\]\]/g, (_m, target, alias) => alias || target)
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/[#>*`~$_{}[\]]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, length);
+}
+
 /** #ff0000 -> rgba */
 export function hexToRgb(hex: string): [number, number, number] {
   const h = hex.replace('#', '');

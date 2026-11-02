@@ -1,7 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import Icon from './Icon.astro';
-import { countWords, formatDateShort, formatNumber, isoDate, readingLabel } from '../lib/format';
+import { countWords, excerptFromBody, formatDateShort, formatNumber, isoDate, readingLabel } from '../lib/format';
 
 export interface Props {
   post: CollectionEntry<'posts'>;
@@ -11,6 +11,7 @@ export interface Props {
 const { post, index = 0 } = Astro.props;
 const { data } = post;
 const words = countWords(post.body ?? '');
+const summary = data.description || excerptFromBody(post.body, 96);
 ---
 
 <li class="post-row" data-reveal style={`--reveal-delay:${Math.min(index, 12) * 35}ms`}>
@@ -23,7 +24,7 @@ const words = countWords(post.body ?? '');
     <h3 class="post-row-title">
       <a href={`/posts/${post.id}`}>{data.title}</a>
     </h3>
-    {data.description && <p class="post-row-desc">{data.description}</p>}
+    {summary && <p class="post-row-desc">{summary}</p>}
 
     <div class="post-row-foot">
       <span class="post-row-metrics">

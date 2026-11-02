@@ -499,6 +499,8 @@
   max-width: 100%;
   margin-inline: auto;
   border-radius: 2px;
+  border: 1px solid var(--line-faint);
+  background: var(--paper-raised);
   cursor: zoom-in;
 }
 
