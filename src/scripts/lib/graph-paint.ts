@@ -27,6 +27,14 @@ export interface Palette {
   font: string;
 }
 
+/** 画布坐标里的矩形（CSS px） */
+export interface Rect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 export interface PaintScene {
   width: number;
   height: number;
@@ -37,6 +45,8 @@ export interface PaintScene {
   hover: number;
   /** 正在拖动的节点下标，-1 表示没有 */
   drag: number;
+  /** 不给标签用的区域：控制按钮、提示文字 */
+  reserved: Rect[];
 }
 
 export interface Painter {
@@ -46,6 +56,13 @@ export interface Painter {
 
 const TAU = Math.PI * 2;
 const LABEL_SIZE = 12;
+const LABEL_SIZE_SMALL = 11;
+/** 窄屏（手机）用更小的标签字号 */
+const NARROW_WIDTH = 520;
+/** 低于这个度数的节点，只在放大或悬停时才露标签 */
+const LABEL_MIN_DEGREE = 3;
+/** 放大到这个倍数以上，标签全开 */
+const LABEL_SCALE = 1.1;
 /** 圆点在屏幕上的直径范围：缩小整体视图时不会变成针尖，放大时也不会糊成一块 */
 const SCREEN_RADIUS_MIN = 2.6;
 const SCREEN_RADIUS_MAX = 24;
@@ -225,21 +242,12 @@ function paintScene(ctx: CanvasRenderingContext2D, scene: PaintScene, colors: Pa
   if (model.focus >= 0) drawRing(ctx, nodes[model.focus]!, radii[model.focus]!, colors.gold, scale);
   if (active >= 0 && active !== model.focus) drawRing(ctx, nodes[active]!, radii[active]!, colors.gold, scale);
 
-  // —— 标签：只在悬停 / 局部图谱 / 放得足够大时出现
+  // —— 标签：只画「值得画」的那几个，并做一次简单的防重叠 / 防越界
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  const showAll = nodes.length <= 16 || scale >= 1.12;
-  const labels: Array<{ node: GraphNode; x: number; y: number; hot: boolean; dim: boolean }> = [];
-  for (const node of nodes) {
-    const hot = node.index === model.focus || (related ? related.has(node.index) : false);
-    if (!showAll && !hot) continue;
-    const x = node.x * scale + view.tx;
-    const y = node.y * scale + view.ty;
-    if (x < -90 || x > width + 90 || y < -40 || y > height + 40) continue;
-    labels.push({ node, x: x, y: y + screenRadius(node, scale) + 5, hot, dim: Boolean(related) && !hot });
-  }
-
+  const labelSize = width < NARROW_WIDTH ? LABEL_SIZE_SMALL : LABEL_SIZE;
+  const labels = pickLabels(scene, ctx, labelSize);
   if (labels.length) {
-    ctx.font = `${LABEL_SIZE}px ${colors.font}`;
+    ctx.font = `${labelSize}px ${colors.font}`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
     ctx.lineJoin = 'round';
@@ -259,11 +267,109 @@ function paintScene(ctx: CanvasRenderingContext2D, scene: PaintScene, colors: Pa
   ctx.globalAlpha = 1;
 }
 
+interface LabelBox {
+  node: GraphNode;
+  /** 文本左端（居中绘制，所以 x 是中线） */
+  x: number;
+  y: number;
+  hot: boolean;
+  dim: boolean;
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
+}
+
+/** measureText 按 (字号, 文本) 缓存：标签与字号都很稳定，没必要每帧重量 */
+const labelWidthCache = new Map<string, number>();
+
+function measureLabel(ctx: CanvasRenderingContext2D, label: string, size: number): number {
+  const key = `${size}\u0000${label}`;
+  const cached = labelWidthCache.get(key);
+  if (cached !== undefined) return cached;
+  let measured = 0;
+  try {
+    measured = ctx.measureText(label).width;
+  } catch {
+    measured = label.length * size * 0.62;
+  }
+  if (!Number.isFinite(measured) || measured <= 0) measured = label.length * size * 0.62;
+  labelWidthCache.set(key, measured);
+  return measured;
+}
+
+function overlaps(a: { left: number; top: number; right: number; bottom: number }, b: Rect, gap: number): boolean {
+  return (
+    a.left - gap < b.x + b.width && a.right + gap > b.x && a.top - gap < b.y + b.height && a.bottom + gap > b.y
+  );
+}
+
+/**
+ * 挑出这一帧要画的标签：
+ * 1. 只在 hover / 焦点 / 度数 ≥ 3 / 放大到 1.1 倍以上时画（局部图谱节点少，全画）；
+ * 2. 文字整体夹在画布内，贴边的标签不会只剩半行；
+ * 3. 控制按钮与提示文字所在区域留空；
+ * 4. 相互压住的标签只留优先级高的（悬停 > 度数高 > 半径大）。
+ */
+function pickLabels(
+  scene: PaintScene,
+  ctx: CanvasRenderingContext2D,
+  labelSize: number,
+): LabelBox[] {
+  const { model, view, width, height, reserved } = scene;
+  const { scale } = view;
+  const related = relatedSet(model, scene.drag >= 0 ? scene.drag : scene.hover);
+  const boxHeight = labelSize + 6;
+
+  const candidates: LabelBox[] = [];
+  for (const node of model.nodes) {
+    const hot = node.index === model.focus || (related ? related.has(node.index) : false);
+    const important = hot || node.degree >= LABEL_MIN_DEGREE || scale > LABEL_SCALE;
+    const local = model.focus >= 0;
+    if (!important && !local) continue;
+
+    const cx = node.x * scale + view.tx;
+    const cy = node.y * scale + view.ty;
+    if (cx < -140 || cx > width + 140 || cy < -60 || cy > height + 60) continue;
+
+    const textWidth = measureLabel(ctx, node.label, labelSize);
+    if (textWidth + 12 > width) continue;
+
+    const half = textWidth / 2 + 3;
+    const x = Math.min(Math.max(cx, half + 2), width - half - 2);
+    const radius = screenRadius(node, scale);
+    let y = cy + radius + 5;
+    if (y + boxHeight > height - 6) y = cy - radius - 5 - boxHeight;
+    y = Math.min(Math.max(y, 2), Math.max(2, height - boxHeight - 2));
+
+    const box = { left: x - half, right: x + half, top: y, bottom: y + boxHeight };
+    if (reserved.some((region) => overlaps(box, region, 4))) continue;
+
+    candidates.push({ node, x, y, hot, dim: Boolean(related) && !hot, ...box });
+  }
+
+  const score = (box: LabelBox): number => (box.hot ? 1_000_000 : 0) + box.node.degree * 1_000 + box.node.r;
+  candidates.sort((a, b) => score(b) - score(a));
+
+  const kept: LabelBox[] = [];
+  for (const candidate of candidates) {
+    const collides = kept.some((other) => overlaps(candidate, toRect(other), 2));
+    if (!collides) kept.push(candidate);
+  }
+  return kept;
+}
+
+function toRect(box: LabelBox): Rect {
+  return { x: box.left, y: box.top, width: box.right - box.left, height: box.bottom - box.top };
+}
+
 export function createPainter(): Painter {
   let colors = readPalette(null);
   return {
     refresh(panel) {
       colors = readPalette(panel ?? null);
+      // 字体/主题变了，量出来的文字宽度也要重算
+      labelWidthCache.clear();
     },
     paint(ctx, scene) {
       paintScene(ctx, scene, colors);

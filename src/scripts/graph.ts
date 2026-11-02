@@ -19,7 +19,7 @@ import { clamp, prefersReducedMotion, qs, qsa } from './lib/dom';
 import { onScroll } from './lib/scroll';
 import { buildModel, parseGraphPayload } from './lib/graph-model';
 import { createLayout } from './lib/graph-layout';
-import { createPainter, screenRadius, type PaintScene, type View } from './lib/graph-paint';
+import { createPainter, screenRadius, type PaintScene, type Rect, type View } from './lib/graph-paint';
 
 const ZOOM_MIN = 0.4;
 const ZOOM_MAX = 2.5;
@@ -28,8 +28,11 @@ const ZOOM_STEP = 1.3;
 const FIT_PADDING = 44;
 /** 拖动小于这个距离就算「点按」，可以跳转 */
 const CLICK_SLOP = 5;
-/** 首帧预热步数：先让节点散开，第一眼不会是挤在原点的一团 */
-const WARMUP_STEPS = 26;
+/** 首帧预热步数：先让节点散开，第一眼不会是挤在原点的一团，
+ *  也让「初始视图」的取景接近最终形态（点「重置」回到的就是它） */
+const WARMUP_STEPS = 96;
+/** 预热之后剩下的一点余温：约 1 秒的轻微归位，不是整段 2.5s 的乱飞 */
+const WARMUP_ALPHA = 0.5;
 /** reduced-motion：直接跑到静止，最多这么多步 */
 const REDUCED_STEPS = 600;
 const DEFAULT_HEIGHT = 520;
@@ -81,7 +84,8 @@ function setupPanel(panel: HTMLElement): void {
 
   canvas.style.display = 'block';
   canvas.style.width = '100%';
-  canvas.style.height = `${panelHeight}px`;
+  // 窄屏高度交给 CSS（设计按断点给了自己的高度），宽屏才用 data-graph-height
+  applyHeight();
   // 单指拖动画布时不要顺手滚页面；缩放/平移自己算
   canvas.style.touchAction = 'none';
   ensurePositioned(panel);
@@ -115,6 +119,49 @@ function setupPanel(panel: HTMLElement): void {
   let tipIndex = -1;
   let tipWidth = 0;
   let tipHeight = 0;
+  /** 标签回避区（画布坐标）：控制按钮、提示文字 */
+  let reserved: Rect[] = [];
+
+  /** 高度策略：宽屏按 data-graph-height 写内联；窄屏把控制权交回 CSS 断点 */
+  function applyHeight(): void {
+    const value = window.innerWidth <= 1024 ? '' : `${panelHeight}px`;
+    if (canvas.style.height !== value) canvas.style.height = value;
+  }
+
+  function reservedRegions(): Rect[] {
+    const regions: Rect[] = [];
+    const base = canvas.getBoundingClientRect();
+    if (base.width < 2 || base.height < 2) return regions;
+    const add = (left: number, top: number, right: number, bottom: number) => {
+      const width = right - left;
+      const height = bottom - top;
+      if (width > 0 && height > 0) regions.push({ x: left - base.left, y: top - base.top, width, height });
+    };
+
+    // 控制按钮在宽屏是右下、窄屏被 CSS 挪到右上，所以直接量它们的包围盒
+    const buttons = qsa<HTMLElement>('[data-graph-zoom-in], [data-graph-zoom-out], [data-graph-reset]', panel);
+    if (buttons.length) {
+      let left = Infinity;
+      let top = Infinity;
+      let right = -Infinity;
+      let bottom = -Infinity;
+      for (const button of buttons) {
+        const box = button.getBoundingClientRect();
+        left = Math.min(left, box.left);
+        top = Math.min(top, box.top);
+        right = Math.max(right, box.right);
+        bottom = Math.max(bottom, box.bottom);
+      }
+      add(left, top, right, bottom + 8);
+    }
+
+    const hint = qs<HTMLElement>('.graph-hint', panel);
+    if (hint) {
+      const box = hint.getBoundingClientRect();
+      add(box.left, box.top, box.right, box.bottom);
+    }
+    return regions;
+  }
 
   /* — 尺寸 / 视口 ————————————————————————— */
 
@@ -133,6 +180,7 @@ function setupPanel(panel: HTMLElement): void {
     canvasWidth = cssWidth;
     canvasHeight = cssHeight;
     dpr = nextDpr;
+    reserved = reservedRegions();
     return true;
   }
 
@@ -202,6 +250,7 @@ function setupPanel(panel: HTMLElement): void {
       model,
       hover,
       drag: dragIndex,
+      reserved,
     };
     painter.paint(ctx, scene);
   }
@@ -229,6 +278,9 @@ function setupPanel(panel: HTMLElement): void {
   function frame(): void {
     raf = 0;
     const more = layout.tick();
+    // 停下来的那一刻补一次取景：动画期间节点还会挪一点，
+    // 这样「重置」才有准头，也避免最后一帧有节点被挤出画布。
+    if (!more && !interacted) view = fitView();
     paint();
     if (more) startLoop();
   }
@@ -258,7 +310,7 @@ function setupPanel(panel: HTMLElement): void {
     layout.settle(WARMUP_STEPS);
     view = fitView();
     paint();
-    if (visible) wake(1);
+    if (visible) wake(WARMUP_ALPHA);
   }
 
   /* — 提示层 ————————————————————————————— */
@@ -378,7 +430,9 @@ function setupPanel(panel: HTMLElement): void {
     event.preventDefault();
     rect = canvas.getBoundingClientRect();
     const point = pointOf(event);
-    pointers.set(event.pointerId, point);
+    // 注意：这里必须存副本。指针表里的坐标每次移动都会被原地更新，
+    // 如果 downPoint / panAnchor 直接引用同一个对象，位移就永远是 0。
+    pointers.set(event.pointerId, { x: point.x, y: point.y });
     try {
       canvas.setPointerCapture(event.pointerId);
     } catch {
@@ -388,8 +442,8 @@ function setupPanel(panel: HTMLElement): void {
     stopLoop();
 
     if (pointers.size === 1) {
-      downPoint = point;
-      panAnchor = point;
+      downPoint = { x: point.x, y: point.y };
+      panAnchor = { x: point.x, y: point.y };
       moved = false;
       const hit = nodeAt(point);
       hover = hit;
@@ -460,7 +514,7 @@ function setupPanel(panel: HTMLElement): void {
         view.tx += point.x - panAnchor.x;
         view.ty += point.y - panAnchor.y;
       }
-      panAnchor = point;
+      panAnchor = { x: point.x, y: point.y };
       if (downPoint && Math.hypot(point.x - downPoint.x, point.y - downPoint.y) > CLICK_SLOP) moved = true;
       interacted = true;
       requestPaint();
@@ -506,8 +560,14 @@ function setupPanel(panel: HTMLElement): void {
         }
       }
 
-      if (dragged >= 0 && didMove) wake(0.25);
-      else if (layout.isActive()) startLoop();
+      if (dragged >= 0 && didMove) {
+        // 放手后把这个节点钉住：用户放哪儿就留在哪儿，剩下的邻居再慢慢归位
+        const node = model.nodes[dragged]!;
+        node.fixed = true;
+        node.vx = 0;
+        node.vy = 0;
+        wake(0.2);
+      } else if (layout.isActive()) startLoop();
 
       if (event.pointerType === 'touch' || cancelled) {
         hover = -1;
@@ -591,6 +651,7 @@ function setupPanel(panel: HTMLElement): void {
     const previousWidth = canvasWidth;
     const previousHeight = canvasHeight;
     rect = null;
+    applyHeight(); // 跨过断点时高度由 CSS 接管/交回内联
     if (!measure()) return; // 容器被隐藏 / 尺寸为 0：静默等待下一次
     if (!started) {
       start();
@@ -645,7 +706,7 @@ function setupPanel(panel: HTMLElement): void {
         if (!entries.some((entry) => entry.isIntersecting)) return;
         observer.disconnect();
         visible = true;
-        if (started) wake(1);
+        if (started) wake(WARMUP_ALPHA);
         else start();
       },
       { rootMargin: '240px 0px', threshold: 0 },

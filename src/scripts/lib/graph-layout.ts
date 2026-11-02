@@ -171,14 +171,17 @@ export function createLayout(model: GraphModel): GraphLayout {
     }
   }
 
+  /** 推进一帧：alpha 决定这一帧的力道，衰减到 0 就彻底静止 */
+  function tick(): boolean {
+    if (alpha <= 0) return false;
+    step(alpha);
+    alpha *= 1 - ALPHA_DECAY;
+    if (alpha < ALPHA_MIN) alpha = 0;
+    return alpha > 0;
+  }
+
   return {
-    tick(): boolean {
-      if (alpha <= 0) return false;
-      step(alpha);
-      alpha *= 1 - ALPHA_DECAY;
-      if (alpha < ALPHA_MIN) alpha = 0;
-      return alpha > 0;
-    },
+    tick,
     settle(steps: number): void {
       const total = Math.max(0, Math.min(400, Math.floor(steps)));
       const strength = alpha > 0 ? Math.min(1, Math.max(0.4, alpha * 0.8)) : 0;

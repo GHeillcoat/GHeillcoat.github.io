@@ -200,6 +200,15 @@ flowchart LR
 4. `public/favicon.svg`、`public/images/art/og.svg`：印章与分享卡片
 5. 写作后跑一次 `npm run fonts`（或直接 `npm run build`），让字体子集覆盖新出现的字
 
+## 文档
+
+- [写作说明](docs/authoring.md)：Obsidian vault / Hexo frontmatter、双链、callout、图谱与发布流程
+- [设计说明](docs/design-notes.md)：纸墨系统、版心、夜墨、动效与体积取舍
+- [交互说明](docs/interaction-notes.md)：`src/scripts/` 的模块划分与约定
+- [DOM 契约](docs/dom-contract.md)：所有 `data-*` 钩子与行为
+- [图谱契约](docs/graph-contract.md)：Canvas 图谱引擎的 DOM / 数据 / 交互要求
+- [内容规范](docs/content-brief.md)：文章与插图的规范（给内容协作者看）
+
 ## 已知取舍
 
 - 字体子集需要联网生成；离线构建时沿用旧字体（可能缺新字，回退到系统宋体）

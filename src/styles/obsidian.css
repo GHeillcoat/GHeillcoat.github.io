@@ -304,6 +304,11 @@
   background-color: color-mix(in srgb, var(--cinnabar-wash) 60%, transparent);
 }
 
+/* 夜墨里正文图片压一点，避免一块白纸在黑夜里发亮（灯箱里仍是原图） */
+[data-theme='dark'] .prose img {
+  filter: brightness(0.88) contrast(1.02) saturate(0.96);
+}
+
 /* 嵌入图：和正文图片同一种「贴上去的纸」 */
 .prose img.wiki-embed {
   display: block;
@@ -526,8 +531,16 @@
    4. 图谱面板
    ========================================================================== */
 
+/* 面板 = 画布 + 一条细工具栏（说明在左、控制在右）。
+   控制按钮不再浮在画布上，避免压住节点标签。 */
 .graph-panel {
   position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'canvas canvas'
+    'hint   controls';
+  align-items: stretch;
   border: 1px solid var(--line);
   border-radius: 2px;
   background:
@@ -539,6 +552,7 @@
 }
 
 .graph-canvas {
+  grid-area: canvas;
   display: block;
   width: 100%;
   height: 320px; /* JS 会按 data-graph-height 覆盖，这里是兜底 */
@@ -553,7 +567,7 @@
   cursor: grabbing;
 }
 
-/* 跟随光标的纸色小标签 */
+/* 跟随光标的纸色小标签（保持在画布之上） */
 .graph-tip {
   position: absolute;
   z-index: 2;
@@ -574,32 +588,30 @@
   pointer-events: none;
 }
 
+/* 工具栏：一排小圆钮，靠右 */
 .graph-controls {
-  position: absolute;
-  right: 0.7rem;
-  bottom: 0.7rem;
-  z-index: 2;
+  grid-area: controls;
   display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  align-items: flex-end;
+  flex-direction: row;
+  align-items: center;
+  justify-self: end;
+  gap: 0.3rem;
+  padding: 0.3rem 0.55rem 0.3rem 0.6rem;
+  border-top: 1px solid var(--line-faint);
 }
 
 .graph-btn {
   display: grid;
   place-items: center;
-  min-width: 2.1rem;
-  height: 2.1rem;
-  padding-inline: 0.4rem;
+  min-width: 2rem;
+  height: 2rem;
+  padding-inline: 0.35rem;
   border: 1px solid var(--line);
   border-radius: 999px;
-  background: var(--paper-glass);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
+  background: color-mix(in srgb, var(--paper-raised) 70%, transparent);
   color: var(--ink-mute);
   font-size: 0.9rem;
   line-height: 1;
-  box-shadow: var(--shadow-1);
   transition: color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out),
     background var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
 }
@@ -615,27 +627,29 @@
 }
 
 .graph-btn--text {
-  min-width: 2.9rem;
-  padding-inline: 0.62rem;
+  min-width: 2.6rem;
+  padding-inline: 0.5rem;
   font-family: var(--font-kai);
-  font-size: 0.66rem;
-  letter-spacing: 0.06em;
-  text-indent: 0.06em;
+  font-size: 0.64rem;
+  letter-spacing: 0.04em;
+  text-indent: 0.04em;
 }
 
+/* 说明文字：工具栏左端，和按钮共用同一条上边线 */
 .graph-hint {
-  position: absolute;
-  left: 0.85rem;
-  bottom: 0.6rem;
-  z-index: 1;
+  grid-area: hint;
+  display: flex;
+  align-items: center;
   margin: 0;
+  min-height: 2.6rem;
+  padding: 0.3rem 0.4rem 0.3rem 0.85rem;
+  border-top: 1px solid var(--line-faint);
   font-family: var(--font-kai);
   font-size: 0.68rem;
   line-height: 1.7;
   letter-spacing: 0.08em;
   color: var(--ink-faint);
   pointer-events: none;
-  max-width: calc(100% - 8rem);
 }
 
 [data-theme='dark'] .graph-panel {
@@ -863,60 +877,56 @@
     min-height: 2.25rem;
   }
 
-  /* 引擎会内联写 height（来自 data-graph-height），小屏上把整站图谱压到 440，
+  /* 引擎会内联写 height（来自 data-graph-height），小屏上把整站图谱压到 400，
      局部图谱保持它自己的 320，不强行拉高 */
   .graph-panel[data-graph-mode='global'] .graph-canvas {
-    height: 440px !important;
+    height: 400px !important;
   }
 
-  /* 右下角是悬浮坞的地盘，控制按钮挪到右上，避免互相盖住 */
+  /* 控制在画布下方的工具栏里横排，触控尺寸 44px */
   .graph-controls {
-    right: 0.55rem;
-    top: 0.55rem;
-    bottom: auto;
     gap: 0.3rem;
+    padding: 0.35rem 0.5rem 0.35rem 0.5rem;
   }
 
   .graph-btn {
-    min-width: 2.5rem;
-    height: 2.5rem;
+    min-width: 2.75rem;
+    height: 2.75rem;
   }
 
   .graph-btn--text {
-    min-width: 3rem;
+    min-width: 3.1rem;
     font-size: 0.7rem;
   }
 
   .graph-hint {
-    max-width: calc(100% - 7rem);
+    min-height: 3.45rem;
+    padding-left: 0.6rem;
     font-size: 0.64rem;
   }
 
+  /* 窄屏：印记与标题同一行，正文拿回整行宽度 */
   .prose .callout {
-    display: flow-root;
-    padding: 1.55em 1em 0.9em 1.1em;
+    padding: 0.9em 0.95em 0.9em 0.95em;
     margin-block: 1.7em;
-    border-left-width: 1px;
   }
 
-  /* 窄屏把印记移到标题上方，正文拿回整行 */
   .prose .callout::before {
     position: static;
     float: left;
-    margin: -0.35em 0.5em 0 -0.05em;
-    width: 1.45em;
-    height: 1.45em;
-    font-size: 0.78em;
+    margin: 0.12em 0.45em 0 -0.05em;
+    width: 1.5em;
+    height: 1.5em;
   }
 
   .prose .callout .callout-title {
     font-size: 0.84em;
-    letter-spacing: 0.14em;
-    text-indent: 0.14em;
+    letter-spacing: 0.13em;
+    text-indent: 0.13em;
   }
 
   .prose details.callout {
-    padding: 0.95em 1em 0.95em 1.1em;
+    padding: 0.9em 0.95em 0.9em 0.95em;
   }
 }
 

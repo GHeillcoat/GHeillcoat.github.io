@@ -147,7 +147,7 @@ async function main() {
   if (post.mermaidBlocks > 0) {
     const mermaidRendered = await page.evaluate(async () => {
       document.querySelector('.mermaid-block')?.scrollIntoView({ block: 'center', behavior: 'instant' });
-      await new Promise((r) => setTimeout(r, 2200));
+      await new Promise((r) => setTimeout(r, 4000));
       return {
         rendered: document.querySelectorAll('.mermaid-block.is-rendered').length,
         svg: document.querySelectorAll('.mermaid-block svg').length,
