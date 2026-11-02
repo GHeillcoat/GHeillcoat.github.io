@@ -238,9 +238,10 @@ function main() {
     copied += 1;
   }
 
+  // 清单只记来源和 id，不写时间戳：内容没变时重复导入不会产生 diff
   fs.writeFileSync(
     MANIFEST,
-    `${JSON.stringify({ from: FROM, generatedAt: new Date().toISOString(), ids: imported.map((n) => n.id) }, null, 2)}\n`,
+    `${JSON.stringify({ from: FROM, ids: imported.map((n) => n.id) }, null, 2)}\n`,
     'utf8',
   );
 

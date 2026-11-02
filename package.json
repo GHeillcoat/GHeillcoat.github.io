@@ -16,7 +16,8 @@
     "preview": "astro preview",
     "shot": "node scripts/shot.mjs",
     "qa": "node scripts/qa.mjs",
-    "import:vault": "node scripts/import-vault.mjs"
+    "import:vault": "node scripts/import-vault.mjs",
+    "sync": "node scripts/sync-vault.mjs"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.3.5",

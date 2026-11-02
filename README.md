@@ -149,44 +149,97 @@ npm run qa        # 端到端自检：用本机 Edge/Chrome 真点一遍交互
 
 ---
 
-## 写一篇新文章
+## 新增 / 更新笔记
 
-在 `src/content/posts/` 新建 `my-post.md`：
+站点有两种内容来源，可以混用；列表、归档、标签、搜索、图谱会按时间合成一套。
+
+### 方式 A：在 Obsidian 库里写（批量笔记，推荐）
+
+位置就是你的 vault：`D:\obsidian`。笔记放在 `笔记/<分卷>/<文件名>.md`，例如
+`笔记/Ch13 RAG/13.3 分块策略.md`。写完/改完，一条命令同步上线：
+
+```bash
+npm run sync        # = 重新导入 + 提交 + 推送，1–2 分钟后线上生效
+npm run sync -- --from "D:/别的库"   # 换个库路径
+```
+
+- 按 `scripts/vault-import-manifest.json` 先清掉上一次导入的副本再生成：**新增会加进来，删除/改名会同步消失**
+- 只提交 `src/content/posts/`、`public/vault/`、清单这三个路径，不碰你手写的文章
+- 内容没变化时会提示「没有变化，跳过提交与推送」
+
+同步时的映射规则：
+
+| vault 里 | 站点里 |
+| --- | --- |
+| `笔记/Ch13 RAG/13.3 分块策略.md` | `src/content/posts/ch13-rag/133-分块策略.md` |
+| 一级文件夹 `Ch13 RAG` | 分类（列表里的 `Ch13 RAG`） |
+| 正文第一个 `# 标题` | 页面标题（写进 frontmatter `title`），并从正文移除 |
+| `created` / 文件时间 | 发布日期 `pubDate` |
+| `tags` / `aliases` | 标签、`[[别名]]` 解析 |
+
+文件名会成为 URL：小写、空格转 `-`、`2.1` → `21`，中文保留。**改名 = 改 URL**，旧链接会失效。
+
+### 方式 B：直接在项目里写（单篇博客，推荐）
+
+位置：`src/content/posts/`，可手写，也可以用脚手架生成骨架：
+
+```bash
+npm run new -- "标题" my-post            # 生成 src/content/posts/my-post.md（draft: true）
+npm run new -- "标题" my-post --tags 排版,阅读 --category 札记
+```
+
+> ⚠️ 不要直接改 `src/content/posts/ch*/` 下**导入来的**文件：下次 `npm run sync` 会用 vault 原件覆盖它。要改就改 `D:\obsidian` 里的原件。
+
+### 格式
+
+frontmatter 里除了 `title` 都可省；Hexo / Obsidian / 本站三种写法都认：
+
+| 字段 | 说明 |
+| --- | --- |
+| `title` | 可省：没写就取正文第一个 `# H1`，再没有就用文件名 |
+| `pubDate` / `date` / `created` | 发布日期，任选其一；都没写就用文件时间 |
+| `updatedDate` / `updated` / `modified` | 可选，更新时间 |
+| `description` | 摘要，出现在列表、搜索与分享卡片 |
+| `category` / `categories` | 分类 |
+| `tags` / `tag` | 标签，字符串或数组都行 |
+| `aliases` | 别名，`[[别名]]` 也能链到这里 |
+| `draft: true` | 草稿：不构建、不进列表、不进搜索 |
+| `featured: true` | 首页「精选」（最多取前 2 篇） |
+| `cover` | 可选题图，如 `/images/posts/xxx.svg` |
+
+正文是完整 Markdown：标题、表格、任务清单、脚注、代码块、`$行内公式$` 与 `$$独立公式$$`、
+```` ```mermaid ```` 图、Obsidian 双链 `[[标题]]` / `![[图片]]`、callout `> [!note]`、`==高亮==`。
 
 ```md
 ---
-title: 标题
-subtitle: 可选副题
-description: 60–110 字摘要，会出现在列表和 SEO
-pubDate: 2025-10-01
+title: 一篇新笔记
+description: 一句话说明这篇写什么
+pubDate: 2026-11-02
 category: 札记
-tags: [标签一, 标签二]
-featured: false      # 首页精选（最多 2 篇）
-cover: /images/posts/xxx.svg   # 可选题图
+tags: [笔记, 方法]
 ---
 
-正文段落，首行会自动缩进两字。
+正文段落。
 
 ## 小节
 
-行内公式 $T = \frac{N}{320}$，独立公式：
-
-$$
-\sum_{i=1}^{n} a_i b_i
-$$
-
-```mermaid
-flowchart LR
-  A[写] --> B[读]
+行内公式 $T = N/320$，双链 [[另一篇笔记]]，高亮 ==重要==。
 ```
 
-图注要用 HTML：
+### 更新与上线
 
-<figure>
-  <img src="/images/posts/xxx.svg" alt="描述" loading="lazy" />
-  <figcaption>图注：一句话说明</figcaption>
-</figure>
+```bash
+npm run dev      # 本地预览 http://localhost:4321（改完即时刷新）
+npm run sync     # 方式 A：从 Obsidian 同步 → 提交 → 推送
+# 方式 B：
+git add -A && git commit -m "post: 标题" && git push
 ```
+
+推送后 GitHub Actions 自动构建并部署，约 1–2 分钟线上生效；构建里会重跑字体子集与
+Pagefind 索引，新出现的字不用手动处理（想本地生成就 `npm run fonts`）。
+
+**发布后会出现在**：`/posts`（按时间倒序）、`/archive`、`/tags`、`/graph`、`Ctrl+K` 全文检索；
+`draft: true` 的不会出现。
 
 ---
 
