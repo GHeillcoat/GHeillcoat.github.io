@@ -652,6 +652,22 @@
   max-width: 100%;
   height: auto;
   margin-inline: auto;
+  /* 图里的文字由 mermaid 自己排版，不要让正文的行距/缩进泄漏进去 */
+  font-family: var(--font-serif);
+}
+
+.prose .mermaid-block svg p,
+.prose .mermaid-block svg .nodeLabel,
+.prose .mermaid-block svg span {
+  margin: 0;
+  padding: 0;
+  text-indent: 0;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.prose .mermaid-block svg foreignObject {
+  overflow: visible;
 }
 
 .prose .mermaid-block.is-rendering .mermaid-fallback {

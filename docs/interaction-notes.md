@@ -31,6 +31,9 @@ keyboard.ts       全局快捷键与焦点管理
 
 - 性能：Pagefind 只在生产环境 import；Mermaid 只在图块进入视口附近时 import，并用
   `layout: 'dagre'` 避免拉入 1.4 MB 的 ELK；滚动统一走 `lib/scroll.ts`。
+- Mermaid 观感：`look: 'classic'`（mermaid 12 默认的 neo 会给节点加一层浅色投影，暗色下像荧光）、
+  `htmlLabels: false`（用 SVG 文本，中英文都能精确居中，也不受正文行距影响）、
+  `themeCSS` 把线/箭头统一压到纸墨色；渲染前 `await document.fonts.ready`，否则中文标签会被过早折行。
 - 安全：所有用户输入（批注原文、内容）都用 `textContent` 写入；Pagefind 命中的
   `<mark>` 片段只提取文本与 mark。
 - 无 JS：页面仍然可读；揭示动画在 `prefers-reduced-motion` 或 IO 不可用时立即显示。

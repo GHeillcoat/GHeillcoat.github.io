@@ -80,7 +80,7 @@ function themeVariables(): Record<string, unknown> {
     titleColor: ink,
     labelTextColor: ink,
     actorTextColor: ink,
-    signalColor: inkSoft,
+    signalColor: inkMute,
     signalTextColor: ink,
     noteBkgColor: sunken,
     noteTextColor: inkSoft,
@@ -88,6 +88,52 @@ function themeVariables(): Record<string, unknown> {
     accentColor: accent,
     altBackground: sunken,
   };
+}
+
+/**
+ * 图的「纸墨」补丁样式。
+ *
+ * mermaid 12 默认用 neo look：节点描边带一层 `drop-shadow(1px 2px 2px rgba(185,185,185,1))`，
+ * 在夜墨里就是一圈发亮的荧光；时序图的信号线/箭头也是浅色。
+ * 这里：
+ *   - 关掉所有 filter（不走 neo）；
+ *   - 线、箭头统一压到淡墨，1px；
+ *   - 时序图的消息线/箭头/角色统一用纸墨色；
+ *   - 边标签底色用纸色，压住背后的连线。
+ */
+function inkThemeCSS(): string {
+  const paper = cssVar('--paper', '#f6f2e8');
+  const raised = cssVar('--paper-raised', '#fbf8f0');
+  const sunken = cssVar('--paper-sunken', '#efe9da');
+  const line = cssVar('--line', '#e2d9c6');
+  const lineStrong = cssVar('--line-strong', '#d1c5ab');
+  const inkSoft = cssVar('--ink-soft', '#4b453b');
+  const inkMute = cssVar('--ink-mute', '#7f7666');
+
+  return `
+    .node rect, .node circle, .node ellipse, .node polygon, .node path,
+    .cluster rect, .icon-shape .icon { filter: none !important; }
+    .node rect, .node circle, .node ellipse, .node polygon, .node path { stroke-width: 1px; }
+    .arrowheadPath { fill: ${lineStrong} !important; stroke: ${lineStrong} !important; }
+    .marker, .marker.cross, marker path { fill: ${lineStrong}; stroke: ${lineStrong}; }
+    .edgePath .path, .flowchart-link { stroke-width: 1px; }
+    .edge-thickness-normal { stroke-width: 1px; }
+    .edgeLabel, .edgeLabel p, .edgeLabel rect, .labelBkg { background-color: ${paper} !important; }
+    .edgeLabel .label text, .edgeLabel span { fill: ${inkMute}; color: ${inkMute}; }
+    .nodeLabel, .nodeLabel p { line-height: 1.4 !important; margin: 0 !important; }
+
+    /* 时序图：线、箭头统一压到淡墨，别在夜里发亮 */
+    .messageLine0, .messageLine1 { stroke: ${inkMute} !important; stroke-width: 1px !important; }
+    .messageText { fill: ${inkSoft} !important; stroke: none !important; }
+    .actor { fill: ${raised} !important; stroke: ${lineStrong} !important; stroke-width: 1px !important; }
+    .actor-line { stroke: ${line} !important; stroke-width: 1px !important; }
+    .labelBox { fill: ${raised} !important; stroke: ${lineStrong} !important; stroke-width: 1px !important; }
+    .labelText, .loopText, .loopLabel { fill: ${inkSoft} !important; }
+    .loopLine { stroke: ${lineStrong} !important; stroke-width: 1px !important; }
+    .note { fill: ${sunken} !important; stroke: ${line} !important; }
+    .noteText { fill: ${inkSoft} !important; }
+    .activation0, .activation1, .activation2 { fill: ${sunken} !important; stroke: ${lineStrong} !important; }
+  `;
 }
 
 function configure(mermaid: MermaidApi): void {
@@ -100,15 +146,28 @@ function configure(mermaid: MermaidApi): void {
   mermaid.initialize({
     startOnLoad: false,
     theme: 'base',
+    // 不要 neo look：它的投影在暗色下会变成荧光边
+    look: 'classic',
     themeVariables: themeVariables(),
+    themeCSS: inkThemeCSS(),
+    fontSize: 15,
     fontFamily,
     securityLevel: 'strict',
+    htmlLabels: false,
     // mermaid 12 的默认布局是 ELK（会额外拉 1.4MB 的 elk chunk）。
     // 本站只画 flowchart / sequence 这类简单图，dagre 足够，且小得多。
     layout: 'dagre',
-    flowchart: { defaultRenderer: 'dagre-wrapper', curve: 'basis', useMaxWidth: true, htmlLabels: true },
+    flowchart: {
+      defaultRenderer: 'dagre-wrapper',
+      curve: 'basis',
+      useMaxWidth: true,
+      htmlLabels: false,
+      padding: 12,
+      // 中文标签比拉丁宽，放宽换行阈值，避免出现「源/文件」这种孤字折行
+      wrappingWidth: 240,
+    },
     state: { layout: 'dagre' },
-    sequence: { useMaxWidth: true },
+    sequence: { useMaxWidth: true, actorMargin: 60 },
     gantt: { useMaxWidth: true },
     er: { useMaxWidth: true },
     journey: { useMaxWidth: true },
@@ -139,6 +198,9 @@ async function renderBlock(block: HTMLElement): Promise<void> {
 
   const id = `ink-mermaid-${++counter}`;
   try {
+    // 先等字体就绪：mermaid 会用当前字体测量标签宽度，
+    // 字体没加载完就测量会让中文标签过早折行（出现孤字换行）
+    if (document.fonts?.ready) await document.fonts.ready.catch(() => undefined);
     configure(mermaid);
     const { svg } = await mermaid.render(id, source);
     if (!svg) throw new Error('empty svg');
@@ -214,3 +276,6 @@ export function initMermaid(): void {
     }
   });
 }
+
+
+
