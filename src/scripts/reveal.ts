@@ -34,7 +34,9 @@ export function initReveal(): void {
         observer.unobserve(entry.target);
       }
     },
-    { rootMargin: '0px 0px -8% 0px', threshold: 0.05 },
+    // threshold 必须为 0：归档页一个年份就是两万多像素高，
+    // 用 0.05 的话「可见面积占比」永远达不到，整页会一直停在 opacity:0。
+    { rootMargin: '0px 0px -8% 0px', threshold: 0 },
   );
 
   for (const element of targets) observer.observe(element);

@@ -343,6 +343,30 @@ async function main() {
   check('文章页收录全部内容', listPage.count >= 400 && listPage.rows >= 400, `${listPage.count} 篇 / ${listPage.rows} 行`);
   check('文章页按时间倒序', listPage.firstDate >= listPage.lastDate, `${listPage.firstDate} → ${listPage.lastDate}`);
 
+  /* 归档页：年份段落要能随滚动揭示（长列表不能被动画整段挡住） */
+  await page.goto(`${BASE}/archive/`, { waitUntil: 'networkidle2' });
+  await sleep(600);
+  const archiveFirst = await page.evaluate(() => {
+    const first = document.querySelector('.archive-year');
+    return {
+      items: document.querySelectorAll('.archive-item').length,
+      in: !!first?.classList.contains('is-in'),
+      opacity: first ? getComputedStyle(first).opacity : '0',
+    };
+  });
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await sleep(900);
+  const archiveLast = await page.evaluate(() => {
+    const sections = [...document.querySelectorAll('.archive-year')];
+    const last = sections[sections.length - 1];
+    return { in: !!last?.classList.contains('is-in'), opacity: last ? getComputedStyle(last).opacity : '0' };
+  });
+  check(
+    '归档页内容可见',
+    archiveFirst.items > 0 && archiveFirst.in && archiveFirst.opacity !== '0' && archiveLast.in,
+    `${archiveFirst.items} 条 / 首段 ${archiveFirst.opacity} / 末段 ${archiveLast.opacity}`,
+  );
+
   /* 移动端首页无横向溢出 */
   await newPage(390, 844);
   await open('/');
