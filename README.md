@@ -110,6 +110,16 @@ npm run preview   # 本地预览生产构建
 npm run qa        # 端到端自检：用本机 Edge/Chrome 真点一遍交互
 ```
 
+**局域网看效果**（手机 / 另一台电脑，连同一个 Wi-Fi）：
+
+```bash
+npm run dev -- --host 0.0.0.0     # 然后访问 http://<本机内网IP>:4321/
+npm run preview -- --host 0.0.0.0 # 生产构建预览：http://<本机内网IP>:4322/
+```
+
+内网 IP 用 `ipconfig` 看（找 `IPv4 地址`，形如 `192.168.x.x`），不要用 `127.0.0.1`。
+如果开了 Windows 防火墙，需要允许 Node.js 或放行 4321 / 4322 入站。
+
 部署：`dist/` 是纯静态目录，丢到 Cloudflare Pages、Vercel、Netlify、GitHub Pages 或任意 nginx 即可。
 
 > 每次改完文章内容，建议跑一次 `npm run fonts`（`npm run build` 会自动跑），
