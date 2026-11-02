@@ -16,6 +16,18 @@ import { site } from '../config';
 
       <div class="about-grid">
         <div class="prose about-prose">
+          <h2>关于这个名字</h2>
+          <p>
+            「{site.title}」不是随手拼的 ID。A 是字母表的第一个，Z 是最后一个，中间是 until——直到。
+            写开了就是一句递归的注解：
+          </p>
+          <blockquote>
+            <p>{site.title} · {site.motto}</p>
+          </blockquote>
+          <p>
+            首字母连起来正好是这个名字。意思是：从 A 到 Z，一直做，直到没有一件事被剩下。
+            这不是什么励志口号，只是给「半途而废」找一个反面的名字——写作、读书、写代码，都算。
+          </p>
           <h2>这间书房</h2>
           <p>
             「{site.title}」是一个很安静的地方。它不追热点，也不做信息流，只放那些我愿意反复读、反复改的东西：读书的札记、写代码时想通的事、以及对某些老问题的重新理解。
@@ -41,8 +53,9 @@ import { site } from '../config';
 
         <aside class="about-aside">
           <div class="about-card about-card--seal">
-            <Seal class="about-seal" char="痕" />
-            <p class="about-signature">墨痕 · {site.latin}</p>
+            <Seal class="about-seal" char={site.seal} />
+            <p class="about-signature">{site.title} · {site.latin}</p>
+            <p class="about-motto">{site.motto}</p>
             <p class="about-motto">{site.author.bio}</p>
           </div>
 
@@ -69,7 +82,13 @@ import { site } from '../config';
           </div>
 
           <div class="about-card">
-            <h2>来信</h2>
+            <h2>找到我</h2>
+            <p class="about-contact">
+              <Icon name="github" size={14} class="icon" />
+              <a href={site.author.github} rel="me noopener" target="_blank">
+                github.com/{site.author.githubName}
+              </a>
+            </p>
             <p class="about-contact">
               <Icon name="mail" size={14} class="icon" />
               <a href="mailto:hi@inkwell.example.com">hi@inkwell.example.com</a>
@@ -80,3 +99,4 @@ import { site } from '../config';
     </div>
   </section>
 </BaseLayout>
+

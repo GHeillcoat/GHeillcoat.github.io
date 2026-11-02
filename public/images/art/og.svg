@@ -16,10 +16,12 @@
     fill="#24211c"
     opacity="0.12"
   />
-  <rect x="92" y="92" width="56" height="56" rx="3" fill="#a63b2c" />
-  <text x="120" y="132" text-anchor="middle" font-size="34" font-family="KaiTi,STKaiti,Noto Serif SC,serif" fill="#fbf3e4">墨</text>
-  <text x="92" y="250" font-size="96" font-family="Noto Serif SC,Songti SC,SimSun,serif" fill="#24211c" letter-spacing="10">墨痕</text>
-  <text x="96" y="306" font-size="26" font-family="KaiTi,STKaiti,Noto Serif SC,serif" fill="#7f7666" letter-spacing="8">字里行间，墨迹未干</text>
-  <line x1="96" y1="356" x2="520" y2="356" stroke="#d1c5ab" stroke-width="1" />
-  <text x="96" y="404" font-size="22" font-family="Noto Serif SC,Songti SC,SimSun,serif" fill="#4b453b" letter-spacing="2">读书札记 · 技术随笔 · 古典淡雅的中文排版</text>
+  <rect x="92" y="92" width="60" height="60" rx="3" fill="#a63b2c" />
+  <rect x="97" y="97" width="50" height="50" fill="none" stroke="#fbf3e4" stroke-width="1" opacity="0.55" />
+  <text x="122" y="136" text-anchor="middle" font-size="38" font-family="EB Garamond, Georgia, serif" fill="#fbf3e4">A</text>
+  <text x="92" y="252" font-size="92" font-family="EB Garamond, Georgia, serif" fill="#24211c" letter-spacing="4">Auntilz</text>
+  <text x="96" y="304" font-size="24" font-family="EB Garamond, Georgia, serif" font-style="italic" fill="#7f7666" letter-spacing="3">Until No Task Is Left Zero</text>
+  <line x1="96" y1="348" x2="620" y2="348" stroke="#d1c5ab" stroke-width="1" />
+  <text x="96" y="396" font-size="22" font-family="Noto Serif SC, Songti SC, SimSun, serif" fill="#4b453b" letter-spacing="2">从 A 到 Z，直到没有一件事被剩下</text>
+  <text x="96" y="438" font-size="18" font-family="Noto Serif SC, Songti SC, SimSun, serif" fill="#7f7666" letter-spacing="3">读书札记 · 技术随笔 · 古典淡雅的中文排版</text>
 </svg>

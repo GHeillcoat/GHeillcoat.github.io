@@ -4,7 +4,7 @@ export interface Props {
   char?: string;
 }
 
-const { class: className = '', char = '墨' } = Astro.props;
+const { class: className = '', char = 'A' } = Astro.props;
 ---
 
 <svg class={className} viewBox="0 0 64 64" aria-hidden="true" focusable="false">
@@ -22,10 +22,10 @@ const { class: className = '', char = '墨' } = Astro.props;
   />
   <text
     x="32"
-    y="43.5"
+    y="44"
     text-anchor="middle"
-    font-size="30"
-    font-family="'Kaiti SC','KaiTi','STKaiti','Noto Serif SC',serif"
+    font-size="33"
+    font-family="'EB Garamond','Noto Serif SC','Kaiti SC','KaiTi',serif"
     fill="#fbf3e4"
   >
     {char}

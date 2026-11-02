@@ -1,10 +1,12 @@
-# 墨痕 · inkwell
+# Auntilz · 墨痕
 
-> 字里行间，墨迹未干。
+> 从 A 到 Z，直到没有一件事被剩下。
+> **Auntilz** · *Until No Task Is Left Zero*
 
 一个从零手作的中文博客：宣纸与墨色的古典淡雅，完整的 Markdown 写作体验（LaTeX、Mermaid、代码高亮、脚注、表格、任务清单、MDX），
 一套「划词批注」的私人笔记系统，以及**纯展示向的 Obsidian 语法**（双链、callout、知识图谱、反向链接）。
 
+- 作者：[GHeillcoat](https://github.com/GHeillcoat)
 - 纯静态输出：没有服务端、没有数据库、没有追踪脚本
 - 中文排版优先：首行缩进两字、1.95 行距、两端对齐、着重号、全角标点
 - 「好看」与「快」一起做：字体按站点字符集切片、图表与检索按需加载

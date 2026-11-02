@@ -17,6 +17,16 @@ const year = new Date().getFullYear();
 
     <nav class="footer-nav" aria-label="页脚导航">
       {site.footerLinks.map((link) => <a href={link.href}>{link.label}</a>)}
+      <a
+        href={site.author.github}
+        class="footer-rss"
+        rel="me noopener"
+        target="_blank"
+        title={`GitHub · ${site.author.githubName}`}
+      >
+        <Icon name="github" size={12} class="icon" />
+        GitHub
+      </a>
       <a href="/rss.xml" class="footer-rss">
         <Icon name="hash" size={12} class="icon" />
         RSS
@@ -24,7 +34,7 @@ const year = new Date().getFullYear();
     </nav>
 
     <div class="footer-meta">
-      <span>© {year} {site.title} · 以 Astro 手作 · 纸与墨皆取自 CSS</span>
+      <span>© {year} {site.title} · {site.motto} · 纸与墨皆取自 CSS</span>
       <span>Powered by <a href="https://astro.build" rel="noopener">Astro</a> · 搜索由 <a href="https://pagefind.app" rel="noopener">Pagefind</a> 驱动</span>
     </div>
   </div>

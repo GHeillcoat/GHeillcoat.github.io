@@ -71,7 +71,7 @@ async function main() {
     themeColor: getComputedStyle(document.body).backgroundColor,
     fontLoaded: document.fonts.check('16px "Noto Serif SC"'),
   }));
-  check('首页可访问', home.title.includes('墨痕'), home.title);
+  check('首页可访问', home.title.includes('Auntilz'), home.title);
   check('首页渲染文章列表', home.postRows >= 3, `${home.postRows} 行`);
   check('首页精选卡片', home.featured >= 1, `${home.featured} 张`);
   check('导航项齐全', home.navCount >= 6, `${home.navCount} 项`);

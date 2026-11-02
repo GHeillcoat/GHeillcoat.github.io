@@ -7,6 +7,7 @@ import GraphCanvas from '../components/GraphCanvas.astro';
 import Seal from '../components/Seal.astro';
 import Icon from '../components/Icon.astro';
 import { buildGraph } from '../lib/graph';
+import { site } from '../config';
 
 const all = (await getCollection('posts', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
@@ -52,7 +53,7 @@ const firstYear = all.length ? Math.min(...all.map((p) => p.data.pubDate.getFull
       </div>
 
       <div class="hero-bg ink-wash ink-wash--mountains" aria-hidden="true"></div>
-      <Seal class="hero-seal" char="痕" />
+      <Seal class="hero-seal" char={site.seal} />
     </section>
 
     <div class="home-feed">
@@ -172,3 +173,4 @@ const firstYear = all.length ? Math.min(...all.map((p) => p.data.pubDate.getFull
     </aside>
   </div>
 </BaseLayout>
+
