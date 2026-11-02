@@ -3,12 +3,16 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PostRow from '../components/PostRow.astro';
 import FeaturedCard from '../components/FeaturedCard.astro';
+import GraphCanvas from '../components/GraphCanvas.astro';
 import Seal from '../components/Seal.astro';
 import Icon from '../components/Icon.astro';
+import { buildGraph } from '../lib/graph';
 
 const all = (await getCollection('posts', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
+const graph = buildGraph(all);
+const topLinked = [...graph.nodes].sort((a, b) => b.degree - a.degree).slice(0, 6);
 
 const featured = all.filter((p) => p.data.featured).slice(0, 2);
 const showcase = featured.length >= 2 ? featured : all.slice(0, 2);
@@ -24,106 +28,147 @@ const firstYear = all.length ? Math.min(...all.map((p) => p.data.pubDate.getFull
 ---
 
 <BaseLayout>
-  <section class="hero">
-    <div class="wrap hero-inner">
-      <div class="hero-copy">
-        <p class="hero-eyebrow">私人书房 · 卷之壹</p>
-        <h1 class="hero-title">字里行间<br />墨迹未干<span class="ink-dot"></span></h1>
-        <p class="hero-lead">
-          这里存放读书的札记、敲下的代码，和一些<em>尚未成篇</em>的念头。以宣纸为底，墨色为字，留给愿意慢下来的人。
-        </p>
-        <p class="hero-stats">
-          <span>凡 {all.length} 篇</span>
-          <span class="divider-dot" aria-hidden="true"></span>
-          <span>自 {firstYear} 年起</span>
-          <span class="divider-dot" aria-hidden="true"></span>
-          <span>{tagCounts.size} 个标签</span>
-        </p>
+  <div class="home-shell">
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="hero-copy">
+          <p class="hero-eyebrow">私人书房 · 卷之壹</p>
+          <h1 class="hero-title">字里行间<br />墨迹未干<span class="ink-dot"></span></h1>
+          <p class="hero-lead">
+            这里存放读书的札记、敲下的代码，和一些<em>尚未成篇</em>的念头。以宣纸为底，墨色为字，留给愿意慢下来的人。
+          </p>
+          <p class="hero-stats">
+            <span>凡 {all.length} 篇</span>
+            <span class="divider-dot" aria-hidden="true"></span>
+            <span>自 {firstYear} 年起</span>
+            <span class="divider-dot" aria-hidden="true"></span>
+            <span>{tagCounts.size} 个标签</span>
+          </p>
+        </div>
+
+        <div class="hero-aside">
+          <p class="hero-aside-quote">「行到水穷处，坐看云起时。」<cite>王维 · 终南别业</cite></p>
+        </div>
       </div>
 
-      <blockquote class="hero-quote">
-        「行到水穷处，<br />坐看云起时。」
-        <cite>王维 · 终南别业</cite>
-      </blockquote>
-    </div>
-
-    <div class="hero-bg ink-wash ink-wash--mountains" aria-hidden="true"></div>
-    <Seal class="hero-seal" char="痕" />
-  </section>
-
-  <div class="wrap">
-    <section class="section" aria-labelledby="sec-featured">
-      <div class="section-head">
-        <h2 class="section-title" id="sec-featured">
-          精选
-          <span class="section-index">01</span>
-        </h2>
-        <a class="section-more" href="/posts">
-          全部文章
-          <Icon name="arrow-right" size={13} class="icon" />
-        </a>
-      </div>
-
-      {
-        showcase.length > 0 ? (
-          <div class="featured-grid">
-            {showcase.map((post, i) => (
-              <FeaturedCard post={post} index={i} />
-            ))}
-          </div>
-        ) : (
-          <p class="empty-state">书房还是空的，写下一篇之后，这里就会热闹起来。</p>
-        )
-      }
+      <div class="hero-bg ink-wash ink-wash--mountains" aria-hidden="true"></div>
+      <Seal class="hero-seal" char="痕" />
     </section>
 
-    <div class="rule-cloud" aria-hidden="true"></div>
-
-    {recent.length > 0 && (
-      <section class="section" aria-labelledby="sec-recent">
+    <div class="home-feed">
+      <section class="section" aria-labelledby="sec-featured">
         <div class="section-head">
-          <h2 class="section-title" id="sec-recent">
-            近作
-            <span class="section-index">02</span>
+          <h2 class="section-title" id="sec-featured">
+            精选
+            <span class="section-index">01</span>
           </h2>
-          <a class="section-more" href="/archive">
-            按时间翻
+          <a class="section-more" href="/posts">
+            全部文章
             <Icon name="arrow-right" size={13} class="icon" />
           </a>
         </div>
 
-        <ol class="post-list" role="list">
-          {recent.map((post, i) => <PostRow post={post} index={i} />)}
-        </ol>
-      </section>
-    )}
-
-    <div class="rule-cloud" aria-hidden="true"></div>
-
-    <section class="section section--tags" aria-labelledby="sec-tags">
-      <div class="section-head">
-        <h2 class="section-title" id="sec-tags">
-          笺注
-          <span class="section-index">03</span>
-        </h2>
-        <a class="section-more" href="/tags">
-          全部标签
-          <Icon name="arrow-right" size={13} class="icon" />
-        </a>
-      </div>
-
-      <ul class="tag-cloud" role="list">
         {
-          topTags.map(([tag, count]) => (
-            <li>
-              <a class="tag-chip" href={`/tags/${encodeURIComponent(tag)}`}>
-                <span>{tag}</span>
-                <span class="tag-count">{count}</span>
-              </a>
-            </li>
-          ))
+          showcase.length > 0 ? (
+            <div class="featured-grid">
+              {showcase.map((post, i) => (
+                <FeaturedCard post={post} index={i} />
+              ))}
+            </div>
+          ) : (
+            <p class="empty-state">书房还是空的，写下一篇之后，这里就会热闹起来。</p>
+          )
         }
-      </ul>
-    </section>
+      </section>
+
+      <div class="rule-cloud" aria-hidden="true"></div>
+
+      {
+        recent.length > 0 && (
+          <section class="section" aria-labelledby="sec-recent">
+            <div class="section-head">
+              <h2 class="section-title" id="sec-recent">
+                近作
+                <span class="section-index">02</span>
+              </h2>
+              <a class="section-more" href="/archive">
+                按时间翻
+                <Icon name="arrow-right" size={13} class="icon" />
+              </a>
+            </div>
+
+            <ol class="post-list" role="list">
+              {recent.map((post, i) => (
+                <PostRow post={post} index={i} />
+              ))}
+            </ol>
+          </section>
+        )
+      }
+
+      <div class="rule-cloud" aria-hidden="true"></div>
+
+      <section class="section section--tags" aria-labelledby="sec-tags">
+        <div class="section-head">
+          <h2 class="section-title" id="sec-tags">
+            笺注
+            <span class="section-index">03</span>
+          </h2>
+          <a class="section-more" href="/tags">
+            全部标签
+            <Icon name="arrow-right" size={13} class="icon" />
+          </a>
+        </div>
+
+        <ul class="tag-cloud" role="list">
+          {
+            topTags.map(([tag, count]) => (
+              <li>
+                <a class="tag-chip" href={`/tags/${encodeURIComponent(tag)}`}>
+                  <span>{tag}</span>
+                  <span class="tag-count">{count}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+    </div>
+
+    <aside class="home-rail" aria-label="知识图谱侧栏">
+      <details class="rail-card" open>
+        <summary class="rail-summary">
+          <span class="rail-title">书房的地图</span>
+          <span class="rail-meta">{graph.nodes.length} 篇 · {graph.edges.length} 条双链</span>
+        </summary>
+
+        <div class="rail-body">
+          <GraphCanvas
+            graph={graph}
+            mode="global"
+            height={380}
+            hint="拖动 · 缩放 · 点击进入"
+          />
+
+          <a class="rail-more" href="/graph">
+            完整图谱
+            <Icon name="arrow-right" size={12} class="icon" />
+          </a>
+
+          <ul class="rail-list" role="list">
+            {
+              topLinked.map((node) => (
+                <li>
+                  <a href={node.url}>
+                    <span class="rail-list-name">{node.title}</span>
+                    <span class="rail-list-degree">{node.degree}</span>
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </details>
+    </aside>
   </div>
 </BaseLayout>
