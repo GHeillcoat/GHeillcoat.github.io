@@ -78,13 +78,15 @@ await new Promise((resolve) => setTimeout(resolve, wait));
 
 // 触发滚动揭示，避免截图里一片空白
 if (has('full')) {
+  await page.addStyleTag({ content: 'html{scroll-behavior:auto !important}' });
   await page.evaluate(async () => {
-    const step = window.innerHeight * 0.8;
+    const step = window.innerHeight * 0.7;
     for (let y = 0; y < document.body.scrollHeight; y += step) {
-      window.scrollTo(0, y);
-      await new Promise((r) => setTimeout(r, 60));
+      window.scrollTo({ top: y, behavior: 'instant' });
+      await new Promise((r) => setTimeout(r, 90));
     }
-    window.scrollTo(0, 0);
+    await new Promise((r) => setTimeout(r, 400));
+    window.scrollTo({ top: 0, behavior: 'instant' });
   });
   await new Promise((resolve) => setTimeout(resolve, 700));
 }

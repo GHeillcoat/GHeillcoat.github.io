@@ -56,7 +56,8 @@ export default defineConfig({
               type: 'element',
               tagName: 'span',
               properties: { className: ['anchor-mark'] },
-              children: [{ type: 'text', value: '§' }],
+              // 不写文本：避免 § 被 Astro 的标题提取带进 TOC，视觉上的 § 由 CSS ::after 提供
+              children: [],
             },
           },
         ],
@@ -66,5 +67,11 @@ export default defineConfig({
   integrations: [mdx(), sitemap()],
   vite: {
     build: { cssMinify: 'lightningcss' },
+    server: {
+      // 截图、临时下载、编辑器临时目录不要触发 HMR（曾因 EBUSY 让 dev server 退出）
+      watch: {
+        ignored: ['**/.tmp/**', '**/.shots/**', '**/.chrome-profile/**', '**/.edge-profile/**', '**/*.tmpdir/**', '**/*.crdownload'],
+      },
+    },
   },
 });

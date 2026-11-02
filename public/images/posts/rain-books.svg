@@ -1,0 +1,190 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 700" width="1000" height="700" role="img" aria-label="水墨小景：雨夜里一家旧书店的橱窗，窗内是深色的书脊，地上有一滩积水与灯光">
+  <defs>
+    <linearGradient id="skyWash" x1="0" y1="0" x2="0.25" y2="1">
+      <stop offset="0" stop-color="#4b453b" stop-opacity="0.14" />
+      <stop offset="0.4" stop-color="#4b453b" stop-opacity="0.05" />
+      <stop offset="1" stop-color="#a5875a" stop-opacity="0.03" />
+    </linearGradient>
+
+    <linearGradient id="roomWash" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#24211c" stop-opacity="0.16" />
+      <stop offset="0.55" stop-color="#24211c" stop-opacity="0.11" />
+      <stop offset="1" stop-color="#24211c" stop-opacity="0.05" />
+    </linearGradient>
+
+    <linearGradient id="spineWash" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#24211c" stop-opacity="0.5" />
+      <stop offset="1" stop-color="#4b453b" stop-opacity="0.32" />
+    </linearGradient>
+
+    <radialGradient id="lampSpill" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#a5875a" stop-opacity="0.34" />
+      <stop offset="0.55" stop-color="#a5875a" stop-opacity="0.12" />
+      <stop offset="1" stop-color="#a5875a" stop-opacity="0" />
+    </radialGradient>
+
+    <radialGradient id="glassLight" cx="0.5" cy="0.42" r="0.6">
+      <stop offset="0" stop-color="#f6f2e8" stop-opacity="0.75" />
+      <stop offset="1" stop-color="#f6f2e8" stop-opacity="0" />
+    </radialGradient>
+
+    <filter id="wet" x="-8%" y="-8%" width="116%" height="116%">
+      <feGaussianBlur stdDeviation="7" />
+    </filter>
+
+    <filter id="roughen" x="-5%" y="-30%" width="110%" height="160%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.03 0.55" numOctaves="2" seed="9" result="n" />
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="3.4" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+
+    <filter id="grain" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.86" numOctaves="3" seed="21" />
+      <feColorMatrix type="saturate" values="0" />
+    </filter>
+  </defs>
+
+  <rect width="1000" height="700" fill="#f6f2e8" />
+  <rect width="1000" height="700" fill="url(#skyWash)" />
+
+  <!-- 雨 -->
+  <g stroke="#4b453b" stroke-linecap="round" fill="none">
+    <g stroke-opacity="0.17" stroke-width="1.6">
+      <path d="M62 30 l8 50" /><path d="M168 8 l8 50" /><path d="M286 44 l8 50" />
+      <path d="M392 16 l8 50" /><path d="M508 52 l8 50" /><path d="M624 12 l8 50" />
+      <path d="M742 40 l8 50" /><path d="M858 20 l8 50" /><path d="M954 54 l8 50" />
+    </g>
+    <g stroke-opacity="0.12" stroke-width="1.4">
+      <path d="M104 112 l7 42" /><path d="M212 98 l7 42" /><path d="M330 120 l7 42" />
+      <path d="M446 94 l7 42" /><path d="M556 128 l7 42" /><path d="M672 102 l7 42" />
+      <path d="M790 122 l7 42" /><path d="M902 100 l7 42" />
+      <path d="M36 236 l9 56" /><path d="M132 268 l9 56" /><path d="M248 222 l9 56" />
+      <path d="M356 274 l9 56" /><path d="M470 230 l9 56" /><path d="M588 278 l9 56" />
+      <path d="M700 234 l9 56" /><path d="M820 272 l9 56" /><path d="M934 228 l9 56" />
+    </g>
+    <g stroke-opacity="0.2" stroke-width="1.7">
+      <path d="M54 466 l9 56" /><path d="M940 470 l9 56" />
+      <path d="M24 580 l8 46" /><path d="M956 566 l8 46" />
+      <path d="M120 638 l7 38" /><path d="M868 646 l7 38" />
+      <path d="M908 118 l8 48" /><path d="M966 244 l7 38" />
+      <path d="M22 128 l8 48" /><path d="M56 194 l7 38" />
+    </g>
+  </g>
+
+  <!-- 窗内：一团深色的空，边角用湿墨化开 -->
+  <path d="M158 166 C168 152 176 154 196 152 C420 146 640 148 812 154 C826 156 834 162 838 176
+           C842 330 840 470 836 546 C834 558 826 564 812 566 C600 572 360 570 182 562
+           C166 560 158 552 156 538 C150 400 152 300 158 166 Z"
+    fill="url(#roomWash)" filter="url(#wet)" opacity="0.9" />
+  <ellipse cx="500" cy="330" rx="330" ry="210" fill="url(#glassLight)" opacity="0.5" />
+
+  <!-- 书架两条横线，墨色不均 -->
+  <g fill="none" stroke="#4b453b" stroke-linecap="round" filter="url(#roughen)">
+    <path d="M176 388 C400 384 640 385 822 390" stroke-width="5" stroke-opacity="0.34" stroke-dasharray="180 7 160 9 150 6 90" />
+    <path d="M180 478 C400 474 640 475 818 480" stroke-width="4.4" stroke-opacity="0.28" stroke-dasharray="150 8 170 7 140" />
+  </g>
+
+  <!-- 书脊：一组浓淡不一的竖笔，高矮参差 -->
+  <g fill="url(#spineWash)" filter="url(#roughen)">
+    <g fill-opacity="0.5">
+      <path d="M190 322 L190 392 C198 392 204 392 210 391 L210 320 C202 320 196 321 190 322 Z" />
+      <path d="M232 310 L232 392 C240 392 246 391 252 391 L252 308 C244 308 238 309 232 310 Z" />
+      <path d="M276 328 L276 392 C282 392 288 391 292 391 L292 326 C286 326 281 327 276 328 Z" />
+      <path d="M320 316 L320 392 C328 391 334 391 340 391 L340 314 C332 314 326 315 320 316 Z" />
+      <path d="M368 330 L368 392 C376 392 382 391 388 391 L388 328 C380 328 374 329 368 330 Z" />
+      <path d="M442 312 L442 392 C450 391 456 391 462 391 L462 310 C454 310 448 311 442 312 Z" />
+      <path d="M486 322 L486 392 C492 392 498 391 502 391 L502 320 C496 320 491 321 486 322 Z" />
+      <path d="M530 308 L530 392 C538 391 544 391 550 391 L550 306 C542 306 536 307 530 308 Z" />
+      <path d="M580 318 L580 392 C586 392 592 391 596 391 L596 316 C590 316 585 317 580 318 Z" />
+      <path d="M626 332 L626 392 C634 392 640 391 646 391 L646 330 C638 330 632 331 626 332 Z" />
+      <path d="M682 310 L682 392 C690 391 696 391 702 391 L702 308 C694 308 688 309 682 310 Z" />
+      <path d="M728 326 L728 392 C734 392 740 391 744 391 L744 324 C738 324 733 325 728 326 Z" />
+      <path d="M776 314 L776 392 C784 391 790 391 796 391 L796 312 C788 312 782 313 776 314 Z" />
+    </g>
+    <g fill-opacity="0.3">
+      <path d="M212 334 L212 392 C218 392 222 391 226 391 L226 332 C221 332 216 333 212 334 Z" />
+      <path d="M300 342 L300 392 C306 392 310 391 314 391 L314 340 C309 340 304 341 300 342 Z" />
+      <path d="M410 336 L410 392 C416 392 420 391 424 391 L424 334 C419 334 414 335 410 336 Z" />
+      <path d="M462 340 L462 392 C468 392 472 391 476 391 L476 338 C471 338 466 339 462 340 Z" />
+      <path d="M562 330 L562 392 C568 392 572 391 576 391 L576 328 C571 328 566 329 562 330 Z" />
+      <path d="M662 344 L662 392 C668 392 672 391 676 391 L676 342 C671 342 666 343 662 344 Z" />
+      <path d="M752 336 L752 392 C758 392 762 391 766 391 L766 334 C761 334 756 335 752 336 Z" />
+    </g>
+    <g fill-opacity="0.42">
+      <path d="M196 418 L196 478 C204 478 210 478 216 477 L216 416 C208 416 202 417 196 418 Z" />
+      <path d="M242 406 L242 478 C250 477 256 477 262 477 L262 404 C254 404 248 405 242 406 Z" />
+      <path d="M292 424 L292 478 C298 478 304 477 308 477 L308 422 C302 422 297 423 292 424 Z" />
+      <path d="M338 412 L338 478 C346 477 352 477 358 477 L358 410 C350 410 344 411 338 412 Z" />
+      <path d="M390 428 L390 478 C396 478 402 477 406 477 L406 426 C400 426 395 427 390 428 Z" />
+      <path d="M444 408 L444 478 C452 477 458 477 464 477 L464 406 C456 406 450 407 444 408 Z" />
+      <path d="M496 420 L496 478 C502 478 508 477 512 477 L512 418 C506 418 501 419 496 420 Z" />
+      <path d="M548 410 L548 478 C556 477 562 477 568 477 L568 408 C560 408 554 409 548 410 Z" />
+      <path d="M600 426 L600 478 C606 478 612 477 616 477 L616 424 C610 424 605 425 600 426 Z" />
+      <path d="M652 414 L652 478 C660 477 666 477 672 477 L672 412 C664 412 658 413 652 414 Z" />
+      <path d="M704 424 L704 478 C710 478 716 477 720 477 L720 422 C714 422 709 423 704 424 Z" />
+      <path d="M756 410 L756 478 C764 477 770 477 776 477 L776 408 C768 408 762 409 756 410 Z" />
+      <path d="M796 428 L796 478 C802 478 806 477 810 477 L810 426 C805 426 800 427 796 428 Z" />
+    </g>
+  </g>
+  <!-- 两本斜靠的书 -->
+  <g fill="url(#spineWash)" fill-opacity="0.34" filter="url(#roughen)">
+    <path d="M404 388 L424 330 L438 334 L420 391 Z" />
+    <path d="M676 400 L692 344 L706 348 L692 392 Z" />
+  </g>
+
+  <!-- 窗框：四笔重墨，粗细不匀，末端带飞白 -->
+  <g fill="none" stroke="#24211c" stroke-linecap="round" filter="url(#roughen)">
+    <path d="M152 156 C380 150 620 151 846 156" stroke-width="9" stroke-opacity="0.5" stroke-dasharray="360 6 300 5" />
+    <path d="M150 560 C380 555 620 556 848 562" stroke-width="10" stroke-opacity="0.46" stroke-dasharray="330 7 340" />
+    <path d="M153 156 C151 300 152 440 151 560" stroke-width="8" stroke-opacity="0.44" stroke-dasharray="220 6 170" />
+    <path d="M846 156 C848 300 847 440 848 560" stroke-width="8" stroke-opacity="0.44" stroke-dasharray="180 7 210" />
+    <path d="M152 306 C380 302 620 303 847 308" stroke-width="5.4" stroke-opacity="0.3" stroke-dasharray="200 6 240" />
+  </g>
+
+  <!-- 灯从店里漏到地上 -->
+  <ellipse cx="500" cy="612" rx="300" ry="76" fill="url(#lampSpill)" />
+
+  <!-- 积水：一片湿，几道倒影 -->
+  <ellipse cx="470" cy="648" rx="330" ry="34" fill="#4b453b" opacity="0.09" filter="url(#wet)" />
+  <g fill="none" stroke-linecap="round">
+    <g stroke="#4b453b" stroke-opacity="0.24" stroke-width="1.6">
+      <path d="M150 636 C230 632 312 635 386 631" />
+      <path d="M560 640 C640 636 722 639 796 635" />
+      <path d="M262 662 C346 658 430 661 512 657" />
+    </g>
+    <g stroke="#24211c" stroke-opacity="0.14" stroke-width="1.3">
+      <path d="M300 650 C300 640 299 632 297 624" />
+      <path d="M336 654 C336 644 335 636 333 628" />
+      <path d="M648 652 C648 642 647 634 645 626" />
+      <path d="M712 648 C712 638 711 630 709 622" />
+    </g>
+  </g>
+
+  <!-- 收起的伞：一团墨，不勾线 -->
+  <g filter="url(#roughen)">
+    <path d="M108 664 C104 610 114 552 138 500 C144 486 152 476 160 468
+             C170 480 172 494 166 508 C146 552 138 604 142 660
+             C140 672 128 678 118 674 C110 671 108 668 108 664 Z"
+      fill="#24211c" fill-opacity="0.34" />
+    <path d="M138 656 C136 610 142 566 156 528" fill="none" stroke="#f6f2e8" stroke-opacity="0.4" stroke-width="1.6" />
+    <path d="M160 468 C168 456 178 450 190 448" fill="none" stroke="#24211c" stroke-opacity="0.4" stroke-width="2.6" stroke-linecap="round" />
+    <path d="M110 666 C104 680 116 690 130 684" fill="none" stroke="#24211c" stroke-opacity="0.36" stroke-width="2.6" stroke-linecap="round" />
+  </g>
+
+  <!-- 点苔 -->
+  <g fill="#24211c" fill-opacity="0.2">
+    <circle cx="176" cy="574" r="2" />
+    <circle cx="184" cy="580" r="1.4" />
+    <circle cx="838" cy="572" r="1.8" />
+    <circle cx="846" cy="566" r="1.3" />
+  </g>
+
+  <!-- 印 -->
+  <g transform="rotate(-4 922 622)" opacity="0.86">
+    <rect x="898" y="598" width="44" height="44" rx="3" fill="#9c4033" fill-opacity="0.9" />
+    <rect x="903" y="603" width="34" height="34" rx="2" fill="none" stroke="#f6f2e8" stroke-opacity="0.5" stroke-width="1" />
+    <text x="920" y="629" text-anchor="middle" font-family="KaiTi, STKaiti, 'Songti SC', serif"
+      font-size="21" fill="#f6f2e8" fill-opacity="0.95">記</text>
+  </g>
+
+  <rect width="1000" height="700" filter="url(#grain)" opacity="0.05" style="mix-blend-mode:multiply" />
+</svg>

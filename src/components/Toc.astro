@@ -6,7 +6,10 @@ export interface Props {
 }
 
 const { headings } = Astro.props;
-const items = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+// 页脚「Footnote」小节不进目录
+const items = headings.filter(
+  (h) => h.depth >= 2 && h.depth <= 3 && h.slug !== 'footnote-label' && !/^footnotes?$/i.test(h.slug),
+);
 ---
 
 <nav class="toc" data-toc aria-label="本文目录">

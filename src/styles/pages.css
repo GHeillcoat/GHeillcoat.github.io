@@ -1,35 +1,122 @@
 /* ==========================================================================
-   Pages · 各页面的补充样式（与页面结构紧密相关，按页分组）
+   Pages · 与页面结构紧密相关的补充样式
    ========================================================================== */
 
-/* — 首页 ————————————————————————————————— */
+/* ==========================================================================
+   题图：没有图的时候，也要像一页纸
+   ========================================================================== */
 
-.hero-stats {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.6rem 0.9rem;
-  margin-top: var(--space-5);
-  font-family: var(--font-latin);
-  font-size: var(--text-sm);
-  letter-spacing: 0.14em;
-  color: var(--ink-faint);
+.post-cover {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background: var(--paper-sunken);
+  isolation: isolate;
 }
 
-.divider-dot {
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background: var(--ink-faint);
-  opacity: 0.7;
+/* 无题图：大字印 + 墨晕 + 纸的层次，右侧被裁掉一点，像落笔出了边界 */
+.post-cover--auto {
+  background:
+    radial-gradient(110% 92% at 18% 0%, color-mix(in srgb, var(--ink) 3%, transparent), transparent 62%),
+    linear-gradient(158deg, var(--paper-raised), var(--paper-sunken) 56%, var(--paper-deep));
 }
 
-.section--tags {
-  padding-bottom: clamp(3.5rem, 8vw, 6rem);
+/* 墨晕 */
+.post-cover--auto::before {
+  content: '';
+  position: absolute;
+  inset: -12% -18% -12% -8%;
+  background: radial-gradient(48% 52% at 72% 58%, var(--wash-near), transparent 70%);
+  filter: blur(3px);
+  pointer-events: none;
 }
 
-/* — 列表里的标签与指标 ————————————————— */
+/* 一道很淡的纸光，像纸被折过一次 */
+.post-cover--auto::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(112deg, transparent 38%, rgb(255 255 255 / 26%) 50%, transparent 62%),
+    radial-gradient(120% 100% at 50% 50%, transparent 60%, rgb(31 28 22 / 5%) 100%);
+  pointer-events: none;
+}
 
+/* 大字印：完整落在框内（不裁字），墨晕与纸光负责出层次 */
+.post-cover-glyph {
+  position: absolute;
+  right: 0.14em;
+  bottom: 0.08em;
+  z-index: 1;
+  font-family: var(--font-kai);
+  font-size: clamp(6.5rem, 10.5vw, 8.5rem);
+  line-height: 1;
+  letter-spacing: 0;
+  color: color-mix(in srgb, var(--ink) 19%, transparent);
+  mix-blend-mode: multiply;
+  transform: rotate(-1.5deg);
+  transition: transform 1100ms var(--ease-ink), color 800ms var(--ease-out);
+  pointer-events: none;
+  user-select: none;
+}
+
+.featured-card:hover .post-cover-glyph {
+  transform: rotate(-0.5deg) scale(1.035);
+  color: color-mix(in srgb, var(--ink) 27%, transparent);
+}
+
+/* — 夜墨：把题图收进夜色，别让它变成一块亮纸 ——————————— */
+
+[data-theme='dark'] .post-cover--auto {
+  /* 月光落在右下，字才有依托 */
+  background:
+    radial-gradient(72% 64% at 76% 70%, rgb(236 229 212 / 7%), transparent 68%),
+    linear-gradient(158deg, #241f18, #1a1611 58%, #131110);
+}
+
+[data-theme='dark'] .post-cover--auto::before {
+  background: radial-gradient(46% 50% at 74% 60%, rgb(236 229 212 / 6%), transparent 72%);
+}
+
+[data-theme='dark'] .post-cover--auto::after {
+  background:
+    linear-gradient(112deg, transparent 40%, rgb(236 229 212 / 4%) 50%, transparent 60%),
+    radial-gradient(120% 100% at 50% 50%, transparent 52%, rgb(0 0 0 / 26%) 100%);
+}
+
+/* 字用淡墨（月光），screen 让它在深纸上浮起来 */
+[data-theme='dark'] .post-cover-glyph {
+  color: color-mix(in srgb, var(--ink) 34%, transparent);
+  mix-blend-mode: screen;
+}
+
+[data-theme='dark'] .featured-card:hover .post-cover-glyph {
+  color: color-mix(in srgb, var(--ink) 46%, transparent);
+}
+
+/* 有题图的那张：压暗 + 纸色蒙版（上暗下纸），让它像夜里挂着的一幅旧画 */
+[data-theme='dark'] .featured-card .post-cover img {
+  filter: brightness(0.6) contrast(1.05) saturate(0.55) sepia(0.3);
+}
+
+[data-theme='dark'] .featured-card:hover .post-cover img {
+  filter: brightness(0.66) contrast(1.05) saturate(0.58) sepia(0.3);
+}
+
+[data-theme='dark'] .featured-card .post-cover:not(.post-cover--auto)::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--paper) 58%, transparent) 0%,
+    color-mix(in srgb, var(--paper) 40%, transparent) 50%,
+    color-mix(in srgb, var(--paper) 52%, transparent) 100%
+  );
+  pointer-events: none;
+}
+
+/* 列表里的小标签 */
 .post-inline-tags {
   display: inline-flex;
   flex-wrap: wrap;
@@ -50,160 +137,9 @@
   color: var(--cinnabar);
 }
 
-.post-row-metrics svg {
-  width: 0.72rem;
-  height: 0.72rem;
-  opacity: 0.8;
-}
-
-/* — 精选卡片：无题图时的字印 ————————————— */
-
-.post-cover {
-  display: block;
-  position: relative;
-  overflow: hidden;
-  border-radius: 1px;
-  background: linear-gradient(140deg, var(--paper-sunken), var(--paper-deep));
-}
-
-.post-cover--auto {
-  display: grid;
-  place-items: center;
-  background:
-    radial-gradient(120% 90% at 20% 10%, color-mix(in srgb, var(--ink) 7%, transparent), transparent 60%),
-    linear-gradient(140deg, var(--paper-sunken), var(--paper-deep));
-}
-
-.post-cover-glyph {
-  font-family: var(--font-kai);
-  font-size: clamp(2.6rem, 6vw, 4rem);
-  color: color-mix(in srgb, var(--ink) 22%, transparent);
-  letter-spacing: 0;
-  transition: transform var(--dur-slow) var(--ease-ink), color var(--dur-slow) var(--ease-out);
-}
-
-.featured-card:hover .post-cover-glyph {
-  transform: scale(1.06);
-  color: color-mix(in srgb, var(--ink) 34%, transparent);
-}
-
-/* — 文章页补充 ——————————————————————— */
-
-.post-cat {
-  color: var(--cinnabar);
-  letter-spacing: 0.16em;
-}
-
-.post-cat:hover {
-  color: var(--cinnabar);
-  text-decoration: underline;
-  text-underline-offset: 0.3em;
-  text-decoration-thickness: 1px;
-}
-
-.meta-item svg {
-  width: 0.8rem;
-  height: 0.8rem;
-  opacity: 0.85;
-}
-
-.meta-note-btn {
-  margin-left: auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.2rem 0.55rem;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  color: var(--ink-mute);
-  letter-spacing: 0.1em;
-  font-size: var(--text-2xs);
-  transition: color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
-}
-
-.meta-note-btn:hover {
-  color: var(--ink);
-  border-color: var(--line-strong);
-}
-
-.meta-note-count {
-  display: inline-grid;
-  place-items: center;
-  min-width: 1.05rem;
-  height: 1.05rem;
-  padding-inline: 0.15rem;
-  border-radius: 999px;
-  background: var(--paper-sunken);
-  font-family: var(--font-latin);
-  font-size: 0.6rem;
-  letter-spacing: 0;
-  color: var(--ink-mute);
-}
-
-.post-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.post-tags--foot {
-  margin-bottom: var(--space-6);
-}
-
-.post-tags--foot .tag-chip {
-  font-size: var(--text-xs);
-  padding: 0.3rem 0.7rem;
-}
-
-/* — 标签页补充 ——————————————————————— */
-
-.tag-cloud--large {
-  gap: 0.9rem;
-}
-
-.tag-cloud--large .tag-chip {
-  font-size: var(--text-md);
-  padding: 0.55rem 1.15rem;
-}
-
-.tag-title-mark {
-  color: var(--cinnabar);
-  font-family: var(--font-latin);
-  font-weight: 400;
-  margin-right: 0.3rem;
-}
-
-.tag-foot {
-  margin-top: var(--space-7);
-  padding-top: var(--space-5);
-  border-top: 1px solid var(--line-faint);
-}
-
-.tag-foot a {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  color: var(--ink-mute);
-  font-size: var(--text-sm);
-  letter-spacing: 0.12em;
-}
-
-.tag-foot a:hover {
-  color: var(--ink);
-}
-
-/* — 关于页 ————————————————————————————— */
-
-.about-aside {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-5);
-  position: sticky;
-  top: 6.5rem;
-}
+/* ==========================================================================
+   关于页
+   ========================================================================== */
 
 .about-prose {
   font-size: 1.0625rem;
@@ -218,15 +154,34 @@
 }
 
 .about-card--seal {
+  position: relative;
   text-align: center;
-  padding-block: 2.25rem 1.75rem;
+  padding-block: 2.15rem 1.6rem;
   background:
-    radial-gradient(90% 70% at 50% 0%, var(--cinnabar-wash), transparent 70%),
+    radial-gradient(80% 62% at 50% 0%, var(--cinnabar-wash), transparent 72%),
     var(--paper-raised);
+  overflow: hidden;
+}
+
+/* 一枚淡云纹，压在卡片底部 */
+.about-card--seal::after {
+  content: '';
+  position: absolute;
+  inset: auto 12% 0.55rem;
+  height: 0.75rem;
+  background-color: var(--line-strong);
+  -webkit-mask-image: url('/images/art/cloud-divider.svg');
+  mask-image: url('/images/art/cloud-divider.svg');
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  opacity: 0.4;
+  pointer-events: none;
 }
 
 .about-seal {
-  width: 4.5rem;
+  width: 4rem;
   margin-inline: auto;
   color: var(--seal);
   transform: rotate(-3deg);
@@ -235,96 +190,76 @@
 .about-signature {
   margin-top: var(--space-4);
   font-size: var(--text-sm);
-  letter-spacing: 0.24em;
+  letter-spacing: 0.22em;
   color: var(--ink-soft);
 }
 
 .about-motto {
-  margin-top: 0.4rem;
+  margin-top: 0.45rem;
   font-family: var(--font-kai);
   font-size: var(--text-xs);
   letter-spacing: 0.1em;
+  line-height: 1.9;
   color: var(--ink-faint);
 }
 
 .about-list--keys .k {
   font-family: var(--font-latin);
+  font-size: var(--text-2xs);
 }
 
 .about-list--keys kbd {
-  padding: 0.05rem 0.3rem;
+  padding: 0.05rem 0.32rem;
   border: 1px solid var(--line);
   border-radius: 3px;
   font-size: 0.62rem;
+  color: var(--ink-mute);
+  background: var(--paper);
 }
 
 .about-contact {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.45rem;
   font-size: var(--text-sm);
   color: var(--ink-mute);
+}
+
+.about-contact .icon {
+  width: 0.85rem;
+  height: 0.85rem;
+  opacity: 0.7;
 }
 
 .about-contact a {
   color: var(--ink-soft);
 }
 
-/* — 404 ————————————————————————————————— */
-
-.notfound-hint {
-  font-family: var(--font-kai);
-  font-size: var(--text-sm);
-  color: var(--ink-faint);
-  letter-spacing: 0.14em;
+.about-contact a:hover {
+  color: var(--cinnabar);
 }
 
-.notfound-seal {
-  width: 3.2rem;
-  color: var(--seal);
-  opacity: 0.85;
-  transform: rotate(6deg);
-  margin-block: 0.5rem;
-}
-
-/* — 页脚补充 ——————————————————————————— */
-
-.footer-brand-block {
-  display: flex;
-  flex-direction: column;
-}
-
-.footer-rss {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-}
-
-.footer-meta a {
-  color: var(--ink-mute);
-  text-decoration: underline;
-  text-decoration-color: var(--line-strong);
-  text-underline-offset: 0.25em;
-}
-
-/* — 批注页 ————————————————————————————— */
+/* ==========================================================================
+   批注页
+   ========================================================================== */
 
 .notes-toolbar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-4);
+  gap: var(--space-3) var(--space-4);
   padding-bottom: var(--space-4);
   margin-bottom: var(--space-5);
-  border-bottom: 1px solid var(--line-faint);
+  border-bottom: 1px solid var(--line);
 }
 
 .notes-total {
   font-family: var(--font-latin);
   font-size: var(--text-sm);
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
 }
 
 .notes-toolbar-actions {
@@ -335,12 +270,16 @@
 .notes-archive {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: clamp(1.75rem, 4vw, 2.5rem);
 }
 
 .notes-archive-group {
   padding-bottom: var(--space-5);
   border-bottom: 1px solid var(--line-faint);
+}
+
+.notes-archive-group:last-child {
+  border-bottom: 0;
 }
 
 .notes-archive-head {
@@ -354,24 +293,39 @@
 
 .notes-archive-title {
   font-size: var(--text-lg);
+  font-weight: 500;
   letter-spacing: 0.03em;
+  color: var(--ink);
+}
+
+.notes-archive-title a {
+  color: var(--ink);
+  background-image: linear-gradient(var(--line-strong), var(--line-strong));
+  background-repeat: no-repeat;
+  background-size: 0% 1px;
+  background-position: 0 100%;
+  transition: background-size var(--dur-slow) var(--ease-ink);
+}
+
+.notes-archive-title a:hover {
+  background-size: 100% 1px;
   color: var(--ink);
 }
 
 .notes-archive-meta {
   display: flex;
   align-items: baseline;
-  gap: 0.8rem;
+  gap: 0.75rem;
   font-family: var(--font-latin);
   font-size: var(--text-xs);
   color: var(--ink-faint);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
 }
 
 .notes-archive-list {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.85rem;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -380,9 +334,14 @@
 .notes-archive-item {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
-  padding-left: 0.95rem;
+  gap: 0.3rem;
+  padding-left: 1rem;
   border-left: 1px solid var(--line);
+  transition: border-color var(--dur) var(--ease-out);
+}
+
+.notes-archive-item:hover {
+  border-left-color: var(--cinnabar-soft);
 }
 
 .notes-archive-quote {
@@ -394,7 +353,7 @@
 
 .notes-archive-body {
   font-size: var(--text-sm);
-  line-height: 1.85;
+  line-height: 1.9;
   color: var(--ink-soft);
   white-space: pre-wrap;
 }
@@ -405,12 +364,13 @@
   gap: 0.75rem;
   font-family: var(--font-latin);
   font-size: 0.68rem;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   color: var(--ink-faint);
 }
 
 .notes-archive-foot button {
   color: var(--ink-faint);
+  font-family: var(--font-kai);
   transition: color var(--dur-fast) var(--ease-out);
 }
 
@@ -418,7 +378,9 @@
   color: var(--cinnabar);
 }
 
-/* — 编辑器主操作区 ————————————————————— */
+/* ==========================================================================
+   批注编辑器内部
+   ========================================================================== */
 
 .note-editor-main-actions {
   display: flex;
@@ -429,19 +391,19 @@
   padding: 0.35rem 0.85rem;
 }
 
-/* — 抽屉遮罩 ——————————————————————————— */
+/* ==========================================================================
+   抽屉：目录与批注（≤1024px 收进右侧）
+   ========================================================================== */
 
 .drawer-backdrop {
   position: fixed;
   inset: 0;
   z-index: 134;
-  background: rgb(20 18 14 / 38%);
+  background: rgb(23 20 16 / 34%);
   -webkit-backdrop-filter: blur(3px);
   backdrop-filter: blur(3px);
   animation: fade-in var(--dur) var(--ease-out) both;
 }
-
-/* — 目录/批注抽屉（移动端）———————————— */
 
 .dock-btn--panel {
   display: none;
@@ -455,13 +417,16 @@
 @media (max-width: 1024px) {
   .post-aside {
     position: fixed;
-    inset: 0 0 0 auto;
+    /* 从页眉下沿开始：页眉是 sticky 且在 .site-main 之外，抽屉压不过它 */
+    inset: var(--header-h) 0 0 auto;
     z-index: 136;
-    width: min(23rem, 90vw);
+    width: min(22rem, 88vw);
     max-height: none;
-    padding: 1.15rem 1.25rem 2rem;
+    padding: 1.15rem 1.35rem calc(2rem + env(safe-area-inset-bottom, 0px));
     background: var(--paper-raised);
     border-left: 1px solid var(--line);
+    border-top: 1px solid var(--line-faint);
+    box-shadow: -24px 0 48px -32px rgb(0 0 0 / 34%);
     transform: translateX(103%);
     transition: transform var(--dur) var(--ease-out);
     overflow-y: auto;
@@ -470,7 +435,7 @@
 
   .post-aside[data-open] {
     transform: none;
-    box-shadow: -24px 0 48px -32px rgb(0 0 0 / 40%);
+    box-shadow: -1px 0 0 var(--line), -28px 0 56px -34px rgb(0 0 0 / 40%);
   }
 
   .post-aside .toc {
@@ -479,7 +444,7 @@
     max-height: none;
     mask-image: none;
     border-bottom: 1px solid var(--line-faint);
-    padding-bottom: 1rem;
+    padding-bottom: 1.1rem;
   }
 
   .post-aside .notes-panel {
@@ -494,14 +459,19 @@
     margin-bottom: 0.25rem;
   }
 
+  /* 抽屉只要一个收起按钮（目录标题旁的那个），批注头里那个是多余的 */
+  .post-aside .notes-actions .toc-close {
+    display: none;
+  }
+
   .toc-close {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 1.6rem;
-    height: 1.6rem;
+    width: 2.5rem;
+    height: 2.5rem;
     border-radius: 999px;
-    color: var(--ink-faint);
+    color: var(--ink-mute);
     transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
   }
 
@@ -513,10 +483,13 @@
   .dock-btn--panel {
     display: grid;
   }
+}
 
-  .toc-head .toc-close {
-    display: inline-flex;
-  }
+/* 抽屉打开时收起悬浮坞，免得按钮压在面板上 */
+body:has(.post-aside[data-open]) .dock {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 @media (min-width: 1025px) {

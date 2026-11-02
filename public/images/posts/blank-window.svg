@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 750" width="1000" height="750" role="img" aria-label="水墨小景：一扇木窗，窗内大半是空的，右下有竹影">
+  <defs>
+    <linearGradient id="lightWash" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4b453b" stop-opacity="0.05" />
+      <stop offset="0.5" stop-color="#f6f2e8" stop-opacity="0" />
+      <stop offset="1" stop-color="#a5875a" stop-opacity="0.05" />
+    </linearGradient>
+
+    <linearGradient id="paperPane" x1="0.15" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#f6f2e8" stop-opacity="0.95" />
+      <stop offset="0.6" stop-color="#f6f2e8" stop-opacity="0.62" />
+      <stop offset="1" stop-color="#f6f2e8" stop-opacity="0.15" />
+    </linearGradient>
+
+    <radialGradient id="paneGlow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#f6f2e8" stop-opacity="0.95" />
+      <stop offset="1" stop-color="#f6f2e8" stop-opacity="0" />
+    </radialGradient>
+
+    <linearGradient id="frameInk" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#24211c" stop-opacity="0.42" />
+      <stop offset="0.45" stop-color="#4b453b" stop-opacity="0.5" />
+      <stop offset="1" stop-color="#24211c" stop-opacity="0.36" />
+    </linearGradient>
+
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="1.5" />
+    </filter>
+
+    <filter id="grain" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="3" />
+      <feColorMatrix type="saturate" values="0" />
+    </filter>
+  </defs>
+
+  <rect width="1000" height="750" fill="#f6f2e8" />
+  <rect width="1000" height="750" fill="url(#lightWash)" />
+
+  <!-- 窗内：只有极淡的光，不落笔 -->
+  <ellipse cx="440" cy="330" rx="330" ry="230" fill="url(#paneGlow)" opacity="0.7" />
+  <rect x="120" y="300" width="250" height="380" fill="#4b453b" opacity="0.018" />
+  <rect x="650" y="120" width="240" height="220" fill="#4b453b" opacity="0.015" />
+
+  <!-- 窗纸：一层比外面更亮的纸光 -->
+  <path d="M104 72 C300 68 700 67 900 71 C902 240 900 460 898 680
+           C680 684 320 683 102 678 C100 480 100 240 104 72 Z"
+    fill="url(#paperPane)" opacity="0.85" />
+
+  <!-- 窗框：四根略弯的木头 -->
+  <g fill="none" stroke="url(#frameInk)" stroke-linecap="round">
+    <path d="M98 64 C96 220 97 430 95 686" stroke-width="9" />
+    <path d="M904 60 C906 214 904 440 907 684" stroke-width="9" />
+    <path d="M94 68 C300 63 700 62 908 66" stroke-width="9" />
+    <path d="M95 686 C320 681 700 683 906 688" stroke-width="9" />
+  </g>
+
+  <!-- 窗棂：细，且偏淡 -->
+  <g fill="none" stroke="#4b453b" stroke-linecap="round" stroke-opacity="0.3">
+    <path d="M352 68 C350 240 351 470 350 686" stroke-width="3.2" />
+    <path d="M648 66 C647 250 648 460 647 686" stroke-width="3.2" />
+    <path d="M95 252 C300 249 700 249 906 253" stroke-width="2.6" stroke-opacity="0.22" />
+    <path d="M95 520 C300 517 700 518 906 522" stroke-width="2.6" stroke-opacity="0.22" />
+  </g>
+
+  <!-- 竹影：一段淡墨，被柔化过 -->
+  <g filter="url(#soft)" opacity="0.86" transform="translate(-30 -14) scale(1.05)">
+    <g fill="none" stroke="#4b453b" stroke-linecap="round" stroke-opacity="0.42">
+      <path d="M872 700 C858 604 840 522 814 430" stroke-width="5.4" />
+      <path d="M806 700 C798 622 792 566 780 502" stroke-width="4.2" stroke-opacity="0.3" />
+      <g stroke-width="2" stroke-opacity="0.3">
+        <path d="M820 444 C838 428 856 420 874 412" />
+        <path d="M812 470 C792 456 774 450 756 442" />
+        <path d="M786 510 C770 498 752 494 736 488" />
+        <path d="M798 540 C816 528 834 524 852 518" />
+      </g>
+    </g>
+    <g fill="#4b453b" fill-opacity="0.34">
+      <path d="M874 412 C890 404 904 400 918 398 C908 410 894 416 878 418 Z" />
+      <path d="M856 420 C862 404 866 390 868 376 C856 386 850 402 850 420 Z" />
+      <path d="M842 428 C828 418 812 412 796 410 C806 422 824 430 840 432 Z" />
+      <path d="M756 442 C742 434 726 430 710 430 C720 442 738 448 754 448 Z" />
+      <path d="M768 452 C756 462 748 474 744 488 C758 480 768 466 772 452 Z" />
+      <path d="M736 488 C722 482 706 480 690 482 C702 492 720 496 734 494 Z" />
+      <path d="M852 518 C868 512 884 510 900 510 C888 520 870 524 852 522 Z" />
+      <path d="M832 528 C838 544 840 558 838 572 C828 560 824 544 828 528 Z" />
+      <path d="M780 502 C766 496 750 494 734 496 C746 506 764 510 778 508 Z" />
+      <path d="M792 494 C800 480 812 470 826 464 C824 480 816 494 800 502 Z" />
+    </g>
+  </g>
+
+  <!-- 点苔：几粒墨，落在窗台上 -->
+  <g fill="#24211c" fill-opacity="0.24">
+    <circle cx="214" cy="694" r="2.2" />
+    <circle cx="222" cy="700" r="1.5" />
+    <circle cx="206" cy="700" r="1.2" />
+    <circle cx="756" cy="696" r="1.8" />
+  </g>
+
+  <!-- 窗台：一横压住整幅，留白才站得住 -->
+  <g fill="none" stroke-linecap="round">
+    <path d="M74 700 C300 694 700 696 930 703" stroke="#24211c" stroke-opacity="0.4" stroke-width="11" />
+    <path d="M74 716 C300 710 700 712 930 719" stroke="#4b453b" stroke-opacity="0.18" stroke-width="4" />
+  </g>
+
+  <!-- 印 -->
+  <g transform="rotate(-4 960 656)" opacity="0.85">
+    <rect x="936" y="632" width="42" height="42" rx="3" fill="#9c4033" fill-opacity="0.9" />
+    <rect x="941" y="637" width="32" height="32" rx="2" fill="none" stroke="#f6f2e8" stroke-opacity="0.5" stroke-width="1" />
+    <text x="957" y="661" text-anchor="middle" font-family="KaiTi, STKaiti, 'Songti SC', serif"
+      font-size="20" fill="#f6f2e8" fill-opacity="0.95">記</text>
+  </g>
+
+  <rect width="1000" height="750" filter="url(#grain)" opacity="0.05" style="mix-blend-mode:multiply" />
+</svg>

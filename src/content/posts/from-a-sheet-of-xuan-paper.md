@@ -1,4 +1,4 @@
----
+﻿---
 title: 从一张宣纸说起
 subtitle: 关于这座书房的缘起，以及纸与墨的一点讲究
 description: 为什么在信息流时代还要手写一个博客：从宣纸的颜色讲到行距、从字体讲到检索，把「好看」拆成可以执行的细节。
@@ -72,9 +72,6 @@ flowchart LR
   C --> D[Astro 静态输出]
   D --> E[Pagefind 全文索引]
   D --> F[自托管字体切片]
-  style A fill:#fbf8f0,stroke:#d1c5ab,color:#24211c
-  style D fill:#fbf8f0,stroke:#c47b68,color:#9c4033
-  style E fill:#fbf8f0,stroke:#4d6a58,color:#4d6a58
 ```
 
 ## 还没做完的事
@@ -85,3 +82,4 @@ flowchart LR
 
 [^1]: 关于纸色的一点私心：我更喜欢老纸那种微微发黄的米色，它在夜里看起来像一盏没关的灯。
 [^2]: 本文的公式、图表与脚注都是真实渲染的，你可以点一下目录、选中一句话，或者按 <kbd>Ctrl</kbd> + <kbd>K</kbd> 试试。
+
