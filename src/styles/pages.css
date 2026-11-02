@@ -686,7 +686,11 @@ body:has(.post-aside[data-open]) .dock {
 }
 
 /* 窄屏：先 hero，再地图，再正文列表 */
-@media (max-width: 1199px) {
+.dock-rail-jump {
+  display: none;
+}
+
+@media (max-width: 999px) {
   .hero {
     order: 1;
   }
@@ -698,16 +702,21 @@ body:has(.post-aside[data-open]) .dock {
   .home-feed {
     order: 3;
   }
+
+  /* 地图在下方时，底部给一个快捷按钮 */
+  .dock .dock-rail-jump {
+    display: grid;
+  }
 }
 
 /* 宽屏：地图固定在右侧，滚正文时一直在 */
-@media (min-width: 1200px) {
+@media (min-width: 1000px) {
   .home-shell {
-    grid-template-columns: minmax(0, 1fr) 21rem;
+    grid-template-columns: minmax(0, 1fr) clamp(17rem, 22vw, 21rem);
     grid-template-areas:
       'hero rail'
       'feed rail';
-    column-gap: clamp(2rem, 4vw, 4rem);
+    column-gap: clamp(1.5rem, 3vw, 4rem);
   }
 
   .hero {

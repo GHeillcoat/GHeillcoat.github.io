@@ -29,6 +29,18 @@ const firstYear = all.length ? Math.min(...all.map((p) => p.data.pubDate.getFull
 ---
 
 <BaseLayout>
+  <Fragment slot="dock">
+    <button
+      class="dock-btn dock-rail-jump"
+      type="button"
+      data-rail-jump
+      aria-label="书房的地图"
+      title="书房的地图"
+    >
+      <Icon name="graph" class="icon" size={18} />
+    </button>
+  </Fragment>
+
   <div class="home-shell">
     <section class="hero">
       <div class="hero-inner">
@@ -172,5 +184,16 @@ const firstYear = all.length ? Math.min(...all.map((p) => p.data.pubDate.getFull
       </details>
     </aside>
   </div>
+
+  <script>
+    // 窄屏时地图排在 hero 下面：底部加一个「地图」按钮，一键跳过去并展开
+    const jump = document.querySelector<HTMLElement>('[data-rail-jump]');
+    jump?.addEventListener('click', () => {
+      const rail = document.querySelector<HTMLElement>('.home-rail');
+      const card = rail?.querySelector<HTMLDetailsElement>('details.rail-card');
+      if (card && !card.open) card.open = true;
+      rail?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  </script>
 </BaseLayout>
 
