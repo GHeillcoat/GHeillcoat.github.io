@@ -517,6 +517,21 @@ body:has(.post-aside[data-open]) .dock {
   }
 }
 
+/* 首页 hero 的墨晕原本靠 overflow:hidden 收边，一进两栏就会被裁成一条竖线。
+   这里在 hero 自身的右缘做一段淡出，让雾在纸色里消失，而不是被切断。 */
+.home-shell .hero-bg {
+  -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 82%, transparent 99%);
+  mask-image: linear-gradient(90deg, #000 0%, #000 82%, transparent 99%);
+}
+
+@media (max-width: 999px) {
+  /* 单栏时 hero 占满宽度，恢复原来的收边方式 */
+  .home-shell .hero-bg {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+}
+
 /* 首页骨架：正文一列，右侧一张可折叠的「书房地图」 */
 .home-shell {
   max-width: 1400px;
