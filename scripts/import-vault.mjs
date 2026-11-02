@@ -1,15 +1,16 @@
 #!/usr/bin/env node
 /**
- * 把一个 Obsidian vault 导入成站点的「笔记」集合。
+ * 把一个 Obsidian vault 直接导入成站点文章（和博客文章放在同一个集合里，
+ * 列表、归档、标签、图谱、搜索都是同一套）。
  *
  *   npm run import:vault -- --from "D:/obsidian"
  *
  * 做的事：
  *   - 扫描 vault 里的 .md（跳过 .obsidian / .git / .claude / scripts / _lab / assets/reference）
- *   - 生成规范化 frontmatter：title（取第一个 H1）、date（created 或文件时间）、tags、aliases、category（顶层文件夹）
- *   - 把正文开头的 H1 去掉（页面标题用 frontmatter 渲染，避免重复）
- *   - 图片等附件复制到 public/vault/（![[img.png]] 由站点解析）
- *   - 输出到 src/content/vault/<相对路径>.md
+ *   - 生成 posts 能认的 frontmatter：title / pubDate / category / tags / aliases / description
+ *   - 正文开头的 H1 去掉（页面标题用 frontmatter 渲染，避免重复）
+ *   - 图片等附件复制到 public/vault/
+ *   - 输出到 src/content/posts/<分卷>/<笔记>.md，并记录清单，重复导入不会留下旧文件
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -23,8 +24,9 @@ const flag = (name, fallback = '') => {
 };
 
 const FROM = path.resolve(flag('from', 'D:/obsidian'));
-const TO = path.resolve(flag('to', 'src/content/vault'));
+const TO = path.resolve(flag('to', 'src/content/posts'));
 const ASSETS = path.resolve(flag('assets', 'public/vault'));
+const MANIFEST = path.resolve(flag('manifest', 'scripts/vault-import-manifest.json'));
 
 const SKIP_DIRS = new Set(['.obsidian', '.git', '.claude', 'scripts', '_lab', 'node_modules']);
 const SKIP_PREFIXES = ['assets/reference/'];
@@ -76,7 +78,8 @@ function toDate(value, fallback) {
   return fallback;
 }
 
-const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const iso = (d) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
 function stripMd(text) {
   return String(text)
@@ -106,8 +109,39 @@ function firstParagraph(body) {
   return '';
 }
 
-function yamlValue(value) {
-  return JSON.stringify(value);
+const yamlValue = (value) => JSON.stringify(value);
+
+function previousImport() {
+  if (!fs.existsSync(MANIFEST)) return [];
+  try {
+    const data = JSON.parse(fs.readFileSync(MANIFEST, 'utf8'));
+    return Array.isArray(data?.ids) ? data.ids : [];
+  } catch {
+    return [];
+  }
+}
+
+function removePrevious(ids) {
+  let removed = 0;
+  for (const id of ids) {
+    const file = path.join(TO, `${id}.md`);
+    if (fs.existsSync(file)) {
+      fs.unlinkSync(file);
+      removed += 1;
+    }
+    // 顺手清掉空目录
+    let dir = path.dirname(file);
+    while (dir.startsWith(TO) && dir !== TO) {
+      try {
+        if (fs.readdirSync(dir).length === 0) fs.rmdirSync(dir);
+        else break;
+      } catch {
+        break;
+      }
+      dir = path.dirname(dir);
+    }
+  }
+  return removed;
 }
 
 function main() {
@@ -116,7 +150,7 @@ function main() {
     process.exit(1);
   }
 
-  fs.rmSync(TO, { recursive: true, force: true });
+  const removed = removePrevious(previousImport());
   fs.mkdirSync(TO, { recursive: true });
   fs.rmSync(ASSETS, { recursive: true, force: true });
   fs.mkdirSync(ASSETS, { recursive: true });
@@ -145,12 +179,13 @@ function main() {
     if (rel.startsWith('笔记/')) rel = rel.slice(3);
     else if (!rel.includes('/')) rel = `_root/${rel}`;
 
-    // 与 Astro 的 glob id 规则完全一致（Astro 内部用 github-slugger）：
-    // 2.1 → 21、空格转连字符、英文小写，中文原样保留
+    // Astro 的 glob id 用 github-slugger：2.1 → 21、空格转连字符、英文小写
     const slugSegment = (seg) => githubSlug(seg);
-    let id = rel.split('/').map(slugSegment).join('/');
+    const rawSegments = rel.split('/');
+    const category = rawSegments.length > 1 ? rawSegments[0] : '根目录';
+    let id = rawSegments.map(slugSegment).join('/');
     let n = 2;
-    while (usedIds.has(id)) {
+    while (usedIds.has(id) || fs.existsSync(path.join(TO, `${id}.md`))) {
       id = `${id}-${n++}`;
     }
     usedIds.add(id);
@@ -166,9 +201,6 @@ function main() {
     let content = body;
     if (h1) content = body.replace(h1[0], '').replace(/^\s*\n/, '');
 
-    // 分类用原始文件夹名（保留大小写与空格），id 才用小写连字符
-    const rawSegments = rel.split('/');
-    const category = rawSegments.length > 1 ? rawSegments[0] : '笔记';
     const published = toDate(data.created ?? data.date ?? data.pubDate, stat.mtime);
     const updated = toDate(data.modified ?? data.updated, stat.mtime);
     const tags = [
@@ -184,22 +216,17 @@ function main() {
 
     const lines = ['---', `title: ${yamlValue(title)}`];
     if (description) lines.push(`description: ${yamlValue(description)}`);
-    lines.push(`date: ${iso(published)}`);
-    if (updated && iso(updated) !== iso(published)) lines.push(`updated: ${iso(updated)}`);
+    lines.push(`pubDate: ${iso(published)}`);
+    if (updated && iso(updated) !== iso(published)) lines.push(`updatedDate: ${iso(updated)}`);
     lines.push(`category: ${yamlValue(category)}`);
     if (tags.length) lines.push(`tags: [${tags.map(yamlValue).join(', ')}]`);
     if (aliases.length) lines.push(`aliases: [${aliases.map(yamlValue).join(', ')}]`);
-    const extra = ['chapter', 'section', 'prerequisites'];
-    for (const key of extra) {
-      if (data[key] != null && data[key] !== '') lines.push(`${key}: ${yamlValue(String(data[key]))}`);
-    }
-    lines.push(`source: ${yamlValue(relFromRoot)}`);
     lines.push('---', '');
 
     const outFile = path.join(TO, `${id}.md`);
     fs.mkdirSync(path.dirname(outFile), { recursive: true });
     fs.writeFileSync(outFile, lines.join('\n') + content.trimStart(), 'utf8');
-    imported.push({ id, title, category, tags: tags.length });
+    imported.push({ id, title, category, tags });
   }
 
   let copied = 0;
@@ -211,11 +238,17 @@ function main() {
     copied += 1;
   }
 
+  fs.writeFileSync(
+    MANIFEST,
+    `${JSON.stringify({ from: FROM, generatedAt: new Date().toISOString(), ids: imported.map((n) => n.id) }, null, 2)}\n`,
+    'utf8',
+  );
+
   const byCategory = new Map();
   for (const note of imported) byCategory.set(note.category, (byCategory.get(note.category) ?? 0) + 1);
 
-  console.log(`导入 ${imported.length} 篇笔记，跳过 ${skipped} 篇，复制附件 ${copied} 个。`);
-  console.log('分组：');
+  console.log(`导入 ${imported.length} 篇笔记，跳过 ${skipped} 篇，复制附件 ${copied} 个，清掉上次导入 ${removed} 个文件。`);
+  console.log('分卷：');
   for (const [name, count] of [...byCategory.entries()].sort((a, b) => b[1] - a[1])) {
     console.log(`  ${name}: ${count}`);
   }

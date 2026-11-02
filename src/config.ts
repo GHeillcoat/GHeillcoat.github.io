@@ -21,7 +21,6 @@ export const site = {
   },
   nav: [
     { label: '文章', href: '/posts', key: 'posts' },
-    { label: '笔记', href: '/vault', key: 'vault' },
     { label: '图谱', href: '/graph', key: 'graph' },
     { label: '归档', href: '/archive', key: 'archive' },
     { label: '标签', href: '/tags', key: 'tags' },
@@ -34,7 +33,6 @@ export const site = {
     { label: '归档', href: '/archive' },
     { label: '标签', href: '/tags' },
     { label: '批注', href: '/notes' },
-    { label: '笔记', href: '/vault' },
     { label: '关于', href: '/about' },
   ],
   locale: 'zh-CN',

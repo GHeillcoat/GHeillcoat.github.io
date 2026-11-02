@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostRow from '../../components/PostRow.astro';
+import { tagSlug } from '../../lib/tags';
 
 export async function getStaticPaths() {
   const posts = await getCollection('posts', ({ data }) => !data.draft);
@@ -11,13 +12,26 @@ export async function getStaticPaths() {
     for (const tag of post.data.tags) counts.set(tag, (counts.get(tag) ?? 0) + 1);
   }
 
-  return [...counts.keys()].map((tag) => ({
-    params: { tag },
+  // 同一 slug 可能来自不同写法（`AI/Agent` 与 `AI-Agent`），合并成同一页
+  const bySlug = new Map<string, { tag: string; posts: typeof posts }>();
+  for (const [tag] of counts) {
+    const slug = tagSlug(tag);
+    if (!slug) continue;
+    const entry = bySlug.get(slug) ?? { tag, posts: [] as typeof posts };
+    bySlug.set(slug, {
+      tag: entry.tag,
+      posts: [
+        ...entry.posts,
+        ...posts.filter((post) => post.data.tags.includes(tag) && !entry.posts.some((p) => p.id === post.id)),
+      ],
+    });
+  }
+
+  return [...bySlug.entries()].map(([slug, { tag, posts: items }]) => ({
+    params: { tag: slug },
     props: {
       tag,
-      posts: posts
-        .filter((post) => post.data.tags.includes(tag))
-        .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()),
+      posts: items.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()),
     },
   }));
 }

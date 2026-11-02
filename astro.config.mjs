@@ -14,7 +14,8 @@ import { rehypeObsidianExtras } from './src/lib/rehype-obsidian.mjs';
 import { inkPaper, inkNight } from './src/lib/shiki-themes.mjs';
 
 export default defineConfig({
-  site: 'https://inkwell.example.com',
+  // GitHub Pages 用户站点（仓库名必须是 GHeillcoat.github.io）；本地/自定义域名可用 SITE_URL 覆盖
+  site: process.env.SITE_URL ?? 'https://gheillcoat.github.io',
   trailingSlash: 'ignore',
   build: { format: 'directory' },
   devToolbar: { enabled: false },
@@ -81,3 +82,4 @@ export default defineConfig({
     },
   },
 });
+

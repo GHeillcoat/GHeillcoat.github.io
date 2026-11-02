@@ -104,6 +104,28 @@ export function buildGraph(
   return { nodes, edges, backlinks, outlinks };
 }
 
+/** 只保留链接最多的 N 个节点：首页侧栏这类小画布用它，避免 455 个点糊成一团 */
+export function topGraph(graph: GraphData, limit: number): GraphData {
+  const ranked = [...graph.nodes].sort((a, b) => b.degree - a.degree).slice(0, limit);
+  const ids = new Set(ranked.map((node) => node.id));
+  const edges = graph.edges.filter((edge) => ids.has(edge.source) && ids.has(edge.target));
+  const degree = new Map<string, number>();
+  for (const edge of edges) {
+    degree.set(edge.source, (degree.get(edge.source) ?? 0) + 1);
+    degree.set(edge.target, (degree.get(edge.target) ?? 0) + 1);
+  }
+  const nodes = ranked
+    .map((node) => ({ ...node, degree: degree.get(node.id) ?? 0 }))
+    .sort((a, b) => b.degree - a.degree);
+  const backlinks: Record<string, string[]> = {};
+  const outlinks: Record<string, string[]> = {};
+  for (const node of nodes) {
+    backlinks[node.id] = (graph.backlinks[node.id] ?? []).filter((from) => ids.has(from));
+    outlinks[node.id] = (graph.outlinks[node.id] ?? []).filter((to) => ids.has(to));
+  }
+  return { nodes, edges, backlinks, outlinks };
+}
+
 /** 以某篇文章为中心的子图（一跳邻居） */
 export function localGraph(graph: GraphData, id: string): GraphData {
   const ids = new Set<string>([id]);

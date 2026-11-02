@@ -1,11 +1,9 @@
 ---
-import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import GraphCanvas from '../components/GraphCanvas.astro';
-import { buildGraph } from '../lib/graph';
+import { getSiteGraph } from '../lib/site-graph';
 
-const posts = await getCollection('posts', ({ data }) => !data.draft);
-const graph = buildGraph(posts);
+const graph = await getSiteGraph();
 const ranked = [...graph.nodes].sort((a, b) => b.degree - a.degree || a.title.localeCompare(b.title, 'zh'));
 const linked = graph.nodes.filter((node) => node.degree > 0).length;
 ---

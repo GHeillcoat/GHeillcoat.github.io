@@ -37,12 +37,14 @@
 
 ### 笔记库（从 Obsidian vault 导入）
 
-- `npm run import:vault -- --from "D:/obsidian"` 把真实 vault 导入成独立集合，`/vault` 按分卷浏览
-- 保留原始目录结构，生成 `title / date / tags / aliases / category`，正文 H1 不会重复
-- 双链按「完整路径 → 文件名 → 标题 → 别名」容错匹配，`[[#小节]]` 同页跳转也支持
+- `npm run import:vault -- --from "D:/obsidian"` 把真实 vault 直接导入 `src/content/posts/`，和博客文章同一个集合
+- 之后**所有入口都是同一套**：`/posts`（455 篇按时间由近及远）、`/archive`、`/tags`、首页「近作」、`/graph`、全文检索
+- 保留原始分卷目录（`笔记/Ch13 RAG/…` → `ch13-rag/…`），生成 `title / pubDate / category / tags / aliases`
+- 双链按「完整路径 → 文件名 → 标题 → 别名 → 去空格标点的宽松匹配」容错，`[[#小节]]` 同页跳转也支持
 - 附件复制到 `public/vault/`，`![[图片]]` 自动解析
-- 笔记与博客双链互通，但**不进入**首页、归档、标签、图谱，避免 440 篇课堂笔记淹没博客
 - 支持 `==高亮==`、块引用锚点清理、宽表格横向滚动（Obsidian 常见写法）
+- 重复导入按 `scripts/vault-import-manifest.json` 清单清理旧文件，不会残留
+- 首页右侧图谱只画链接最多的 80 个枢纽（455 个点会糊成一团），完整图谱在 `/graph`
 
 ### 写作（Markdown 全能力）
 
@@ -87,6 +89,13 @@
 
 ---
 
+## 部署到 GitHub Pages
+
+- 仓库名用 **`GHeillcoat.github.io`**（用户站点，挂在根路径 `/`），推到 `master` 或 `main`
+- 仓库 **Settings → Pages → Source** 选 **GitHub Actions**
+- workflow 在 `.github/workflows/deploy.yml`：`npm ci` → `npm run build`（字体子集 + Astro + Pagefind）→ 发布 `dist/`
+- 线上地址：`https://gheillcoat.github.io/`
+- 换成项目仓库（`/<repo>/` 子路径）或自定义域名的方式，见 [部署说明](docs/deploy.md)
 ## 快速开始
 
 ```bash
@@ -125,8 +134,7 @@ npm run qa        # 端到端自检：用本机 Edge/Chrome 真点一遍交互
 │   ├── config.ts             # 站点标题、导航、页脚
 │   ├── content.config.ts     # 元数据归一（Obsidian properties / Hexo frontmatter）+ vault 集合
 │   ├── content/posts/        # 文章（.md / .mdx）——可以直接当 Obsidian vault
-│   ├── content/vault/        # 导入的课堂笔记（由 import-vault.mjs 生成，可重跑）
-│   ├── layouts/              # BaseLayout / PostLayout / VaultLayout
+│   ├── layouts/              # BaseLayout / PostLayout
 │   ├── components/           # 页眉页脚、卡片、目录、批注面板、图谱、搜索面板…
 │   ├── pages/                # 首页/文章/笔记库/图谱/归档/标签/批注/关于/404/rss
 │   ├── scripts/              # 主题、命令面板、批注、目录、Mermaid、图谱、灯箱…
@@ -241,3 +249,5 @@ flowchart LR
 ## License
 
 内容与插图版权归作者所有；代码部分可自由取用。
+
+

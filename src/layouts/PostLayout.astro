@@ -6,8 +6,9 @@ import BaseLayout from './BaseLayout.astro';
 import Toc from '../components/Toc.astro';
 import NotesPanel from '../components/NotesPanel.astro';
 import Relations from '../components/Relations.astro';
+import { tagSlug } from '../lib/tags';
 import Icon from '../components/Icon.astro';
-import { buildGraph } from '../lib/graph';
+import { getSiteGraph } from '../lib/site-graph';
 import { site } from '../config';
 import {
   countWords,
@@ -28,9 +29,8 @@ const { post, prev, next } = Astro.props;
 const { data } = post;
 const { Content, headings } = await render(post);
 
-// 双链图谱：整站的边 + 这篇的局部关系
-const allPosts = await getCollection('posts', (entry) => !entry.data.draft);
-const graph = buildGraph(allPosts);
+// 双链图谱：整站的边 + 这篇的局部关系（整站图缓存一次，455 篇也不会重复计算）
+const graph = await getSiteGraph();
 
 const words = countWords(post.body ?? '');
 const minutes = readingTime(post.body ?? '', data.lang);
@@ -149,7 +149,7 @@ const jsonLd = {
                 <ul class="post-tags post-tags--foot" role="list">
                   {data.tags.map((tag) => (
                     <li>
-                      <a class="tag-chip" href={`/tags/${encodeURIComponent(tag)}`}>
+                      <a class="tag-chip" href={`/tags/${tagSlug(tag)}`}>
                         <span>#{tag}</span>
                       </a>
                     </li>
@@ -224,3 +224,5 @@ const jsonLd = {
     </div>
   </div>
 </BaseLayout>
+
+

@@ -2,6 +2,7 @@
 import type { CollectionEntry } from 'astro:content';
 import Icon from './Icon.astro';
 import { countWords, excerptFromBody, formatDateShort, formatNumber, isoDate, readingLabel } from '../lib/format';
+import { tagSlug } from '../lib/tags';
 
 export interface Props {
   post: CollectionEntry<'posts'>;
@@ -40,7 +41,7 @@ const summary = data.description || excerptFromBody(post.body, 96);
           <ul class="post-inline-tags" role="list">
             {data.tags.slice(0, 3).map((tag) => (
               <li>
-                <a href={`/tags/${encodeURIComponent(tag)}`} class="post-inline-tag">
+                <a href={`/tags/${tagSlug(tag)}`} class="post-inline-tag">
                   #{tag}
                 </a>
               </li>
@@ -51,3 +52,5 @@ const summary = data.description || excerptFromBody(post.body, 96);
     </div>
   </div>
 </li>
+
+

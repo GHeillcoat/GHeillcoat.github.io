@@ -6,13 +6,16 @@ import FeaturedCard from '../components/FeaturedCard.astro';
 import GraphCanvas from '../components/GraphCanvas.astro';
 import Seal from '../components/Seal.astro';
 import Icon from '../components/Icon.astro';
-import { buildGraph } from '../lib/graph';
+import { tagSlug } from '../lib/tags';
+import { getSiteGraph } from '../lib/site-graph';
+import { topGraph } from '../lib/graph';
 import { site } from '../config';
 
 const all = (await getCollection('posts', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
-const graph = buildGraph(all);
+const graph = await getSiteGraph();
+const railGraph = topGraph(graph, 80);
 const topLinked = [...graph.nodes].sort((a, b) => b.degree - a.degree).slice(0, 6);
 
 const featured = all.filter((p) => p.data.featured).slice(0, 2);
@@ -137,7 +140,7 @@ const firstYear = all.length ? Math.min(...all.map((p) => p.data.pubDate.getFull
           {
             topTags.map(([tag, count]) => (
               <li>
-                <a class="tag-chip" href={`/tags/${encodeURIComponent(tag)}`}>
+                <a class="tag-chip" href={`/tags/${tagSlug(tag)}`}>
                   <span>{tag}</span>
                   <span class="tag-count">{count}</span>
                 </a>
@@ -157,10 +160,10 @@ const firstYear = all.length ? Math.min(...all.map((p) => p.data.pubDate.getFull
 
         <div class="rail-body">
           <GraphCanvas
-            graph={graph}
+            graph={railGraph}
             mode="global"
             height={380}
-            hint="拖动 · 缩放 · 点击进入"
+            hint={`${graph.nodes.length} 篇 · 这里只画 ${railGraph.nodes.length} 个枢纽`}
           />
 
           <a class="rail-more" href="/graph">
@@ -196,4 +199,7 @@ const firstYear = all.length ? Math.min(...all.map((p) => p.data.pubDate.getFull
     });
   </script>
 </BaseLayout>
+
+
+
 

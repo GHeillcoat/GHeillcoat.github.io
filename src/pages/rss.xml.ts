@@ -24,7 +24,9 @@ export const GET: APIRoute = async ({ site: siteUrl }) => {
     (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
   );
 
+  // 455 篇全塞进 RSS 太重，只发最近 30 篇
   const items = posts
+    .slice(0, 30)
     .map((post) => {
       const url = new URL(`/posts/${post.id}`, base).href;
       const description = post.data.description || '';

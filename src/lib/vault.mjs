@@ -21,7 +21,6 @@ import path from 'node:path';
 import { parse as parseYaml } from 'yaml';
 
 const POSTS_DIR = path.resolve('src/content/posts');
-const VAULT_DIR = path.resolve('src/content/vault');
 const PUBLIC_DIR = path.resolve('public');
 const CACHE_TTL = 800;
 
@@ -137,7 +136,7 @@ function encodePath(value) {
   return value.split('/').map(encodeURIComponent).join('/');
 }
 
-function scanDir(dir, kind) {
+function scanDir(dir) {
   const entries = [];
   for (const file of walk(dir)) {
     const raw = fs.readFileSync(file, 'utf8');
@@ -149,7 +148,6 @@ function scanDir(dir, kind) {
 
     entries.push({
       id,
-      kind,
       title: meta.title,
       aliases: meta.aliases,
       tags: meta.tags,
@@ -158,7 +156,7 @@ function scanDir(dir, kind) {
       published: meta.published,
       updated: meta.updated,
       description: meta.description,
-      url: kind === 'vault' ? `/vault/${encodePath(id)}` : `/posts/${encodePath(id)}`,
+      url: `/posts/${encodePath(id)}`,
       body,
     });
   }
@@ -166,8 +164,8 @@ function scanDir(dir, kind) {
 }
 
 function build() {
-  // 博客文章优先命中，其次是导入的笔记（标题/别名冲突时文章赢）
-  const entries = [...scanDir(POSTS_DIR, 'post'), ...scanDir(VAULT_DIR, 'vault')];
+  // 博客文章与导入的笔记现在同属 posts 集合，统一从 posts 目录索引
+  const entries = scanDir(POSTS_DIR);
   const byKey = new Map();
 
   // Obsidian 的短链接（[[文件名]]、[[别名]]、[[标题]]）都要能命中：
@@ -288,3 +286,4 @@ export function resolveTargets(body) {
   }
   return ids;
 }
+

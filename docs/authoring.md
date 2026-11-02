@@ -25,7 +25,7 @@ npm run build                           # 输出 dist/，丢到任意静态托�
 如果有一份真实的笔记库（比如 `D:/obsidian`），不必手动搬文件：
 
 ```bash
-npm run import:vault -- --from "D:/obsidian"    # 导入到 src/content/vault/
+npm run import:vault -- --from "D:/obsidian"    # 直接导入到 src/content/posts/
 npm run fonts                                   # 新字补进字体子集
 npm run build
 ```
@@ -33,14 +33,15 @@ npm run build
 它会：
 
 - 跳过 `.obsidian`、`.git`、`.claude`、`scripts`、`assets/reference`
-- 保留分卷目录（`笔记/Ch13 RAG/…` → `/vault/ch13-rag/…`），id 与 Astro 的 slug 规则一致
+- 保留分卷目录（`笔记/Ch13 RAG/…` → `ch13-rag/…`），id 与 Astro 的 slug 规则一致（`2.1` → `21`）
 - 按 `created` / 文件时间生成日期，从第一个 H1 取标题并把它从正文里去掉
-- 保留 `tags`、`aliases`、`chapter`、`section`、`prerequisites`，生成 `category`
+- 生成 `title / pubDate / category / tags / aliases`，笔记与博客文章完全同构
 - 复制图片附件到 `public/vault/`，`![[图片]]` 直接可用
 - 双链按「完整路径 → 文件名 → 标题 → 别名 → 去空格标点的宽松匹配」解析，`[[#小节]]` 也能跳
 
-导入的笔记有自己的 `/vault` 索引页与详情页，**不进入**首页、归档、标签页和 `/graph`，
-所以不会把博客淹掉；双链仍与博客文章互通。重新导入会覆盖 `src/content/vault/`（源库不动）。
+导入之后没有任何「另一套页面」：文章页、归档、标签、首页近作、知识图谱、全文检索
+都把笔记当成普通文章一起排序（455 篇按时间由近及远）。重新导入时按
+`scripts/vault-import-manifest.json` 清理上次导入的文件，不会残留，也不会碰你手写的博客。
 
 ## 二、Frontmatter：三种写法都认
 
