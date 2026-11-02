@@ -4,9 +4,11 @@
  *   - %%注释%%       → 去掉
  *   - 单独一行 ^块ID  → 去掉（Obsidian 的块引用锚点）
  *   - <table>        → 包一层可横向滚动的容器
+ *
+ * 内联脚注 `^[...]` 在 mdast 阶段处理，见 ./remark-inline-footnotes.mjs。
  */
 
-const SKIP_TAGS = new Set(['code', 'pre', 'script', 'style']);
+const SKIP_TAGS = new Set(['code', 'pre', 'script', 'style', 'a', 'svg', 'kbd']);
 
 function textOf(node) {
   if (!node) return '';
@@ -61,23 +63,26 @@ export function rehypeObsidianExtras() {
     walk(tree, (child, parent) => {
       // 去掉只包含块 ID 的段落
       if (child.type === 'element' && child.tagName === 'p') {
-        const text = textOf(child).trim();
-        if (/^\^[A-Za-z0-9_-]+$/.test(text)) {
+        const content = textOf(child).trim();
+        if (/^\^[A-Za-z0-9_-]+$/.test(content)) {
           child.__drop = true;
         }
       }
       // 表格包一层横向滚动容器
       if (child.type === 'element' && child.tagName === 'table') {
-        if (parent.type === 'element' && parent.tagName === 'div' && parent.properties?.className?.includes?.('table-scroll')) {
+        if (
+          parent.type === 'element' &&
+          parent.tagName === 'div' &&
+          parent.properties?.className?.includes?.('table-scroll')
+        ) {
           return;
         }
-        const wrapped = {
+        child.__wrap = {
           type: 'element',
           tagName: 'div',
           properties: { className: ['table-scroll'] },
           children: [child],
         };
-        child.__wrap = wrapped;
       }
     });
 

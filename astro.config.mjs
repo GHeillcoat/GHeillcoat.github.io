@@ -11,6 +11,7 @@ import { rehypeMermaid } from './src/lib/rehype-mermaid.mjs';
 import { rehypeCallouts } from './src/lib/rehype-callouts.mjs';
 import { rehypeWikiLinks } from './src/lib/rehype-wikilinks.mjs';
 import { rehypeObsidianExtras } from './src/lib/rehype-obsidian.mjs';
+import { remarkInlineFootnotes } from './src/lib/remark-inline-footnotes.mjs';
 import { inkPaper, inkNight } from './src/lib/shiki-themes.mjs';
 
 export default defineConfig({
@@ -29,7 +30,7 @@ export default defineConfig({
     processor: unified({
       gfm: true,
       smartypants: true,
-      remarkPlugins: [remarkGfm, remarkMath],
+      remarkPlugins: [remarkGfm, remarkMath, remarkInlineFootnotes],
       rehypePlugins: [
         rehypeSlug,
         rehypeCallouts,

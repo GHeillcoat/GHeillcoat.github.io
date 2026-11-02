@@ -343,6 +343,22 @@ async function main() {
   check('文章页收录全部内容', listPage.count >= 400 && listPage.rows >= 400, `${listPage.count} 篇 / ${listPage.rows} 行`);
   check('文章页按时间倒序', listPage.firstDate >= listPage.lastDate, `${listPage.firstDate} → ${listPage.lastDate}`);
 
+  /* 内联脚注 ^[...]：上标 + 文末注释，不能留字面量 */
+  await page.goto(`${BASE}${encodeURI('/posts/ch14-agent原理/深挖/深挖-lang家族/')}`, {
+    waitUntil: 'networkidle2',
+  });
+  await sleep(500);
+  const footnotes = await page.evaluate(() => ({
+    refs: document.querySelectorAll('.prose .data-footnote-ref').length,
+    section: !!document.querySelector('.prose .footnotes'),
+    literal: (document.querySelector('.prose')?.textContent ?? '').includes('^['),
+  }));
+  check(
+    '内联脚注已渲染',
+    footnotes.refs > 0 && footnotes.section && !footnotes.literal,
+    `${footnotes.refs} 个引用 / 注释区 ${footnotes.section} / 字面量 ${footnotes.literal}`,
+  );
+
   /* 归档页：年份段落要能随滚动揭示（长列表不能被动画整段挡住） */
   await page.goto(`${BASE}/archive/`, { waitUntil: 'networkidle2' });
   await sleep(600);
