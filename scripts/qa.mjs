@@ -103,7 +103,24 @@ async function main() {
   check('Ctrl+K 唤起寻章面板', paletteOpen);
 
   await page.type('[data-palette-input]', '园');
-  await sleep(700);
+  // 线上 Pagefind 是冷加载，等它接手（dev 没有 /pagefind，直接跳过）
+  const hasPagefind = await page.evaluate(async (base) => {
+    try {
+      const res = await fetch(`${base}/pagefind/pagefind.js`, { method: 'HEAD' });
+      return res.ok;
+    } catch {
+      return false;
+    }
+  }, BASE);
+  if (hasPagefind) {
+    await page
+      .waitForFunction(
+        () => document.querySelector('[data-palette-engine]')?.textContent?.trim() === 'Pagefind',
+        { timeout: 8000 },
+      )
+      .catch(() => null);
+  }
+  await sleep(400);
   const paletteState = await page.evaluate(() => {
     const items = [...document.querySelectorAll('[data-palette-item]')];
     return {

@@ -511,6 +511,18 @@ export function initPalette(): void {
 
   registerOverlay({ name: 'palette', z: 140, isOpen, close });
 
+  // 生产环境在首屏空闲时就把 Pagefind 预取好：
+  // 冷启动时第一次搜索才不会先闪一下「站内页面」兜底结果。
+  if (import.meta.env.PROD) {
+    const preload = () => void loadPagefind();
+    if (typeof window.requestIdleCallback === 'function') {
+      window.requestIdleCallback(preload, { timeout: 2500 });
+    } else {
+      window.setTimeout(preload, 1200);
+    }
+  }
+
+
   // 视口变化时把选中项拉回可视区
   window.addEventListener(
     'resize',
